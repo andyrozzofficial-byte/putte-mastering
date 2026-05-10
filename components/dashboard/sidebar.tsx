@@ -69,7 +69,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             key={href}
             href={href}
             onClick={onNavigate}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+            className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors sm:text-sm ${
               active
                 ? "bg-[var(--accent-warm)] text-black"
                 : "text-gray-600 hover:bg-gray-50 hover:text-black"
@@ -114,7 +114,7 @@ export function Sidebar() {
   return (
     <>
       {/* Mobile top bar */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 md:hidden">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2.5 md:hidden">
         <Link
           href={STUDIO}
           className="flex min-w-0 items-center gap-2 font-semibold"
@@ -134,9 +134,9 @@ export function Sidebar() {
       </header>
 
       {/* Desktop sidebar */}
-      <aside className="relative hidden min-h-screen w-64 shrink-0 border-r border-gray-200 bg-white md:flex md:flex-col md:py-8">
-        <div className="flex flex-1 flex-col px-6">
-          <Link href={STUDIO} className="mb-10 flex items-center gap-2.5">
+      <aside className="relative hidden min-h-screen w-[15.5rem] shrink-0 border-r border-gray-200 bg-white md:flex md:flex-col md:py-6 lg:w-60">
+        <div className="flex flex-1 flex-col px-5">
+          <Link href={STUDIO} className="mb-8 flex items-center gap-2">
             <IconWaveform className="shrink-0 text-black" />
             <span className="text-sm font-semibold tracking-tight text-black">
               Putte Mastering
@@ -144,10 +144,10 @@ export function Sidebar() {
           </Link>
           <NavLinks />
         </div>
-        <div className="border-t border-gray-100 px-6 pt-6">
+        <div className="border-t border-gray-100 px-5 pt-5">
           <button
             type="button"
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-black"
+            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-black sm:text-sm"
           >
             <IconLogout />
             Logga ut
@@ -172,7 +172,7 @@ export function Sidebar() {
             open ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-4">
+          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
             <span className="text-sm font-semibold tracking-[0.12em]">
               Meny
             </span>
@@ -185,7 +185,7 @@ export function Sidebar() {
               <IconClose />
             </button>
           </div>
-          <div className="flex flex-1 flex-col overflow-y-auto px-4 py-4">
+          <div className="flex flex-1 flex-col overflow-y-auto px-4 py-3">
             <NavLinks onNavigate={() => setOpen(false)} />
           </div>
           <div className="border-t border-gray-100 p-4">

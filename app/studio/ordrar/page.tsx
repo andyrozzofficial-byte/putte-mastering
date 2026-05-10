@@ -5,13 +5,13 @@ export default function OrdersPage() {
   const orders = studioOrdersAsRows();
 
   return (
-    <main className="flex-1 px-4 pb-16 pt-6 md:px-8 md:pb-20 md:pt-10 lg:px-12 lg:pt-12">
-      <div className="mx-auto max-w-6xl space-y-8">
-        <header className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight text-black md:text-3xl">
+    <main className="flex-1 px-4 pb-12 pt-5 md:px-7 md:pb-16 md:pt-8 lg:px-10 lg:pt-10">
+      <div className="mx-auto max-w-6xl space-y-6 md:space-y-7">
+        <header className="space-y-0.5">
+          <h1 className="text-[1.375rem] font-semibold tracking-tight text-black sm:text-2xl md:text-[1.65rem]">
             Ordrar
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-[13px] text-gray-500 sm:text-sm">
             Öppna en order för att se kundfil, detaljer och leverans.
           </p>
         </header>

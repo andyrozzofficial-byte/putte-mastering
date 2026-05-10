@@ -74,23 +74,31 @@ export function OrdersTable({
   orderDetailBase,
 }: OrdersTableProps) {
   return (
-    <section className="space-y-4">
-      <h2 className="text-lg font-semibold tracking-tight text-black">
+    <section className="space-y-3">
+      <h2 className="text-[15px] font-semibold tracking-tight text-black sm:text-base">
         {title}
       </h2>
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-sm">
+          <table className="w-full min-w-[560px] text-left text-[13px] sm:min-w-[600px] sm:text-sm">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50/80">
-                <th className="px-5 py-3 font-medium text-gray-500">Order</th>
-                <th className="px-5 py-3 font-medium text-gray-500">Kund</th>
-                <th className="px-5 py-3 font-medium text-gray-500">
+                <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
+                  Order
+                </th>
+                <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
+                  Kund
+                </th>
+                <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
                   Tjänst
                 </th>
-                <th className="px-5 py-3 font-medium text-gray-500">Status</th>
-                <th className="px-5 py-3 font-medium text-gray-500">Datum</th>
-                <th className="px-3 py-3 font-medium text-gray-400">
+                <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
+                  Status
+                </th>
+                <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
+                  Datum
+                </th>
+                <th className="px-2 py-2.5 font-medium text-gray-400 sm:px-3">
                   <span className="sr-only">Åtgärder</span>
                 </th>
               </tr>
@@ -103,21 +111,23 @@ export function OrdersTable({
                     i < orders.length - 1 ? "border-b border-gray-100" : ""
                   }
                 >
-                  <td className="px-5 py-4 font-medium text-black">
+                  <td className="px-4 py-3 font-medium text-black sm:px-5">
                     <OrderIdCell
                       orderId={order.id}
                       orderDetailBase={orderDetailBase}
                     />
                   </td>
-                  <td className="px-5 py-4 text-gray-800">{order.customer}</td>
-                  <td className="px-5 py-4 text-gray-700">{order.service}</td>
-                  <td className="px-5 py-4">
+                  <td className="px-4 py-3 text-gray-800 sm:px-5">
+                    {order.customer}
+                  </td>
+                  <td className="px-4 py-3 text-gray-700 sm:px-5">{order.service}</td>
+                  <td className="px-4 py-3 sm:px-5">
                     <OrderStatusBadge status={order.status} />
                   </td>
-                  <td className="px-5 py-4 tabular-nums text-gray-600">
+                  <td className="px-4 py-3 tabular-nums text-gray-600 sm:px-5">
                     {order.date}
                   </td>
-                  <td className="px-2 py-3 text-right">
+                  <td className="px-1.5 py-2.5 text-right sm:px-2">
                     <RowActions />
                   </td>
                 </tr>

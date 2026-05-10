@@ -4,7 +4,7 @@ export function MastradLogo({ className }: { className?: string }) {
   return (
     <Link
       href="/"
-      className={`flex items-center gap-2.5 font-bold tracking-[0.14em] text-black ${className ?? ""}`}
+      className={`flex items-center gap-2 font-bold tracking-[0.12em] text-black ${className ?? ""}`}
     >
       <span className="inline-flex text-black" aria-hidden>
         <svg
@@ -23,7 +23,7 @@ export function MastradLogo({ className }: { className?: string }) {
           <path d="M20 11v2" />
         </svg>
       </span>
-      <span className="text-sm md:text-[15px]">MASTRAD</span>
+      <span className="text-[13px] md:text-sm">MASTRAD</span>
     </Link>
   );
 }

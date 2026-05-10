@@ -26,7 +26,7 @@ export function UploadDropzone({
   return (
     <div
       id="upload"
-      className={`rounded-2xl border border-gray-100 bg-white p-8 shadow-sm transition-colors md:p-10 ${
+      className={`rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-colors md:p-7 ${
         active ? "ring-1 ring-gray-300/80" : ""
       }`}
     >
@@ -56,7 +56,7 @@ export function UploadDropzone({
             goNext();
           }
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-6 py-14 text-center transition-colors md:py-16 ${
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-5 py-10 text-center transition-colors sm:px-6 md:py-12 ${
           active
             ? "border-gray-400 bg-[var(--accent-warm)]/40"
             : "border-gray-200 bg-white hover:border-gray-300"
@@ -75,12 +75,14 @@ export function UploadDropzone({
             }
           }}
         />
-        <UploadCloudIcon className="mb-6 text-gray-400" />
-        <p className="text-lg font-semibold tracking-tight text-black">
+        <UploadCloudIcon className="mb-4 text-gray-400" />
+        <p className="text-base font-semibold tracking-tight text-black sm:text-[17px]">
           Dra & släpp din fil här
         </p>
-        <p className="mt-2 text-sm text-gray-500">eller klicka för att välja fil</p>
-        <p className="mt-8 text-xs text-gray-400">
+        <p className="mt-1.5 text-[13px] text-gray-500 sm:text-sm">
+          eller klicka för att välja fil
+        </p>
+        <p className="mt-6 text-[11px] text-gray-400 sm:text-xs">
           WAV, AIFF, FLAC, MP3 upp till 500MB
         </p>
       </div>

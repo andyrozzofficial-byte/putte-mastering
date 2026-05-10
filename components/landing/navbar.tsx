@@ -26,17 +26,17 @@ export function LandingNavbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-100/80 bg-white/90 backdrop-blur-md">
-      <div className="mx-auto max-w-7xl px-6 py-4 lg:px-12 lg:py-5">
-        <div className="flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-6">
+      <div className="mx-auto max-w-7xl px-5 py-3 sm:px-6 lg:px-10 lg:py-4">
+        <div className="flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-5">
           <MastradLogo />
 
           <nav className="hidden md:block md:justify-self-center" aria-label="Primär">
-            <ul className="flex items-center gap-6 lg:gap-10">
+            <ul className="flex items-center gap-5 lg:gap-8">
               {links.map(({ href, label }) => (
                 <li key={href}>
                   <Link
                     href={href}
-                    className="whitespace-nowrap text-sm font-medium text-gray-600 transition-colors hover:text-black"
+                    className="whitespace-nowrap text-[13px] font-medium text-gray-600 transition-colors hover:text-black md:text-sm"
                   >
                     {label}
                   </Link>
@@ -48,7 +48,7 @@ export function LandingNavbar() {
           <div className="flex items-center justify-end gap-3 md:min-w-0">
             <Link
               href="/studio"
-              className="hidden rounded-md bg-black px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800 sm:inline-flex"
+              className="hidden rounded-md bg-black px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-neutral-800 sm:inline-flex"
             >
               Logga in
             </Link>
@@ -66,13 +66,13 @@ export function LandingNavbar() {
       </div>
 
       {open ? (
-        <div className="border-t border-gray-100 bg-white px-6 py-4 md:hidden">
-          <ul className="flex flex-col gap-1">
+        <div className="border-t border-gray-100 bg-white px-5 py-3 md:hidden">
+          <ul className="flex flex-col gap-0.5">
             {links.map(({ href, label }) => (
               <li key={href}>
                 <Link
                   href={href}
-                  className="block rounded-lg px-3 py-3 text-sm font-medium text-gray-800 hover:bg-gray-50"
+                  className="block rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-800 hover:bg-gray-50"
                   onClick={() => setOpen(false)}
                 >
                   {label}
@@ -82,7 +82,7 @@ export function LandingNavbar() {
             <li className="pt-2">
               <Link
                 href="/studio"
-                className="block rounded-lg bg-black px-3 py-3 text-center text-sm font-medium text-white"
+                className="block rounded-lg bg-black px-3 py-2.5 text-center text-[13px] font-medium text-white"
                 onClick={() => setOpen(false)}
               >
                 Logga in

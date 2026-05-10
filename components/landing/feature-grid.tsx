@@ -32,21 +32,23 @@ export function FeatureGrid() {
   return (
     <section
       id="funktioner"
-      className="border-t border-gray-100 bg-neutral-50/70 py-20 md:py-28"
+      className="border-t border-gray-100 bg-neutral-50/70 py-14 md:py-20"
       aria-labelledby="funktioner-heading"
     >
-      <div className="mx-auto max-w-7xl px-6 lg:px-12">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
         <h2 id="funktioner-heading" className="sr-only">
           Varför välja oss
         </h2>
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+        <div className="grid gap-8 sm:grid-cols-2 sm:gap-y-10 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-8">
           {items.map(({ icon: Icon, title, body }) => (
-            <div key={title} className="space-y-4">
+            <div key={title} className="space-y-3">
               <Icon className="text-gray-700" />
-              <h3 className="text-base font-semibold tracking-tight text-black">
+              <h3 className="text-[15px] font-semibold tracking-tight text-black">
                 {title}
               </h3>
-              <p className="text-sm leading-relaxed text-gray-600">{body}</p>
+              <p className="text-[13px] leading-relaxed text-gray-600 sm:text-sm">
+                {body}
+              </p>
             </div>
           ))}
         </div>

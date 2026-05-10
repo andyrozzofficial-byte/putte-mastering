@@ -43,14 +43,14 @@ export default function OrderServicePage() {
   return (
     <div className="min-h-screen bg-neutral-50/50">
       <FlowHeader />
-      <main className="mx-auto max-w-5xl px-6 pb-20 pt-10 md:pb-28 md:pt-14 lg:px-8">
+      <main className="mx-auto max-w-5xl px-5 pb-14 pt-8 sm:px-6 md:pb-20 md:pt-10 lg:px-7">
         <StepProgress activeStep={1} />
 
-        <h1 className="mt-16 text-center text-2xl font-semibold tracking-tight text-black md:mt-20 md:text-3xl">
+        <h1 className="mt-10 text-center text-[1.375rem] font-semibold tracking-tight text-black sm:text-xl md:mt-12 md:text-2xl">
           Välj tjänst
         </h1>
 
-        <div className="mt-10 grid gap-6 md:mt-14 md:grid-cols-3 md:gap-5 lg:gap-6">
+        <div className="mt-8 grid gap-4 md:mt-10 md:grid-cols-3 md:gap-4 lg:gap-5">
           {plans.map((plan) => (
             <PricingCard
               key={plan.title}

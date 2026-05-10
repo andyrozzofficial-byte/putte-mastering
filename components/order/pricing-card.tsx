@@ -15,9 +15,9 @@ export function PricingCard({
 }: PricingCardProps) {
   return (
     <article
-      className={`relative flex h-full flex-col rounded-xl border p-6 shadow-sm transition-all duration-200 md:p-8 ${
+      className={`relative flex h-full flex-col rounded-xl border p-5 shadow-sm transition-all duration-200 md:p-6 ${
         popular
-          ? "border-[var(--accent-warm-strong)]/80 bg-[var(--accent-warm)]/80 pt-9 shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:border-gray-300 hover:shadow-md"
+          ? "border-[var(--accent-warm-strong)]/80 bg-[var(--accent-warm)]/80 pt-8 shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:border-gray-300 hover:shadow-md"
           : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-md"
       }`}
     >
@@ -27,14 +27,16 @@ export function PricingCard({
         </span>
       ) : null}
 
-      <h3 className="text-lg font-semibold tracking-tight text-black">{title}</h3>
-      <p className="mt-4 text-3xl font-semibold tracking-tight text-black md:text-[2rem]">
+      <h3 className="text-[15px] font-semibold tracking-tight text-black sm:text-base">
+        {title}
+      </h3>
+      <p className="mt-3 text-[1.65rem] font-semibold tracking-tight text-black sm:text-[1.75rem] md:text-[1.85rem]">
         {price}
       </p>
 
-      <ul className="mt-8 flex flex-1 flex-col gap-3">
+      <ul className="mt-6 flex flex-1 flex-col gap-2">
         {features.map((f) => (
-          <li key={f} className="flex gap-3 text-sm text-gray-600">
+          <li key={f} className="flex gap-2.5 text-[13px] text-gray-600 sm:text-sm">
             <CheckIcon className="mt-0.5 shrink-0 text-gray-700" />
             <span className="leading-relaxed">{f}</span>
           </li>
@@ -43,7 +45,7 @@ export function PricingCard({
 
       <button
         type="button"
-        className={`mt-10 w-full rounded-lg py-3 text-sm font-medium transition-colors ${
+        className={`mt-8 w-full rounded-lg py-2.5 text-[13px] font-medium transition-colors sm:text-sm ${
           popular
             ? "bg-black text-white hover:bg-neutral-800"
             : "border border-black bg-white text-black hover:bg-gray-50"

@@ -15,15 +15,17 @@ const items = [
 
 export function TrustBadges() {
   return (
-    <div className="border-t border-gray-100 pt-12 md:pt-16">
-      <ul className="flex flex-col items-center justify-center gap-8 sm:flex-row sm:flex-wrap sm:gap-x-12 sm:gap-y-6 md:gap-x-16">
+    <div className="border-t border-gray-100 pt-8 md:pt-10">
+      <ul className="flex flex-col items-center justify-center gap-6 sm:flex-row sm:flex-wrap sm:gap-x-10 sm:gap-y-5 md:gap-x-12">
         {items.map(({ title, icon: Icon }) => (
           <li
             key={title}
-            className="flex max-w-xs flex-col items-center gap-3 text-center sm:max-w-none"
+            className="flex max-w-xs flex-col items-center gap-2 text-center sm:max-w-none"
           >
             <Icon className="text-gray-700" />
-            <span className="text-sm font-medium text-gray-700">{title}</span>
+            <span className="text-[13px] font-medium text-gray-700 sm:text-sm">
+              {title}
+            </span>
           </li>
         ))}
       </ul>

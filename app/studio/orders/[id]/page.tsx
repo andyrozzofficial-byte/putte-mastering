@@ -24,19 +24,19 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
   if (!order) notFound();
 
   return (
-    <main className="flex-1 bg-neutral-50/40 px-4 pb-16 pt-6 md:px-8 md:pb-20 md:pt-8 lg:px-12">
-      <div className="mx-auto max-w-3xl">
+    <main className="flex-1 bg-neutral-50/40 px-4 pb-12 pt-5 md:px-7 md:pb-16 md:pt-7 lg:px-10">
+      <div className="mx-auto max-w-2xl lg:max-w-3xl">
         <Link
           href="/studio/ordrar"
-          className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-black"
+          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-gray-500 transition-colors hover:text-black sm:text-sm"
         >
           <ArrowLeftIcon />
           Tillbaka
         </Link>
 
-        <header className="mt-10 flex flex-col items-center gap-4 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-6">
+        <header className="mt-8 flex flex-col items-center gap-3 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-5">
           <span className="hidden md:block" aria-hidden />
-          <h1 className="text-center text-2xl font-semibold tracking-tight text-black md:text-3xl">
+          <h1 className="text-center text-[1.375rem] font-semibold tracking-tight text-black sm:text-xl md:text-2xl">
             {order.label}
           </h1>
           <div className="flex justify-center md:justify-end">
@@ -44,11 +44,11 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
           </div>
         </header>
 
-        <section className="mt-10 rounded-xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+        <section className="mt-8 rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-6">
           <h2 className="text-xs font-medium uppercase tracking-[0.12em] text-gray-400">
             Kund
           </h2>
-          <dl className="mt-6 space-y-4 text-sm">
+          <dl className="mt-5 space-y-3 text-[13px] sm:text-sm">
             <div className="flex flex-col gap-1 sm:flex-row sm:gap-8">
               <dt className="w-28 shrink-0 text-gray-500">Namn</dt>
               <dd className="font-medium text-black">{order.customerName}</dd>
@@ -83,7 +83,7 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
           </dl>
         </section>
 
-        <div className="mt-8 space-y-8">
+        <div className="mt-6 space-y-6 md:space-y-7">
           <CustomerSourceFile
             fileName={order.sourceFile.name}
             formatLabel={order.sourceFile.formatLabel}
@@ -91,16 +91,16 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
             sizeLabel={order.sourceFile.sizeLabel}
           />
 
-          <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+          <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-6">
             <h2 className="text-xs font-medium uppercase tracking-[0.12em] text-gray-400">
               Orderdetaljer
             </h2>
-            <dl className="mt-6 space-y-5 text-sm">
-              <div className="flex flex-col gap-1 border-b border-gray-100 pb-5 sm:flex-row sm:gap-8">
+            <dl className="mt-5 space-y-4 text-[13px] sm:text-sm">
+              <div className="flex flex-col gap-1 border-b border-gray-100 pb-4 sm:flex-row sm:gap-8">
                 <dt className="w-36 shrink-0 text-gray-500">Vald tjänst</dt>
                 <dd className="font-medium text-black">{order.service}</dd>
               </div>
-              <div className="flex flex-col gap-1 border-b border-gray-100 pb-5 sm:flex-row sm:gap-8">
+              <div className="flex flex-col gap-1 border-b border-gray-100 pb-4 sm:flex-row sm:gap-8">
                 <dt className="w-36 shrink-0 text-gray-500">Pris</dt>
                 <dd className="font-medium text-black">{order.price}</dd>
               </div>

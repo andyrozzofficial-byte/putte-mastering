@@ -9,14 +9,14 @@ export function DeliveryMasterUpload() {
   const openFile = useCallback(() => inputRef.current?.click(), []);
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-6">
       <p className="text-xs font-medium uppercase tracking-[0.12em] text-gray-400">
         Leverans
       </p>
-      <h3 className="mt-3 text-lg font-semibold tracking-tight text-black">
+      <h3 className="mt-2 text-[15px] font-semibold tracking-tight text-black sm:text-base">
         Ladda upp färdig master
       </h3>
-      <p className="mt-2 text-sm text-gray-500">
+      <p className="mt-1.5 text-[13px] text-gray-500 sm:text-sm">
         WAV eller AIFF i målformat som kunden beställt.
       </p>
 
@@ -43,7 +43,7 @@ export function DeliveryMasterUpload() {
           e.preventDefault();
           setDrag(false);
         }}
-        className={`mt-8 flex cursor-pointer flex-col items-center rounded-xl border border-dashed px-6 py-14 text-center transition-colors md:py-16 ${
+        className={`mt-6 flex cursor-pointer flex-col items-center rounded-xl border border-dashed px-5 py-10 text-center transition-colors sm:px-6 md:py-12 ${
           drag
             ? "border-gray-400 bg-[var(--accent-warm)]/50"
             : "border-gray-200 bg-neutral-50/30 hover:border-gray-300"
@@ -55,14 +55,18 @@ export function DeliveryMasterUpload() {
           className="sr-only"
           accept=".wav,.aiff,audio/wav,audio/aiff"
         />
-        <UploadGlyph className="mb-5 text-gray-400" />
-        <p className="text-base font-semibold text-black">Dra & släpp din fil här</p>
-        <p className="mt-2 text-sm text-gray-500">eller klicka för att välja fil</p>
+        <UploadGlyph className="mb-4 text-gray-400" />
+        <p className="text-[15px] font-semibold text-black sm:text-base">
+          Dra & släpp din fil här
+        </p>
+        <p className="mt-1.5 text-[13px] text-gray-500 sm:text-sm">
+          eller klicka för att välja fil
+        </p>
       </div>
 
       <button
         type="button"
-        className="mt-8 w-full rounded-lg bg-black py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
+        className="mt-6 w-full rounded-lg bg-black py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-neutral-800 sm:text-sm"
       >
         Markera som klar
       </button>
