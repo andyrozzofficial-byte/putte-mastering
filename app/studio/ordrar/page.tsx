@@ -1,8 +1,9 @@
 import { OrdersTable } from "@/components/dashboard/orders-table";
-import { studioOrdersAsRows } from "@/lib/studio-orders";
+import { dbRowToOrderRow, fetchStudioOrders } from "@/lib/studio/orders-data";
 
-export default function OrdersPage() {
-  const orders = studioOrdersAsRows();
+export default async function OrdersPage() {
+  const rows = await fetchStudioOrders();
+  const orders = rows.map(dbRowToOrderRow);
 
   return (
     <main className="flex-1 px-4 pb-12 pt-5 md:px-7 md:pb-16 md:pt-8 lg:px-10 lg:pt-10">

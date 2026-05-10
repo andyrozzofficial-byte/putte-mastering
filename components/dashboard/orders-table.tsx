@@ -1,140 +1,69 @@
-import Link from "next/link";
+import { OrdersTableRows, type OrderTableRowModel } from "./orders-table-rows";
 
-import { OrderStatusBadge, type OrderStatus } from "./order-status-badge";
-
-export type OrderRow = {
-  id: string;
-  customer: string;
-  service: string;
-  status: OrderStatus;
-  date: string;
-};
-
-function orderSlugFromLabel(label: string): string | null {
-  const m = label.match(/(\d+)/);
-  return m ? m[1] : null;
-}
-
-function OrderIdCell({
-  orderId,
-  orderDetailBase,
-}: {
-  orderId: string;
-  orderDetailBase?: string;
-}) {
-  if (!orderDetailBase) {
-    return orderId;
-  }
-  const slug = orderSlugFromLabel(orderId);
-  if (!slug) {
-    return orderId;
-  }
-  return (
-    <Link
-      href={`${orderDetailBase}/${slug}`}
-      className="text-black underline decoration-transparent underline-offset-4 transition-colors hover:decoration-black"
-    >
-      {orderId}
-    </Link>
-  );
-}
+export type OrderRow = OrderTableRowModel;
 
 type OrdersTableProps = {
   title: string;
   orders: OrderRow[];
-  /** e.g. `/studio/orders` — makes order id column link to detail */
+  /** e.g. `/studio/orders` — row navigates here + /id */
   orderDetailBase?: string;
 };
-
-function RowActions() {
-  return (
-    <button
-      type="button"
-      className="rounded-md p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-700"
-      aria-label="Fler åtgärder"
-    >
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        aria-hidden
-      >
-        <circle cx="5" cy="12" r="2" />
-        <circle cx="12" cy="12" r="2" />
-        <circle cx="19" cy="12" r="2" />
-      </svg>
-    </button>
-  );
-}
 
 export function OrdersTable({
   title,
   orders,
-  orderDetailBase,
+  orderDetailBase = "/studio/orders",
 }: OrdersTableProps) {
+  const hasOrders = orders.length > 0;
+
   return (
     <section className="space-y-3">
       <h2 className="text-[15px] font-semibold tracking-tight text-black sm:text-base">
         {title}
       </h2>
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[560px] text-left text-[13px] sm:min-w-[600px] sm:text-sm">
-            <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/80">
-                <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
-                  Order
-                </th>
-                <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
-                  Kund
-                </th>
-                <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
-                  Tjänst
-                </th>
-                <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
-                  Status
-                </th>
-                <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
-                  Datum
-                </th>
-                <th className="px-2 py-2.5 font-medium text-gray-400 sm:px-3">
-                  <span className="sr-only">Åtgärder</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order, i) => (
-                <tr
-                  key={order.id}
-                  className={
-                    i < orders.length - 1 ? "border-b border-gray-100" : ""
-                  }
-                >
-                  <td className="px-4 py-3 font-medium text-black sm:px-5">
-                    <OrderIdCell
-                      orderId={order.id}
-                      orderDetailBase={orderDetailBase}
-                    />
-                  </td>
-                  <td className="px-4 py-3 text-gray-800 sm:px-5">
-                    {order.customer}
-                  </td>
-                  <td className="px-4 py-3 text-gray-700 sm:px-5">{order.service}</td>
-                  <td className="px-4 py-3 sm:px-5">
-                    <OrderStatusBadge status={order.status} />
-                  </td>
-                  <td className="px-4 py-3 tabular-nums text-gray-600 sm:px-5">
-                    {order.date}
-                  </td>
-                  <td className="px-1.5 py-2.5 text-right sm:px-2">
-                    <RowActions />
-                  </td>
+        {hasOrders ? (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[720px] text-left text-[13px] sm:min-w-[840px] sm:text-sm">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50/80">
+                  <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
+                    Kund
+                  </th>
+                  <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
+                    Spår
+                  </th>
+                  <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
+                    Tjänst
+                  </th>
+                  <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
+                    Status
+                  </th>
+                  <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
+                    Pris
+                  </th>
+                  <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
+                    Datum
+                  </th>
+                  <th className="px-2 py-2.5 font-medium text-gray-400 sm:px-3">
+                    <span className="sr-only">Åtgärder</span>
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                <OrdersTableRows
+                  orders={orders}
+                  orderDetailBase={orderDetailBase}
+                  borderedRows
+                />
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="px-5 py-14 text-center text-[13px] text-gray-500 sm:px-6 sm:text-sm">
+            Inga ordrar ännu
+          </p>
+        )}
       </div>
     </section>
   );

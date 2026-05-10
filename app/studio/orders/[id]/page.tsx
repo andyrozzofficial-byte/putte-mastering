@@ -1,7 +1,10 @@
 import { OrderStatusBadge } from "@/components/dashboard/order-status-badge";
 import { CustomerSourceFile } from "@/components/studio/customer-source-file";
 import { DeliveryMasterUpload } from "@/components/studio/delivery-master-upload";
-import { getStudioOrder } from "@/lib/studio-orders";
+import {
+  dbRowToStudioDetail,
+  fetchStudioOrderById,
+} from "@/lib/studio/orders-data";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -12,7 +15,8 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const order = getStudioOrder(id);
+  const row = await fetchStudioOrderById(id);
+  const order = row ? dbRowToStudioDetail(row) : null;
   return {
     title: order ? `${order.label} — Studio` : "Order — Studio",
   };
@@ -20,8 +24,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function StudioOrderDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const order = getStudioOrder(id);
-  if (!order) notFound();
+  const row = await fetchStudioOrderById(id);
+  if (!row) notFound();
+
+  const order = dbRowToStudioDetail(row);
 
   return (
     <main className="flex-1 bg-neutral-50/40 px-4 pb-12 pt-5 md:px-7 md:pb-16 md:pt-7 lg:px-10">
@@ -56,24 +62,32 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
             <div className="flex flex-col gap-1 sm:flex-row sm:gap-8">
               <dt className="w-28 shrink-0 text-gray-500">E-post</dt>
               <dd>
-                <a
-                  href={`mailto:${order.customerEmail}`}
-                  className="font-medium text-black underline decoration-gray-300 underline-offset-4 hover:decoration-black"
-                >
-                  {order.customerEmail}
-                </a>
+                {order.customerEmail.trim().length > 0 ? (
+                  <a
+                    href={`mailto:${order.customerEmail}`}
+                    className="font-medium text-black underline decoration-gray-300 underline-offset-4 hover:decoration-black"
+                  >
+                    {order.customerEmail}
+                  </a>
+                ) : (
+                  <span className="font-medium text-gray-400">Ej angivet</span>
+                )}
               </dd>
             </div>
             <div className="flex flex-col gap-1 sm:flex-row sm:gap-8">
               <dt className="w-28 shrink-0 text-gray-500">Datum</dt>
               <dd className="text-black">
-                {new Date(`${order.orderedAt}T12:00:00`).toLocaleDateString(
-                  "sv-SE",
-                  {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  },
+                {order.orderedAt.length > 0 ? (
+                  new Date(`${order.orderedAt}T12:00:00`).toLocaleDateString(
+                    "sv-SE",
+                    {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    },
+                  )
+                ) : (
+                  <span className="text-gray-400">—</span>
                 )}
                 <span className="mt-0.5 block text-sm font-normal text-gray-500">
                   {order.dateRelative}
