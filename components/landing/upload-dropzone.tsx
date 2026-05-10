@@ -1,10 +1,23 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 
-export function UploadDropzone() {
+type UploadDropzoneProps = {
+  /** Navigates here after a file is chosen or dropped (order flow). */
+  nextStepHref?: string;
+};
+
+export function UploadDropzone({
+  nextStepHref = "/order/tjanst",
+}: UploadDropzoneProps) {
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [active, setActive] = useState(false);
+
+  const goNext = useCallback(() => {
+    router.push(nextStepHref);
+  }, [router, nextStepHref]);
 
   const onPick = useCallback(() => {
     inputRef.current?.click();
@@ -39,6 +52,9 @@ export function UploadDropzone() {
         onDrop={(e) => {
           e.preventDefault();
           setActive(false);
+          if (e.dataTransfer.files?.length) {
+            goNext();
+          }
         }}
         className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-6 py-14 text-center transition-colors md:py-16 ${
           active
@@ -53,6 +69,11 @@ export function UploadDropzone() {
           className="sr-only"
           accept=".wav,.aiff,.flac,.mp3,audio/wav,audio/aiff,audio/flac,audio/mpeg"
           multiple={false}
+          onChange={(e) => {
+            if (e.target.files?.length) {
+              goNext();
+            }
+          }}
         />
         <UploadCloudIcon className="mb-6 text-gray-400" />
         <p className="text-lg font-semibold tracking-tight text-black">
