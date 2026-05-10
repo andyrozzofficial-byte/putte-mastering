@@ -10,7 +10,8 @@ export type OrdersDbRow = {
   track_name: string | null;
   service: string | null;
   status: string | null;
-  price: string | null;
+  /** Integer SEK from DB (`bigint`); PostgREST may return number or string. */
+  price: string | number | null;
   notes: string | null;
   uploaded_file: string | null;
   mastered_file: string | null;
@@ -64,12 +65,27 @@ export function mapDbStatusToBadge(status: string | null): OrderStatus {
   return "ny";
 }
 
-export function parsePriceToKr(price: string | null | undefined): number {
-  if (!price) return 0;
+export function parsePriceToKr(
+  price: string | number | null | undefined,
+): number {
+  if (price == null) return 0;
+  if (typeof price === "number")
+    return Number.isFinite(price) ? Math.trunc(price) : 0;
   const normalized = price.replace(/\u00a0/g, " ").replace(/\s/g, "");
   const digits = normalized.replace(/[^\d]/g, "");
   const n = Number.parseInt(digits, 10);
   return Number.isFinite(n) ? n : 0;
+}
+
+function displayPriceFromDb(
+  price: string | number | null | undefined,
+): string {
+  if (price == null) return "—";
+  if (typeof price === "number") return formatKr(price);
+  const s = price.trim();
+  if (!s) return "—";
+  const n = parsePriceToKr(s);
+  return n > 0 ? formatKr(n) : s;
 }
 
 export function formatKr(amount: number): string {
@@ -136,7 +152,7 @@ export function dbRowToOrderRow(row: OrdersDbRow): OrderRow {
     trackName: (row.track_name ?? "").trim() || "—",
     service: (row.service ?? "").trim() || "—",
     status: mapDbStatusToBadge(row.status),
-    price: (row.price ?? "").trim() || "—",
+    price: displayPriceFromDb(row.price),
     date: formatOrderCreatedAt(row.created_at),
   };
 }
@@ -165,7 +181,7 @@ export function dbRowToStudioDetail(row: OrdersDbRow): StudioOrderDetail {
     orderedAt,
     dateRelative: formatOrderCreatedAt(row.created_at),
     service: (row.service ?? "").trim() || "—",
-    price: (row.price ?? "").trim() || "—",
+    price: displayPriceFromDb(row.price),
     customerNote: row.notes?.trim() ? row.notes : null,
     sourceFile: {
       name: fileName,

@@ -41,6 +41,7 @@ export function OrderPlansClient() {
         clearOrderUploadDraft();
         router.push("/?order=received");
       } catch (e) {
+        console.error("[order-plans] submitOrderToSupabase failed:", e);
         const msg =
           e instanceof Error
             ? e.message

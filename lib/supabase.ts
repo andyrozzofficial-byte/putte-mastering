@@ -2,6 +2,21 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 
+/**
+ * Columns sent on INSERT into `public.orders` (excluding DB defaults: `id`, `created_at`).
+ * Must stay in sync with the Supabase table definition.
+ */
+export const ORDERS_INSERT_COLUMNS = [
+  "customer_name",
+  "track_name",
+  "service",
+  "status",
+  "notes",
+  "uploaded_file",
+  "mastered_file",
+  "price",
+] as const;
+
 /** Row shape for inserts into the public `orders` table (matches Supabase column names). */
 export type OrderInsert = {
   customer_name: string;
@@ -12,8 +27,17 @@ export type OrderInsert = {
   /** Storage reference `bucket/path` (private buckets OK). */
   uploaded_file: string | null;
   mastered_file: string | null;
+  /** Display label from UI (e.g. `"1 500 kr"`); stored as integer SEK in `orders.price`. */
   price: string;
 };
+
+/** Maps plan labels like `"1 500 kr"` → `1500` for `bigint` / integer `price` column. */
+export function parseOrderPriceLabelToKr(label: string): number {
+  const normalized = label.replace(/\u00a0/g, " ").replace(/\s/g, "");
+  const digits = normalized.replace(/[^\d]/g, "");
+  const n = Number.parseInt(digits, 10);
+  return Number.isFinite(n) ? n : 0;
+}
 
 /**
  * Browser/client-side Supabase client (uses the anon key).
