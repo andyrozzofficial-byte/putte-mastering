@@ -18,24 +18,37 @@ import {
 
 type NavIcon = ComponentType<{ className?: string }>;
 
+const STUDIO = "/studio";
+
 const nav: {
   href: string;
   label: string;
   icon: NavIcon;
   badge?: string;
 }[] = [
-  { href: "/", label: "Översikt", icon: IconOverview },
-  { href: "/ordrar", label: "Ordrar", icon: IconOrders },
+  { href: STUDIO, label: "Översikt", icon: IconOverview },
+  { href: `${STUDIO}/ordrar`, label: "Ordrar", icon: IconOrders },
   {
-    href: "/nya-ordrar",
+    href: `${STUDIO}/nya-ordrar`,
     label: "Nya ordrar",
     icon: IconOrders,
     badge: "2",
   },
-  { href: "/kunder", label: "Kunder", icon: IconUsers },
-  { href: "/filer", label: "Filer", icon: IconFolder },
-  { href: "/installningar", label: "Inställningar", icon: IconSettings },
+  { href: `${STUDIO}/kunder`, label: "Kunder", icon: IconUsers },
+  { href: `${STUDIO}/filer`, label: "Filer", icon: IconFolder },
+  {
+    href: `${STUDIO}/installningar`,
+    label: "Inställningar",
+    icon: IconSettings,
+  },
 ];
+
+function navItemActive(pathname: string, href: string): boolean {
+  if (href === STUDIO) {
+    return pathname === STUDIO;
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -43,8 +56,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <nav className="flex flex-col gap-1" aria-label="Huvudnavigation">
       {nav.map(({ href, label, icon: Icon, badge }) => {
-        const active =
-          pathname === href || (href !== "/" && pathname.startsWith(href));
+        const active = navItemActive(pathname, href);
         return (
           <Link
             key={href}
@@ -96,7 +108,10 @@ export function Sidebar() {
     <>
       {/* Mobile top bar */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 md:hidden">
-        <Link href="/" className="flex min-w-0 items-center gap-2 font-semibold">
+        <Link
+          href={STUDIO}
+          className="flex min-w-0 items-center gap-2 font-semibold"
+        >
           <IconWaveform className="shrink-0 text-black" />
           <span className="truncate tracking-tight">Putte Mastering</span>
         </Link>
@@ -114,7 +129,7 @@ export function Sidebar() {
       {/* Desktop sidebar */}
       <aside className="relative hidden min-h-screen w-64 shrink-0 border-r border-gray-200 bg-white md:flex md:flex-col md:py-8">
         <div className="flex flex-1 flex-col px-6">
-          <Link href="/" className="mb-10 flex items-center gap-2.5">
+          <Link href={STUDIO} className="mb-10 flex items-center gap-2.5">
             <IconWaveform className="shrink-0 text-black" />
             <span className="text-sm font-semibold tracking-tight text-black">
               Putte Mastering
