@@ -47,7 +47,7 @@ export function LandingNavbar() {
 
           <div className="flex items-center justify-end gap-3 md:min-w-0">
             <Link
-              href="/studio"
+              href="/login"
               className="hidden rounded-md bg-black px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-neutral-800 sm:inline-flex"
             >
               Logga in
@@ -81,7 +81,7 @@ export function LandingNavbar() {
             ))}
             <li className="pt-2">
               <Link
-                href="/studio"
+                href="/login"
                 className="block rounded-lg bg-black px-3 py-2.5 text-center text-[13px] font-medium text-white"
                 onClick={() => setOpen(false)}
               >

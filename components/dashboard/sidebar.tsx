@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ComponentType } from "react";
 import { useEffect, useState } from "react";
+import { StudioLogoutButton } from "@/components/dashboard/studio-logout-button";
 import {
   IconClose,
   IconFolder,
-  IconLogout,
   IconMenu,
   IconOrders,
   IconOverview,
@@ -145,13 +145,7 @@ export function Sidebar() {
           <NavLinks />
         </div>
         <div className="border-t border-gray-100 px-5 pt-5">
-          <button
-            type="button"
-            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-black sm:text-sm"
-          >
-            <IconLogout />
-            Logga ut
-          </button>
+          <StudioLogoutButton variant="desktop" />
         </div>
       </aside>
 
@@ -189,13 +183,7 @@ export function Sidebar() {
             <NavLinks onNavigate={() => setOpen(false)} />
           </div>
           <div className="border-t border-gray-100 p-4">
-            <button
-              type="button"
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-600"
-            >
-              <IconLogout />
-              Logga ut
-            </button>
+            <StudioLogoutButton variant="mobile" />
           </div>
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 
 /** Row shape for inserts into the public `orders` table (matches Supabase column names). */
 export type OrderInsert = {
@@ -20,11 +19,7 @@ export type OrderInsert = {
  * Browser/client-side Supabase client (uses the anon key).
  * Only call from Client Components or client-side handlers.
  */
+/** Anonymous/public flows (customer upload + order insert). Cookie-less browser client. */
 export function createSupabaseClient(): SupabaseClient {
-  if (!url?.trim() || !anonKey?.trim()) {
-    throw new Error(
-      "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    );
-  }
-  return createClient(url, anonKey);
+  return createClient(getSupabaseUrl(), getSupabaseAnonKey());
 }
