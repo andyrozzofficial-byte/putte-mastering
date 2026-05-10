@@ -1,10 +1,8 @@
 export const ORDER_UPLOAD_SESSION_KEY = "mastrad_order_upload_v1";
 
 export type OrderUploadDraft = {
-  /** Public or canonical URL/path for the uploaded source file (storage). */
-  uploadedFile: string;
-  /** Path inside the storage bucket. */
-  storagePath: string;
+  /** `{bucket}/{path}` e.g. `uploads/incoming/uuid-file.wav` */
+  storageRef: string;
   /** Original file name for display / track_name. */
   trackName: string;
 };
@@ -19,13 +17,21 @@ export function readOrderUploadDraft(): OrderUploadDraft | null {
   const raw = sessionStorage.getItem(ORDER_UPLOAD_SESSION_KEY);
   if (!raw) return null;
   try {
-    const parsed = JSON.parse(raw) as OrderUploadDraft;
-    if (
-      typeof parsed.uploadedFile === "string" &&
-      typeof parsed.storagePath === "string" &&
-      typeof parsed.trackName === "string"
-    ) {
-      return parsed;
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    const trackName = parsed.trackName;
+    if (typeof trackName !== "string") return null;
+
+    if (typeof parsed.storageRef === "string") {
+      return { storageRef: parsed.storageRef, trackName };
+    }
+
+    /* Legacy drafts stored path inside bucket only */
+    if (typeof parsed.storagePath === "string") {
+      const pathInsideBucket = parsed.storagePath;
+      const storageRef = pathInsideBucket.startsWith("uploads/")
+        ? pathInsideBucket
+        : `uploads/${pathInsideBucket}`;
+      return { storageRef, trackName };
     }
   } catch {
     /* ignore */

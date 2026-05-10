@@ -10,6 +10,7 @@ export type OrderInsert = {
   service: string;
   status: string;
   notes: string;
+  /** Storage reference `bucket/path` (private buckets OK). */
   uploaded_file: string | null;
   mastered_file: string | null;
   price: string;

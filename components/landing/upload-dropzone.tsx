@@ -24,10 +24,9 @@ export function UploadDropzone({
       setUploadError(null);
       setBusy(true);
       try {
-        const { uploadedFile, storagePath } = await uploadCustomerTrack(file);
+        const { storageRef } = await uploadCustomerTrack(file);
         saveOrderUploadDraft({
-          uploadedFile,
-          storagePath,
+          storageRef,
           trackName: file.name,
         });
         router.push(nextStepHref);

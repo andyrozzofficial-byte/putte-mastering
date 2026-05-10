@@ -34,7 +34,7 @@ export function OrderPlansClient() {
           service: planTitle,
           status: "new",
           notes: "",
-          uploaded_file: draft.uploadedFile,
+          uploaded_file: draft.storageRef,
           mastered_file: null,
           price,
         });
