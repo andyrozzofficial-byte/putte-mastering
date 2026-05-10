@@ -4,6 +4,9 @@ type PricingCardProps = {
   features: readonly string[];
   popular?: boolean;
   ctaLabel?: string;
+  onSelect?: () => void | Promise<void>;
+  disabled?: boolean;
+  isLoading?: boolean;
 };
 
 export function PricingCard({
@@ -12,6 +15,9 @@ export function PricingCard({
   features,
   popular = false,
   ctaLabel = "Välj",
+  onSelect,
+  disabled = false,
+  isLoading = false,
 }: PricingCardProps) {
   return (
     <article
@@ -45,13 +51,15 @@ export function PricingCard({
 
       <button
         type="button"
-        className={`mt-8 w-full rounded-lg py-2.5 text-[13px] font-medium transition-colors sm:text-sm ${
+        disabled={disabled || isLoading}
+        onClick={() => void onSelect?.()}
+        className={`mt-8 w-full rounded-lg py-2.5 text-[13px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm ${
           popular
             ? "bg-black text-white hover:bg-neutral-800"
             : "border border-black bg-white text-black hover:bg-gray-50"
         }`}
       >
-        {ctaLabel}
+        {isLoading ? "Skickar…" : ctaLabel}
       </button>
     </article>
   );

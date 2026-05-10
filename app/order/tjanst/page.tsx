@@ -1,5 +1,5 @@
 import { FlowHeader } from "@/components/order/flow-header";
-import { PricingCard } from "@/components/order/pricing-card";
+import { OrderPlansClient } from "@/components/order/order-plans-client";
 import { StepProgress } from "@/components/order/step-progress";
 import { TrustBadges } from "@/components/order/trust-badges";
 import type { Metadata } from "next";
@@ -9,35 +9,6 @@ export const metadata: Metadata = {
   description:
     "Välj masteringpaket: Standard, Premium eller Stem Master. Enkelt och tydligt.",
 };
-
-const plans = [
-  {
-    title: "Standard Master",
-    price: "1 500 kr",
-    features: [
-      "Professionell mastering",
-      "1 revision",
-      "Leverans inom 2–3 dagar",
-    ],
-    popular: false as const,
-  },
-  {
-    title: "Premium Master",
-    price: "2 000 kr",
-    features: [
-      "Professionell mastering",
-      "2 revisioner",
-      "Expressleverans (1–2 dagar)",
-    ],
-    popular: true as const,
-  },
-  {
-    title: "Stem Master",
-    price: "3 000 kr",
-    features: ["För stems / mixar", "Mer kontroll & balans", "2 revisioner"],
-    popular: false as const,
-  },
-] as const;
 
 export default function OrderServicePage() {
   return (
@@ -50,17 +21,7 @@ export default function OrderServicePage() {
           Välj tjänst
         </h1>
 
-        <div className="mt-8 grid gap-4 md:mt-10 md:grid-cols-3 md:gap-4 lg:gap-5">
-          {plans.map((plan) => (
-            <PricingCard
-              key={plan.title}
-              title={plan.title}
-              price={plan.price}
-              features={plan.features}
-              popular={plan.popular}
-            />
-          ))}
-        </div>
+        <OrderPlansClient />
 
         <TrustBadges />
       </main>
