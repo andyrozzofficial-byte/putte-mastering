@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { OrderStatusBadge, type OrderStatus } from "./order-status-badge";
 
 export type OrderRow = {
@@ -8,9 +10,40 @@ export type OrderRow = {
   date: string;
 };
 
+function orderSlugFromLabel(label: string): string | null {
+  const m = label.match(/(\d+)/);
+  return m ? m[1] : null;
+}
+
+function OrderIdCell({
+  orderId,
+  orderDetailBase,
+}: {
+  orderId: string;
+  orderDetailBase?: string;
+}) {
+  if (!orderDetailBase) {
+    return orderId;
+  }
+  const slug = orderSlugFromLabel(orderId);
+  if (!slug) {
+    return orderId;
+  }
+  return (
+    <Link
+      href={`${orderDetailBase}/${slug}`}
+      className="text-black underline decoration-transparent underline-offset-4 transition-colors hover:decoration-black"
+    >
+      {orderId}
+    </Link>
+  );
+}
+
 type OrdersTableProps = {
   title: string;
   orders: OrderRow[];
+  /** e.g. `/studio/orders` — makes order id column link to detail */
+  orderDetailBase?: string;
 };
 
 function RowActions() {
@@ -35,7 +68,11 @@ function RowActions() {
   );
 }
 
-export function OrdersTable({ title, orders }: OrdersTableProps) {
+export function OrdersTable({
+  title,
+  orders,
+  orderDetailBase,
+}: OrdersTableProps) {
   return (
     <section className="space-y-4">
       <h2 className="text-lg font-semibold tracking-tight text-black">
@@ -67,7 +104,10 @@ export function OrdersTable({ title, orders }: OrdersTableProps) {
                   }
                 >
                   <td className="px-5 py-4 font-medium text-black">
-                    {order.id}
+                    <OrderIdCell
+                      orderId={order.id}
+                      orderDetailBase={orderDetailBase}
+                    />
                   </td>
                   <td className="px-5 py-4 text-gray-800">{order.customer}</td>
                   <td className="px-5 py-4 text-gray-700">{order.service}</td>

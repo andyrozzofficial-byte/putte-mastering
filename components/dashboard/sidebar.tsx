@@ -47,6 +47,13 @@ function navItemActive(pathname: string, href: string): boolean {
   if (href === STUDIO) {
     return pathname === STUDIO;
   }
+  if (href === `${STUDIO}/ordrar`) {
+    return (
+      pathname === href ||
+      pathname.startsWith(`${href}/`) ||
+      pathname.startsWith(`${STUDIO}/orders`)
+    );
+  }
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 

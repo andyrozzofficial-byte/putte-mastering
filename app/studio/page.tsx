@@ -1,9 +1,7 @@
 import { StatCard } from "@/components/dashboard/stat-card";
-import {
-  OrdersTable,
-  type OrderRow,
-} from "@/components/dashboard/orders-table";
+import { OrdersTable } from "@/components/dashboard/orders-table";
 import { Button } from "@/components/ui/button";
+import { studioOrdersAsRows } from "@/lib/studio-orders";
 
 const stats = [
   {
@@ -28,29 +26,7 @@ const stats = [
   },
 ] as const;
 
-const recentOrders: OrderRow[] = [
-  {
-    id: "Order #1023",
-    customer: "Andreas L.",
-    service: "Standard Master",
-    status: "ny",
-    date: "Idag 16:02",
-  },
-  {
-    id: "Order #1022",
-    customer: "Marcus J.",
-    service: "Premium Master",
-    status: "in_progress",
-    date: "Idag 13:48",
-  },
-  {
-    id: "Order #1021",
-    customer: "Erik N.",
-    service: "Standard Master",
-    status: "klar",
-    date: "Igår 22:10",
-  },
-];
+const recentOrders = studioOrdersAsRows();
 
 export default function OverviewPage() {
   return (
@@ -79,7 +55,11 @@ export default function OverviewPage() {
           </div>
         </section>
 
-        <OrdersTable title="Senaste ordrar" orders={recentOrders} />
+        <OrdersTable
+          title="Senaste ordrar"
+          orders={recentOrders}
+          orderDetailBase="/studio/orders"
+        />
       </div>
     </main>
   );
