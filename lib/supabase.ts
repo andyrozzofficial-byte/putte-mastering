@@ -6,24 +6,29 @@ import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
  * Columns sent on INSERT into `public.orders` (excluding DB defaults: `id`, `created_at`).
  * Must stay in sync with the Supabase table definition.
  */
+/** INSERT columns on `public.orders` (excluding defaults), sorted for payload checks. */
 export const ORDERS_INSERT_COLUMNS = [
+  "customer_email",
+  "customer_message",
   "customer_name",
-  "track_name",
+  "mastered_file",
+  "notes",
+  "price",
   "service",
   "status",
-  "notes",
+  "track_name",
   "uploaded_file",
-  "mastered_file",
-  "price",
 ] as const;
 
 /** Row shape for inserts into the public `orders` table (matches Supabase column names). */
 export type OrderInsert = {
   customer_name: string;
+  customer_email: string;
+  /** Optional note from customer; stored in `customer_message` (empty → null). */
+  customer_message: string;
   track_name: string;
   service: string;
   status: string;
-  notes: string;
   /** Storage reference `bucket/path` (private buckets OK). */
   uploaded_file: string | null;
   mastered_file: string | null;

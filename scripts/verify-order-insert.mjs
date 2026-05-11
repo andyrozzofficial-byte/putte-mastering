@@ -18,7 +18,9 @@ if (!url || !key) {
 }
 
 const payload = {
-  customer_name: null,
+  customer_name: "Verify Script",
+  customer_email: "verify@example.com",
+  customer_message: null,
   track_name: "verify-script-test",
   service: "Standard Master",
   status: "new",

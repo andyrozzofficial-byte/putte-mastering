@@ -5,6 +5,9 @@ export type OrderUploadDraft = {
   storageRef: string;
   /** Original file name for display / track_name. */
   trackName: string;
+  customer_name?: string;
+  customer_email?: string;
+  customer_message?: string;
 };
 
 export function saveOrderUploadDraft(draft: OrderUploadDraft): void {
@@ -22,7 +25,11 @@ export function readOrderUploadDraft(): OrderUploadDraft | null {
     if (typeof trackName !== "string") return null;
 
     if (typeof parsed.storageRef === "string") {
-      return { storageRef: parsed.storageRef, trackName };
+      const base = { storageRef: parsed.storageRef, trackName };
+      return {
+        ...base,
+        ...readOptionalCustomerFields(parsed),
+      };
     }
 
     /* Legacy drafts stored path inside bucket only */
@@ -31,7 +38,11 @@ export function readOrderUploadDraft(): OrderUploadDraft | null {
       const storageRef = pathInsideBucket.startsWith("uploads/")
         ? pathInsideBucket
         : `uploads/${pathInsideBucket}`;
-      return { storageRef, trackName };
+      return {
+        storageRef,
+        trackName,
+        ...readOptionalCustomerFields(parsed),
+      };
     }
   } catch {
     /* ignore */
@@ -42,4 +53,35 @@ export function readOrderUploadDraft(): OrderUploadDraft | null {
 export function clearOrderUploadDraft(): void {
   if (typeof sessionStorage === "undefined") return;
   sessionStorage.removeItem(ORDER_UPLOAD_SESSION_KEY);
+}
+
+function readOptionalCustomerFields(parsed: Record<string, unknown>): Pick<
+  OrderUploadDraft,
+  "customer_name" | "customer_email" | "customer_message"
+> {
+  const out: Pick<
+    OrderUploadDraft,
+    "customer_name" | "customer_email" | "customer_message"
+  > = {};
+  if (typeof parsed.customer_name === "string")
+    out.customer_name = parsed.customer_name;
+  if (typeof parsed.customer_email === "string")
+    out.customer_email = parsed.customer_email;
+  if (typeof parsed.customer_message === "string")
+    out.customer_message = parsed.customer_message;
+  return out;
+}
+
+/** Persists customer fields into the same session draft as the upload (no-op if no draft). */
+export function mergeOrderUploadDraft(
+  patch: Partial<
+    Pick<
+      OrderUploadDraft,
+      "customer_name" | "customer_email" | "customer_message"
+    >
+  >,
+): void {
+  const current = readOrderUploadDraft();
+  if (!current) return;
+  saveOrderUploadDraft({ ...current, ...patch });
 }
