@@ -174,6 +174,17 @@ export function ContactSection() {
         <p className="mt-8 text-[11px] text-gray-400 sm:text-xs">
           © {new Date().getFullYear()} MASTRAD. Manuell mastering.
         </p>
+        <p className="mt-4 text-[11px] leading-relaxed text-gray-400/70 sm:text-xs">
+          Design & utveckling av{" "}
+          <a
+            href="https://lunov.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500/90 underline decoration-gray-300/60 underline-offset-[3px] transition-colors hover:text-gray-800 hover:decoration-gray-500/80"
+          >
+            Lunov
+          </a>
+        </p>
       </div>
     </footer>
   );
