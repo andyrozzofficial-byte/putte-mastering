@@ -141,7 +141,7 @@ export function PricingTeaserSection() {
   return (
     <section
       id="pricing"
-      className="bg-neutral-50/50 py-8 sm:py-9 md:py-10"
+      className="bg-neutral-50/55 py-7 sm:py-8 md:py-9"
       aria-labelledby="pricing-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
@@ -156,8 +156,8 @@ export function PricingTeaserSection() {
           start.
         </p>
 
-        <div className="mt-8 grid gap-6 md:mt-9 md:grid-cols-2 md:gap-7 lg:gap-8">
-          <article className="flex min-h-[380px] flex-col rounded-2xl bg-white p-10 shadow-[0_14px_60px_-30px_rgba(0,0,0,0.22)] ring-1 ring-black/[0.04] sm:min-h-[400px] sm:p-12 md:p-13">
+        <div className="mt-7 grid gap-6 md:mt-8 md:grid-cols-2 md:gap-7 lg:gap-8">
+          <article className="flex min-h-[410px] flex-col rounded-2xl bg-white p-11 shadow-[0_18px_72px_-36px_rgba(0,0,0,0.26)] ring-1 ring-black/[0.05] sm:min-h-[430px] sm:p-13 md:p-14">
             <div className="text-left">
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
                 Standard
@@ -169,7 +169,7 @@ export function PricingTeaserSection() {
                 3 business days
               </p>
             </div>
-            <ul className="mt-auto flex flex-col gap-3 border-t border-neutral-100/90 pt-9 text-left text-[13px] leading-snug text-gray-600 sm:text-sm">
+            <ul className="mt-auto flex flex-col gap-3 border-t border-neutral-100/90 pt-10 text-left text-[13px] leading-snug text-gray-600 sm:text-sm">
               {bullets.map((b) => (
                 <li key={b} className="flex gap-3">
                   <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-neutral-400" />
@@ -179,7 +179,7 @@ export function PricingTeaserSection() {
             </ul>
           </article>
 
-          <article className="flex min-h-[380px] flex-col rounded-2xl bg-white p-10 shadow-[0_18px_72px_-34px_rgba(0,0,0,0.26)] ring-1 ring-black/[0.06] sm:min-h-[400px] sm:p-12 md:p-13">
+          <article className="flex min-h-[410px] flex-col rounded-2xl bg-white p-11 shadow-[0_22px_88px_-42px_rgba(0,0,0,0.3)] ring-1 ring-black/[0.07] sm:min-h-[430px] sm:p-13 md:p-14">
             <div className="text-left">
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
                 Express
@@ -191,7 +191,7 @@ export function PricingTeaserSection() {
                 24 hour delivery
               </p>
             </div>
-            <ul className="mt-auto flex flex-col gap-3 border-t border-neutral-100/90 pt-9 text-left text-[13px] leading-snug text-gray-600 sm:text-sm">
+            <ul className="mt-auto flex flex-col gap-3 border-t border-neutral-100/90 pt-10 text-left text-[13px] leading-snug text-gray-600 sm:text-sm">
               {bullets.map((b) => (
                 <li key={b} className="flex gap-3">
                   <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-neutral-400" />
@@ -233,24 +233,24 @@ export function FaqSection() {
   return (
     <section
       id="faq"
-      className="bg-white py-9 sm:py-10 md:py-12"
+      className="bg-white py-8 sm:py-9 md:py-10"
       aria-labelledby="faq-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-2xl">
+        <div className="mx-auto max-w-3xl">
           <h2
             id="faq-heading"
-            className="text-center text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.03em] text-black sm:text-[1.75rem] md:text-[1.9375rem]"
+            className="text-center text-[1.65rem] font-bold leading-[1.08] tracking-[-0.04em] text-black sm:text-[1.95rem] md:text-[2.15rem]"
           >
             FAQ
           </h2>
-          <dl className="mt-10 space-y-9 text-left sm:mt-11 sm:space-y-10">
+          <dl className="mt-9 space-y-8 text-left sm:mt-10 sm:space-y-9">
             {faqs.map(({ q, a }) => (
               <div
                 key={q}
                 className="border-b border-neutral-100 pb-10 last:border-0 last:pb-0 md:pb-12"
               >
-                <dt className="text-[15px] font-semibold leading-snug tracking-[-0.015em] text-black sm:text-base md:text-[17px]">
+                <dt className="text-[15px] font-semibold leading-snug tracking-[-0.02em] text-black sm:text-base md:text-[18px]">
                   {q}
                 </dt>
                 <dd className="mt-3 text-[13px] leading-[1.65] text-gray-600 sm:text-sm">
@@ -269,7 +269,7 @@ export function ContactSection() {
   return (
     <footer
       id="contact"
-      className="bg-neutral-50/50 py-10 sm:py-11 md:py-12"
+      className="bg-neutral-50/55 py-9 sm:py-10 md:py-11"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-2xl rounded-2xl bg-white px-8 py-10 shadow-[0_18px_72px_-34px_rgba(0,0,0,0.26)] ring-1 ring-black/[0.04] sm:px-10 sm:py-11 md:px-12 md:py-12">

@@ -8,7 +8,7 @@ export function TrustedBySection() {
       aria-labelledby="trusted-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="rounded-2xl bg-white px-10 py-14 shadow-[0_18px_72px_-34px_rgba(0,0,0,0.26)] ring-1 ring-black/[0.05] sm:px-12 sm:py-14 md:px-14 md:py-16 lg:px-16 lg:py-18">
+        <div className="rounded-2xl bg-white px-10 py-14 shadow-[0_22px_90px_-44px_rgba(0,0,0,0.32)] ring-1 ring-black/[0.06] sm:px-12 sm:py-14 md:px-14 md:py-16 lg:px-16 lg:py-18">
           <p className="text-center text-[10px] font-semibold uppercase tracking-[0.24em] text-gray-500">
             Trusted by
           </p>
