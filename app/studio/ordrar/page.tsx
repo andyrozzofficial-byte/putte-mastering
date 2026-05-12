@@ -1,6 +1,8 @@
 import { OrdersTable } from "@/components/dashboard/orders-table";
 import { dbRowToOrderRow, fetchStudioOrders } from "@/lib/studio/orders-data";
 
+export const dynamic = "force-dynamic";
+
 export default async function OrdersPage() {
   const rows = await fetchStudioOrders();
   const orders = rows.map(dbRowToOrderRow);

@@ -8,6 +8,8 @@ import {
   formatKr,
 } from "@/lib/studio/orders-data";
 
+export const dynamic = "force-dynamic";
+
 const RECENT_LIMIT = 15;
 
 export default async function OverviewPage() {
