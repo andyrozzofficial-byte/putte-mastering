@@ -20,14 +20,17 @@ ALTER TABLE public.orders
 ALTER TABLE public.orders
   ALTER COLUMN delivery_download_count SET NOT NULL;
 
--- Unique among non-null tokens (legacy rows may have NULL).
+-- Drop legacy unique indexes (partial or name collisions) before table UNIQUE constraint.
 DROP INDEX IF EXISTS public.orders_delivery_access_token_key;
 DROP INDEX IF EXISTS public.orders_delivery_access_token_uidx;
 DROP INDEX IF EXISTS public.orders_delivery_access_token_unique;
 
-CREATE UNIQUE INDEX IF NOT EXISTS orders_delivery_access_token_unique
-  ON public.orders (delivery_access_token)
-  WHERE delivery_access_token IS NOT NULL;
+-- Unique among all values; PostgreSQL allows multiple NULLs (legacy rows without a token).
+ALTER TABLE public.orders
+  DROP CONSTRAINT IF EXISTS orders_delivery_access_token_uq;
+
+ALTER TABLE public.orders
+  ADD CONSTRAINT orders_delivery_access_token_uq UNIQUE (delivery_access_token);
 
 CREATE INDEX IF NOT EXISTS idx_orders_delivery_completed_at
   ON public.orders (delivery_completed_at DESC)
