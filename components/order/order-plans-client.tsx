@@ -72,9 +72,30 @@ export function OrderPlansClient() {
           }),
         });
 
-        const json = (await res.json()) as { url?: string; error?: string };
-        if (!res.ok || !json.url) {
-          throw new Error(json.error || "Could not start checkout. Please try again.");
+        const raw = await res.text();
+        let json: { url?: string; error?: string } | null = null;
+        try {
+          json = raw ? (JSON.parse(raw) as { url?: string; error?: string }) : null;
+        } catch {
+          json = null;
+        }
+
+        if (!res.ok) {
+          console.error("[order-plans] /api/stripe/checkout failed:", {
+            status: res.status,
+            body: raw.slice(0, 1000),
+          });
+          throw new Error(
+            json?.error || "Could not start checkout. Please try again.",
+          );
+        }
+
+        if (!json?.url) {
+          console.error("[order-plans] /api/stripe/checkout invalid JSON:", {
+            status: res.status,
+            body: raw.slice(0, 1000),
+          });
+          throw new Error("Could not start checkout. Please try again.");
         }
 
         clearOrderUploadDraft();
@@ -90,7 +111,7 @@ export function OrderPlansClient() {
         setLoadingPlan(null);
       }
     },
-    [router, customerName, customerEmail, customerMessage],
+    [customerName, customerEmail, customerMessage],
   );
 
   const busy = loadingPlan !== null;
