@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { MastradLogo } from "./logo";
+import { FirstListenLogo } from "./first-listen-logo";
 
 const links = [
-  { href: "/#top", label: "Hem" },
-  { href: "/#hur", label: "Så fungerar det" },
-  { href: "/#priser", label: "Priser" },
+  { href: "/#top", label: "Home" },
+  { href: "/#how", label: "How it works" },
+  { href: "/#pricing", label: "Pricing" },
   { href: "/#faq", label: "FAQ" },
-  { href: "/#kontakt", label: "Kontakt" },
+  { href: "/#contact", label: "Contact" },
 ] as const;
 
 export function LandingNavbar() {
@@ -25,13 +25,13 @@ export function LandingNavbar() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-100/80 bg-white/90 backdrop-blur-md">
-      <div className="mx-auto max-w-7xl px-5 py-3 sm:px-6 lg:px-10 lg:py-4">
-        <div className="flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-5">
-          <MastradLogo />
+    <header className="sticky top-0 z-50 border-b border-gray-100/90 bg-white/95 backdrop-blur-md">
+      <div className="mx-auto max-w-7xl px-5 py-3.5 sm:px-6 lg:px-10 lg:py-4">
+        <div className="flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-6">
+          <FirstListenLogo />
 
-          <nav className="hidden md:block md:justify-self-center" aria-label="Primär">
-            <ul className="flex items-center gap-5 lg:gap-8">
+          <nav className="hidden md:block md:justify-self-center" aria-label="Primary">
+            <ul className="flex items-center gap-6 lg:gap-8">
               {links.map(({ href, label }) => (
                 <li key={href}>
                   <Link
@@ -45,19 +45,25 @@ export function LandingNavbar() {
             </ul>
           </nav>
 
-          <div className="flex items-center justify-end gap-3 md:min-w-0">
+          <div className="flex items-center justify-end gap-2 sm:gap-3 md:min-w-0">
+            <Link
+              href="#upload"
+              className="hidden rounded-lg bg-black px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-neutral-800 sm:inline-flex"
+            >
+              Upload your track
+            </Link>
             <Link
               href="/login"
-              className="hidden rounded-md bg-black px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-neutral-800 sm:inline-flex"
+              className="hidden text-[13px] font-medium text-gray-600 transition-colors hover:text-black lg:inline"
             >
-              Logga in
+              Studio
             </Link>
             <button
               type="button"
-              className="rounded-md p-2 text-gray-600 hover:bg-gray-50 md:hidden"
+              className="rounded-lg p-2 text-gray-600 transition-colors hover:bg-neutral-50 md:hidden"
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
-              aria-label={open ? "Stäng meny" : "Öppna meny"}
+              aria-label={open ? "Close menu" : "Open menu"}
             >
               {open ? <IconClose /> : <IconMenu />}
             </button>
@@ -72,7 +78,7 @@ export function LandingNavbar() {
               <li key={href}>
                 <Link
                   href={href}
-                  className="block rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-800 hover:bg-gray-50"
+                  className="block rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-800 hover:bg-neutral-50"
                   onClick={() => setOpen(false)}
                 >
                   {label}
@@ -81,11 +87,20 @@ export function LandingNavbar() {
             ))}
             <li className="pt-2">
               <Link
-                href="/login"
+                href="#upload"
                 className="block rounded-lg bg-black px-3 py-2.5 text-center text-[13px] font-medium text-white"
                 onClick={() => setOpen(false)}
               >
-                Logga in
+                Upload your track
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/login"
+                className="block rounded-lg px-3 py-2.5 text-center text-[13px] font-medium text-gray-700 hover:bg-neutral-50"
+                onClick={() => setOpen(false)}
+              >
+                Studio
               </Link>
             </li>
           </ul>

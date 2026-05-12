@@ -34,7 +34,7 @@ export function UploadDropzone({
         const msg =
           e instanceof Error
             ? e.message
-            : "Uppladdning misslyckades. Försök igen.";
+            : "Upload failed. Please try again.";
         setUploadError(msg);
       } finally {
         setBusy(false);
@@ -50,8 +50,8 @@ export function UploadDropzone({
   return (
     <div
       id="upload"
-      className={`rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-colors md:p-7 ${
-        active ? "ring-1 ring-gray-300/80" : ""
+      className={`rounded-2xl border border-gray-200/80 bg-white p-6 transition-colors md:p-7 ${
+        active ? "ring-1 ring-gray-300/60" : ""
       } ${busy ? "pointer-events-none opacity-70" : ""}`}
       aria-busy={busy}
     >
@@ -82,10 +82,10 @@ export function UploadDropzone({
         }}
         className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-5 py-10 text-center transition-colors sm:px-6 md:py-12 ${
           active
-            ? "border-gray-400 bg-[var(--accent-warm)]/40"
-            : "border-gray-200 bg-white hover:border-gray-300"
+            ? "border-gray-400 bg-neutral-50"
+            : "border-gray-200/90 bg-white hover:border-gray-300"
         }`}
-        aria-label="Ladda upp ljudfil"
+        aria-label="Upload audio file"
       >
         <input
           ref={inputRef}
@@ -101,16 +101,16 @@ export function UploadDropzone({
         />
         <UploadCloudIcon className="mb-4 text-gray-400" />
         <p className="text-base font-semibold tracking-tight text-black sm:text-[17px]">
-          Dra & släpp din fil här
+          Drag &amp; drop your file here
         </p>
         <p className="mt-1.5 text-[13px] text-gray-500 sm:text-sm">
-          eller klicka för att välja fil
+          or click to choose a file
         </p>
         <p className="mt-6 text-[11px] text-gray-400 sm:text-xs">
-          WAV, AIFF, FLAC, MP3 upp till 500MB
+          WAV, AIFF, FLAC, MP3 up to 500MB
         </p>
         {busy ? (
-          <p className="mt-4 text-[13px] text-gray-500">Laddar upp…</p>
+          <p className="mt-4 text-[13px] text-gray-500">Uploading…</p>
         ) : null}
         {uploadError ? (
           <p className="mt-4 text-center text-[13px] text-red-700" role="alert">

@@ -8,42 +8,42 @@ import {
 const items = [
   {
     icon: IconWaveformFeature,
-    title: "100% Manuell mastering",
-    body: "Ingen AI. Bara erfarenhet, öron och känsla.",
+    title: "100% manual mastering",
+    body: "No AI. Just experience, precision and taste.",
   },
   {
     icon: IconShieldCheck,
-    title: "Högsta kvalitet",
-    body: "Branschstandard för professionella resultat.",
+    title: "Highest quality",
+    body: "Industry-standard mastering for professional results.",
   },
   {
     icon: IconClock,
-    title: "Snabb leverans",
-    body: "Vanligtvis 2–3 arbetsdagar. Express vid behov.",
+    title: "Fast delivery",
+    body: "Usually delivered in 2–3 business days.",
   },
   {
     icon: IconLock,
-    title: "Säkert & privat",
-    body: "Dina filer behandlas alltid konfidentiellt.",
+    title: "Secure & private",
+    body: "Your files are always safe and confidential.",
   },
 ] as const;
 
 export function FeatureGrid() {
   return (
     <section
-      id="funktioner"
-      className="border-t border-gray-100 bg-neutral-50/70 py-14 md:py-20"
-      aria-labelledby="funktioner-heading"
+      id="features"
+      className="border-t border-gray-100/90 bg-white py-16 md:py-24"
+      aria-labelledby="features-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <h2 id="funktioner-heading" className="sr-only">
-          Varför välja oss
+        <h2 id="features-heading" className="sr-only">
+          Why First Listen
         </h2>
-        <div className="grid gap-8 sm:grid-cols-2 sm:gap-y-10 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-8">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-10 lg:gap-y-8">
           {items.map(({ icon: Icon, title, body }) => (
             <div key={title} className="space-y-3">
-              <Icon className="text-gray-700" />
-              <h3 className="text-[15px] font-semibold tracking-tight text-black">
+              <Icon className="text-gray-800" />
+              <h3 className="text-[15px] font-semibold tracking-tight text-black sm:text-base">
                 {title}
               </h3>
               <p className="text-[13px] leading-relaxed text-gray-600 sm:text-sm">
