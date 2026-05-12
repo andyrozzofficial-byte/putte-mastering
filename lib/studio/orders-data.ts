@@ -200,30 +200,59 @@ export function dbRowToStudioDetail(row: OrdersDbRow): StudioOrderDetail {
 }
 
 export async function fetchStudioOrders(): Promise<OrdersDbRow[]> {
-  const supabase = await createStudioServerClient();
-  const { data, error } = await supabase
-    .from("orders")
-    .select(
-      "id, customer_name, customer_email, customer_message, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at",
-    )
-    .order("created_at", { ascending: false });
+  try {
+    const supabase = await createStudioServerClient();
+    const { data, error } = await supabase
+      .from("orders")
+      .select(
+        "id, customer_name, customer_email, customer_message, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at",
+      )
+      .order("created_at", { ascending: false });
 
-  if (error) throw new Error(error.message);
-  return (data ?? []) as OrdersDbRow[];
+    if (error) {
+      console.error("[studio] fetchStudioOrders failed:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+      return [];
+    }
+
+    return (data ?? []) as OrdersDbRow[];
+  } catch (e) {
+    console.error("[studio] fetchStudioOrders threw:", e);
+    return [];
+  }
 }
 
 export async function fetchStudioOrderById(
   id: string,
 ): Promise<OrdersDbRow | null> {
-  const supabase = await createStudioServerClient();
-  const { data, error } = await supabase
-    .from("orders")
-    .select(
-      "id, customer_name, customer_email, customer_message, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at",
-    )
-    .eq("id", id)
-    .maybeSingle();
+  try {
+    const supabase = await createStudioServerClient();
+    const { data, error } = await supabase
+      .from("orders")
+      .select(
+        "id, customer_name, customer_email, customer_message, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at",
+      )
+      .eq("id", id)
+      .maybeSingle();
 
-  if (error) throw new Error(error.message);
-  return data as OrdersDbRow | null;
+    if (error) {
+      console.error("[studio] fetchStudioOrderById failed:", {
+        id,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+      return null;
+    }
+
+    return data as OrdersDbRow | null;
+  } catch (e) {
+    console.error("[studio] fetchStudioOrderById threw:", { id, error: e });
+    return null;
+  }
 }
