@@ -22,16 +22,18 @@ export async function POST(req: Request) {
     );
   }
 
-  const [{ createClient }, { getSupabaseServiceRoleKey, getSupabaseUrl }, { parseOrderPriceLabelToKr }, { default: Stripe }, { getStripe }] =
+  const [{ createClient }, { getSupabaseServiceRoleKey, getSupabaseUrl }, { parseOrderPriceLabelToKr }, { default: Stripe }] =
     await Promise.all([
       import("@supabase/supabase-js"),
       import("@/lib/supabase/env"),
       import("@/lib/supabase"),
       import("stripe"),
-      import("@/lib/stripe/server"),
     ]);
 
-  const stripe = getStripe();
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: "2026-04-22.dahlia",
+    typescript: true,
+  });
   const signature = req.headers.get("stripe-signature");
   if (!signature) {
     return NextResponse.json(

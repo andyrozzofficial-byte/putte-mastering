@@ -1,5 +1,4 @@
 import { ORDER_PLANS } from "@/lib/order-plans";
-import { getStripe } from "@/lib/stripe/server";
 
 export type CheckoutBody = {
   customer_name: string;
@@ -25,6 +24,10 @@ export async function createStripeCheckoutSession(args: {
 }): Promise<{ url: string } | { error: string; status: number }> {
   const { body, origin } = args;
 
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return { error: "Missing STRIPE_SECRET_KEY", status: 500 };
+  }
+
   const service = (body.service ?? "").trim();
   const plan = ORDER_PLANS.find((p) => p.title === service);
   if (!plan) return { error: "Invalid service", status: 400 };
@@ -43,7 +46,11 @@ export async function createStripeCheckoutSession(args: {
     origin,
   });
 
-  const stripe = getStripe();
+  const { default: Stripe } = await import("stripe");
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: "2026-04-22.dahlia",
+    typescript: true,
+  });
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     payment_method_types: ["card"],
