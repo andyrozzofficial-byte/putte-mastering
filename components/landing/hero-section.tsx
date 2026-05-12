@@ -59,9 +59,9 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Right column — full-height cinematic frame */}
-          <div className="relative min-h-[min(48vh,400px)] w-full lg:min-h-0 lg:h-full">
-            <div className="relative h-full min-h-[min(48vh,400px)] overflow-hidden rounded-2xl bg-neutral-200/30 shadow-[0_12px_54px_-24px_rgba(0,0,0,0.24)] ring-1 ring-black/[0.05] lg:ml-2 lg:min-h-full lg:rounded-[1.25rem]">
+          {/* Right column — cinematic frame, vertically balanced */}
+          <div className="relative min-h-[min(48vh,400px)] w-full lg:flex lg:items-center lg:py-12">
+            <div className="relative h-full min-h-[min(48vh,400px)] overflow-hidden rounded-2xl bg-neutral-200/30 shadow-[0_12px_54px_-24px_rgba(0,0,0,0.24)] ring-1 ring-black/[0.05] lg:ml-2 lg:h-[min(72vh,780px)] lg:min-h-0 lg:w-full lg:rounded-[1.25rem]">
               <Image
                 src={HERO_IMAGE}
                 alt=""
