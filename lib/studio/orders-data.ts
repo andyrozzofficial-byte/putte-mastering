@@ -143,7 +143,7 @@ export function computeDashboardStats(rows: OrdersDbRow[]): DashboardOrderStats 
     const badge = mapDbStatusToBadge(row.status);
     if (badge === "new") newOrders += 1;
     if (badge === "completed") completed += 1;
-    revenueKr += parsePriceToKr(row.price);
+    if (badge === "completed") revenueKr += parsePriceToKr(row.price);
   }
 
   return {

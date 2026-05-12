@@ -133,7 +133,7 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
 
           <OrderStatusActions orderId={order.id} currentStatus={order.status} />
 
-          <DeliveryMasterUpload />
+          <DeliveryMasterUpload orderId={order.id} />
         </div>
       </div>
     </main>
