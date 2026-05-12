@@ -190,7 +190,7 @@ export function OrderPlansClient() {
       </section>
 
       <div
-        className={`grid gap-4 md:grid-cols-3 md:gap-4 lg:gap-5 ${
+        className={`mx-auto grid max-w-3xl gap-4 md:grid-cols-2 md:gap-5 lg:gap-6 ${
           error ? "mt-6 md:mt-6" : "mt-8 md:mt-10"
         }`}
       >
