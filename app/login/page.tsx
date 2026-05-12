@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Logga in — Studio",
-  description: "Inloggning för Putte Mastering studio.",
+  title: "Sign in — Studio",
+  description: "Admin sign-in for First Listen Mastering Studio.",
 };
 
 function safeStudioRedirect(nextParam: string | undefined): string {
@@ -45,7 +45,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
             href="/"
             className="text-sm font-semibold tracking-tight text-black"
           >
-            Putte Mastering
+            First Listen Mastering
           </Link>
         </div>
       </header>
@@ -53,10 +53,10 @@ export default async function LoginPage({ searchParams }: PageProps) {
       <main className="mx-auto flex max-w-lg flex-col px-5 pb-16 pt-12 sm:px-6 md:pt-16">
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
           <h1 className="text-center text-xl font-semibold tracking-tight text-black sm:text-2xl">
-            Logga in
+            Sign in
           </h1>
           <p className="mt-2 text-center text-[13px] text-gray-500 sm:text-sm">
-            Studio — endast för administratörer
+            Studio — admins only
           </p>
           <div className="mt-8">
             <LoginForm redirectTo={redirectTo} />

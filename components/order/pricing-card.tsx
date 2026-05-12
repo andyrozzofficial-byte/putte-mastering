@@ -14,7 +14,7 @@ export function PricingCard({
   price,
   features,
   popular = false,
-  ctaLabel = "Välj",
+  ctaLabel = "Choose",
   onSelect,
   disabled = false,
   isLoading = false,
@@ -29,7 +29,7 @@ export function PricingCard({
     >
       {popular ? (
         <span className="absolute left-1/2 top-0 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-gray-200/80 bg-[var(--accent-warm-strong)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-800">
-          Populär
+          Popular
         </span>
       ) : null}
 
@@ -59,7 +59,7 @@ export function PricingCard({
             : "border border-black bg-white text-black hover:bg-gray-50"
         }`}
       >
-        {isLoading ? "Skickar…" : ctaLabel}
+        {isLoading ? "Submitting…" : ctaLabel}
       </button>
     </article>
   );

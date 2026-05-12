@@ -160,7 +160,7 @@ export function PricingTeaserSection() {
           <article className="flex min-h-[410px] flex-col rounded-2xl bg-white p-11 shadow-[0_18px_72px_-36px_rgba(0,0,0,0.26)] ring-1 ring-black/[0.05] transition-shadow duration-300 hover:shadow-[0_22px_90px_-44px_rgba(0,0,0,0.32)] sm:min-h-[430px] sm:p-13 md:p-14">
             <div className="text-left">
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
-                Standard
+                Standard Master
               </p>
               <p className="mt-6 text-[2.35rem] font-semibold leading-none tracking-[-0.04em] text-black sm:text-[2.65rem]">
                 $60
@@ -182,7 +182,7 @@ export function PricingTeaserSection() {
           <article className="flex min-h-[410px] flex-col rounded-2xl bg-white p-11 shadow-[0_22px_88px_-42px_rgba(0,0,0,0.3)] ring-1 ring-black/[0.07] transition-shadow duration-300 hover:shadow-[0_26px_110px_-54px_rgba(0,0,0,0.36)] sm:min-h-[430px] sm:p-13 md:p-14">
             <div className="text-left">
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
-                Express
+                Express Master
               </p>
               <p className="mt-6 text-[2.35rem] font-semibold leading-none tracking-[-0.04em] text-black sm:text-[2.65rem]">
                 $80
@@ -282,10 +282,10 @@ export function ContactSection() {
           </p>
           <p className="mt-6 text-center sm:mt-7">
             <a
-              href="mailto:studio@mastrad.se"
+              href="mailto:hello@firstlistenmastering.com"
               className="text-[13px] font-medium text-black underline decoration-neutral-300 underline-offset-[5px] transition-colors hover:decoration-black sm:text-sm"
             >
-              studio@mastrad.se
+              hello@firstlistenmastering.com
             </a>
           </p>
         </div>

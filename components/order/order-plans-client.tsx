@@ -37,7 +37,7 @@ export function OrderPlansClient() {
       const draft = readOrderUploadDraft();
       if (!draft) {
         setError(
-          "Ingen uppladdad fil hittades. Gå tillbaka till startsidan och ladda upp ditt spår först.",
+          "No uploaded file found. Go back to the homepage and upload your track first.",
         );
         return;
       }
@@ -45,15 +45,15 @@ export function OrderPlansClient() {
       const name = customerName.trim();
       const email = customerEmail.trim();
       if (!name) {
-        setError("Fyll i ditt namn innan du väljer tjänst.");
+        setError("Please enter your name before choosing a service.");
         return;
       }
       if (!email) {
-        setError("Fyll i din e-postadress innan du väljer tjänst.");
+        setError("Please enter your email before choosing a service.");
         return;
       }
       if (!isValidEmail(email)) {
-        setError("Ange en giltig e-postadress.");
+        setError("Please enter a valid email address.");
         return;
       }
 
@@ -77,7 +77,7 @@ export function OrderPlansClient() {
         const msg =
           e instanceof Error
             ? e.message
-            : "Något gick fel. Försök igen om en stund.";
+            : "Something went wrong. Please try again in a moment.";
         setError(msg);
       } finally {
         setLoadingPlan(null);
@@ -109,10 +109,10 @@ export function OrderPlansClient() {
           id="customer-details-heading"
           className="text-[15px] font-semibold tracking-tight text-black sm:text-base"
         >
-          Dina uppgifter
+          Your details
         </h2>
         <p className="mt-1.5 text-[13px] text-gray-500 sm:text-sm">
-          Namn och e-post krävs för att vi ska kunna återkomma till dig.
+          Name and email are required so we can get back to you.
         </p>
         <div className="mt-5 space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -121,7 +121,7 @@ export function OrderPlansClient() {
                 htmlFor="order-customer-name"
                 className="block text-[13px] font-medium text-gray-700 sm:text-sm"
               >
-                Namn <span className="text-red-600">*</span>
+                Name <span className="text-red-600">*</span>
               </label>
               <input
                 id="order-customer-name"
@@ -136,7 +136,7 @@ export function OrderPlansClient() {
                   mergeOrderUploadDraft({ customer_name: v });
                 }}
                 className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-[13px] text-black outline-none ring-black/5 transition-shadow placeholder:text-gray-400 focus:border-gray-300 focus:ring-2 sm:text-sm"
-                placeholder="För- och efternamn"
+                placeholder="Full name"
               />
             </div>
             <div className="space-y-1.5">
@@ -144,7 +144,7 @@ export function OrderPlansClient() {
                 htmlFor="order-customer-email"
                 className="block text-[13px] font-medium text-gray-700 sm:text-sm"
               >
-                E-post <span className="text-red-600">*</span>
+                Email <span className="text-red-600">*</span>
               </label>
               <input
                 id="order-customer-email"
@@ -160,7 +160,7 @@ export function OrderPlansClient() {
                   mergeOrderUploadDraft({ customer_email: v });
                 }}
                 className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-[13px] text-black outline-none ring-black/5 transition-shadow placeholder:text-gray-400 focus:border-gray-300 focus:ring-2 sm:text-sm"
-                placeholder="du@exempel.se"
+                placeholder="you@example.com"
               />
             </div>
           </div>
@@ -169,7 +169,7 @@ export function OrderPlansClient() {
               htmlFor="order-customer-message"
               className="block text-[13px] font-medium text-gray-700 sm:text-sm"
             >
-              Meddelande till masteringtekniker
+              Message to the engineer
             </label>
             <textarea
               id="order-customer-message"
@@ -183,7 +183,7 @@ export function OrderPlansClient() {
                 mergeOrderUploadDraft({ customer_message: v });
               }}
               className="w-full resize-y rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-[13px] text-black outline-none ring-black/5 transition-shadow placeholder:text-gray-400 focus:border-gray-300 focus:ring-2 sm:text-sm"
-              placeholder="Valfritt — referenser, önskemål om loudness, leveransdatum osv."
+              placeholder="Optional — references, loudness notes, deadline, etc."
             />
           </div>
         </div>

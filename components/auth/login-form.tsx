@@ -35,7 +35,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
         router.replace(redirectTo);
         router.refresh();
       } catch {
-        setError("Inloggning misslyckades. Försök igen.");
+        setError("Login failed. Please try again.");
       } finally {
         setBusy(false);
       }
@@ -50,7 +50,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           htmlFor="studio-email"
           className="block text-[13px] font-medium text-gray-700"
         >
-          E-post
+          Email
         </label>
         <input
           id="studio-email"
@@ -61,7 +61,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-[13px] text-black outline-none ring-black/10 transition-shadow placeholder:text-gray-400 focus:border-gray-300 focus:ring-2 sm:text-sm"
-          placeholder="du@example.com"
+          placeholder="you@example.com"
         />
       </div>
       <div className="space-y-2">
@@ -69,7 +69,7 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
           htmlFor="studio-password"
           className="block text-[13px] font-medium text-gray-700"
         >
-          Lösenord
+          Password
         </label>
         <input
           id="studio-password"
@@ -94,12 +94,12 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
         disabled={busy}
         className="w-full rounded-lg bg-black py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
       >
-        {busy ? "Loggar in…" : "Logga in"}
+        {busy ? "Signing in…" : "Sign in"}
       </button>
 
       <p className="text-center text-[13px] text-gray-500">
         <Link href="/" className="font-medium text-black underline decoration-gray-300 underline-offset-4 hover:decoration-black">
-          Till startsidan
+          Back to homepage
         </Link>
       </p>
     </form>
