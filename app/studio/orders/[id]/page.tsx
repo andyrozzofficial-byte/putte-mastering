@@ -1,6 +1,7 @@
 import { OrderStatusBadge } from "@/components/dashboard/order-status-badge";
 import { CustomerSourceFile } from "@/components/studio/customer-source-file";
 import { DeliveryMasterUpload } from "@/components/studio/delivery-master-upload";
+import { OrderStatusActions } from "@/components/studio/order-status-actions";
 import {
   dbRowToStudioDetail,
   fetchStudioOrderById,
@@ -129,6 +130,8 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
               </div>
             </dl>
           </section>
+
+          <OrderStatusActions orderId={order.id} currentStatus={order.status} />
 
           <DeliveryMasterUpload />
         </div>

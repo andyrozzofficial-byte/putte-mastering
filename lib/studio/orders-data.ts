@@ -48,7 +48,7 @@ export type DashboardOrderStats = {
 
 export function mapDbStatusToBadge(status: string | null): OrderStatus {
   const s = (status ?? "").toLowerCase().trim();
-  if (s === "new" || s === "ny") return "ny";
+  if (s === "new" || s === "ny") return "new";
   if (
     s === "in_progress" ||
     s === "in progress" ||
@@ -57,13 +57,21 @@ export function mapDbStatusToBadge(status: string | null): OrderStatus {
   )
     return "in_progress";
   if (
+    s === "waiting_revision" ||
+    s === "waiting revision" ||
+    s === "revision" ||
+    s === "needs_revision" ||
+    s === "needs revision"
+  )
+    return "waiting_revision";
+  if (
     s === "klar" ||
     s === "completed" ||
     s === "complete" ||
     s === "done"
   )
-    return "klar";
-  return "ny";
+    return "completed";
+  return "new";
 }
 
 export function parsePriceToKr(
@@ -133,8 +141,8 @@ export function computeDashboardStats(rows: OrdersDbRow[]): DashboardOrderStats 
 
   for (const row of rows) {
     const badge = mapDbStatusToBadge(row.status);
-    if (badge === "ny") newOrders += 1;
-    if (badge === "klar") completed += 1;
+    if (badge === "new") newOrders += 1;
+    if (badge === "completed") completed += 1;
     revenueKr += parsePriceToKr(row.price);
   }
 
