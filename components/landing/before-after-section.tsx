@@ -40,7 +40,7 @@ export function BeforeAfterSection() {
               </p>
 
               <div
-                className="flex h-16 items-end gap-0.5 rounded-lg border border-neutral-200/95 bg-white px-3 py-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] sm:h-20 sm:px-4"
+                className="flex h-20 items-end gap-0.5 rounded-lg border border-neutral-200/95 bg-white px-3 py-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] sm:h-24 sm:px-4"
                 aria-hidden
               >
                 {Array.from({ length: 48 }).map((_, i) => {

@@ -157,7 +157,7 @@ export function PricingTeaserSection() {
         </p>
 
         <div className="mt-7 grid gap-6 md:mt-8 md:grid-cols-2 md:gap-7 lg:gap-8">
-          <article className="flex min-h-[410px] flex-col rounded-2xl bg-white p-11 shadow-[0_18px_72px_-36px_rgba(0,0,0,0.26)] ring-1 ring-black/[0.05] sm:min-h-[430px] sm:p-13 md:p-14">
+          <article className="flex min-h-[410px] flex-col rounded-2xl bg-white p-11 shadow-[0_18px_72px_-36px_rgba(0,0,0,0.26)] ring-1 ring-black/[0.05] transition-shadow duration-300 hover:shadow-[0_22px_90px_-44px_rgba(0,0,0,0.32)] sm:min-h-[430px] sm:p-13 md:p-14">
             <div className="text-left">
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
                 Standard
@@ -179,7 +179,7 @@ export function PricingTeaserSection() {
             </ul>
           </article>
 
-          <article className="flex min-h-[410px] flex-col rounded-2xl bg-white p-11 shadow-[0_22px_88px_-42px_rgba(0,0,0,0.3)] ring-1 ring-black/[0.07] sm:min-h-[430px] sm:p-13 md:p-14">
+          <article className="flex min-h-[410px] flex-col rounded-2xl bg-white p-11 shadow-[0_22px_88px_-42px_rgba(0,0,0,0.3)] ring-1 ring-black/[0.07] transition-shadow duration-300 hover:shadow-[0_26px_110px_-54px_rgba(0,0,0,0.36)] sm:min-h-[430px] sm:p-13 md:p-14">
             <div className="text-left">
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
                 Express
@@ -237,7 +237,7 @@ export function FaqSection() {
       aria-labelledby="faq-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-2xl">
           <h2
             id="faq-heading"
             className="text-center text-[1.65rem] font-bold leading-[1.08] tracking-[-0.04em] text-black sm:text-[1.95rem] md:text-[2.15rem]"
@@ -272,7 +272,7 @@ export function ContactSection() {
       className="bg-neutral-50/55 py-9 sm:py-10 md:py-11"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-2xl rounded-2xl bg-white px-8 py-10 shadow-[0_18px_72px_-34px_rgba(0,0,0,0.26)] ring-1 ring-black/[0.04] sm:px-10 sm:py-11 md:px-12 md:py-12">
+        <div className="mx-auto max-w-2xl rounded-2xl bg-white px-9 py-11 shadow-[0_22px_90px_-44px_rgba(0,0,0,0.3)] ring-1 ring-black/[0.05] sm:px-12 sm:py-13 md:px-14 md:py-14">
           <h2 className="text-center text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.03em] text-black sm:text-[1.75rem] md:text-[1.9375rem]">
             Contact
           </h2>
