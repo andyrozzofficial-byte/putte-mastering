@@ -1,10 +1,4 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import Stripe from "stripe";
-
-import { getSupabaseServiceRoleKey, getSupabaseUrl } from "@/lib/supabase/env";
-import { getStripe } from "@/lib/stripe/server";
-import { parseOrderPriceLabelToKr } from "@/lib/supabase";
 
 function getStripeWebhookSecret(): string {
   const secret = process.env.STRIPE_WEBHOOK_SECRET?.trim();
@@ -17,15 +11,42 @@ function getStripeWebhookSecret(): string {
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
+  if (process.env.NEXT_PUBLIC_TEST_MODE === "true") {
+    return NextResponse.json({ received: true });
+  }
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return NextResponse.json(
+      { error: "Missing STRIPE_SECRET_KEY" },
+      { status: 500 },
+    );
+  }
+
+  const [{ createClient }, { getSupabaseServiceRoleKey, getSupabaseUrl }, { parseOrderPriceLabelToKr }, { default: Stripe }, { getStripe }] =
+    await Promise.all([
+      import("@supabase/supabase-js"),
+      import("@/lib/supabase/env"),
+      import("@/lib/supabase"),
+      import("stripe"),
+      import("@/lib/stripe/server"),
+    ]);
+
   const stripe = getStripe();
   const signature = req.headers.get("stripe-signature");
   if (!signature) {
-    return NextResponse.json({ error: "Missing Stripe signature" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing Stripe signature" },
+      { status: 400 },
+    );
   }
 
   const rawBody = await req.text();
 
-  let event: Stripe.Event;
+  let event: InstanceType<typeof Stripe>["webhooks"] extends {
+    constructEvent: (...a: any) => infer R;
+  }
+    ? R
+    : never;
   try {
     event = stripe.webhooks.constructEvent(
       rawBody,
@@ -41,7 +62,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ received: true });
   }
 
-  const session = event.data.object as Stripe.Checkout.Session;
+  const session = event.data.object as any;
   const meta = session.metadata ?? {};
 
   const customer_name = (meta.customer_name ?? "").trim();
@@ -59,7 +80,10 @@ export async function POST(req: Request) {
       service,
       uploaded_file,
     });
-    return NextResponse.json({ error: "Missing required metadata" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing required metadata" },
+      { status: 400 },
+    );
   }
 
   const supabase = createClient(getSupabaseUrl(), getSupabaseServiceRoleKey(), {

@@ -9,8 +9,9 @@ import {
 import { PricingCard } from "@/components/order/pricing-card";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import { isTestMode } from "@/lib/test-mode";
 import { submitOrderToSupabase } from "@/lib/submit-order";
+
+const TEST_MODE = process.env.NEXT_PUBLIC_TEST_MODE === "true";
 
 function isValidEmail(value: string): boolean {
   const v = value.trim();
@@ -60,7 +61,7 @@ export function OrderPlansClient() {
 
       setLoadingPlan(planTitle);
       try {
-        if (isTestMode()) {
+        if (TEST_MODE) {
           await submitOrderToSupabase({
             customer_name: name,
             customer_email: email,
