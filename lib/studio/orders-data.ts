@@ -8,7 +8,6 @@ export type OrdersDbRow = {
   id: string;
   customer_name: string | null;
   customer_email: string | null;
-  customer_message: string | null;
   track_name: string | null;
   service: string | null;
   status: string | null;
@@ -185,8 +184,6 @@ export function dbRowToStudioDetail(row: OrdersDbRow): StudioOrderDetail {
     service: (row.service ?? "").trim() || "—",
     price: displayPriceFromDb(row.price),
     customerNote: (() => {
-      const fromCol = (row.customer_message ?? "").trim();
-      if (fromCol) return fromCol;
       const legacy = (row.notes ?? "").trim();
       return legacy.length > 0 ? legacy : null;
     })(),
@@ -205,7 +202,7 @@ export async function fetchStudioOrders(): Promise<OrdersDbRow[]> {
     const { data, error } = await supabase
       .from("orders")
       .select(
-        "id, customer_name, customer_email, customer_message, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at",
+        "id, customer_name, customer_email, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at",
       )
       .order("created_at", { ascending: false });
 
@@ -234,7 +231,7 @@ export async function fetchStudioOrderById(
     const { data, error } = await supabase
       .from("orders")
       .select(
-        "id, customer_name, customer_email, customer_message, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at",
+        "id, customer_name, customer_email, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at",
       )
       .eq("id", id)
       .maybeSingle();

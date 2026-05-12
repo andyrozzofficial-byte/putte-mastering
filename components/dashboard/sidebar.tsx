@@ -24,16 +24,10 @@ const nav: {
   href: string;
   label: string;
   icon: NavIcon;
-  badge?: string;
 }[] = [
   { href: STUDIO, label: "Overview", icon: IconOverview },
   { href: `${STUDIO}/ordrar`, label: "Orders", icon: IconOrders },
-  {
-    href: `${STUDIO}/nya-ordrar`,
-    label: "New orders",
-    icon: IconOrders,
-    badge: "2",
-  },
+  { href: `${STUDIO}/nya-ordrar`, label: "New orders", icon: IconOrders },
   { href: `${STUDIO}/kunder`, label: "Customers", icon: IconUsers },
   { href: `${STUDIO}/filer`, label: "Files", icon: IconFolder },
   {
@@ -62,7 +56,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <nav className="flex flex-col gap-1" aria-label="Primary navigation">
-      {nav.map(({ href, label, icon: Icon, badge }) => {
+      {nav.map(({ href, label, icon: Icon }) => {
         const active = navItemActive(pathname, href);
         return (
           <Link
@@ -78,11 +72,6 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             <Icon className="shrink-0 text-gray-500" />
             <span className="flex flex-1 items-center justify-between gap-2">
               {label}
-              {badge ? (
-                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-                  {badge}
-                </span>
-              ) : null}
             </span>
           </Link>
         );

@@ -20,11 +20,10 @@ if (!url || !key) {
 const payload = {
   customer_name: "Verify Script",
   customer_email: "verify@example.com",
-  customer_message: null,
   track_name: "verify-script-test",
   service: "Standard Master",
   status: "new",
-  notes: null,
+  notes: "verify-script-note",
   uploaded_file: null,
   mastered_file: null,
   price: 1500,

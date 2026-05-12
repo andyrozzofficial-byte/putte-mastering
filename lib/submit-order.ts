@@ -42,7 +42,6 @@ function payloadMatchesOrdersColumns(payload: OrdersInsertPayload): boolean {
 /** Matches `public.orders` INSERT columns (excluding defaults). */
 export type OrdersInsertPayload = {
   customer_email: string;
-  customer_message: string | null;
   customer_name: string;
   track_name: string;
   service: string;
@@ -71,12 +70,11 @@ function toOrdersInsertPayload(row: OrderInsert): OrdersInsertPayload {
 
   return {
     customer_email: row.customer_email.trim(),
-    customer_message: trimOrNull(row.customer_message),
     customer_name: row.customer_name.trim(),
     track_name: row.track_name.trim(),
     service: row.service.trim(),
     status: row.status.trim(),
-    notes: null,
+    notes: trimOrNull(row.customer_message),
     uploaded_file: row.uploaded_file,
     mastered_file: row.mastered_file,
     price: priceKr,

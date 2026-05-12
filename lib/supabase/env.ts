@@ -13,3 +13,11 @@ export function getSupabaseAnonKey(): string {
   }
   return key;
 }
+
+export function getSupabaseServiceRoleKey(): string {
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  if (!key) {
+    throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY");
+  }
+  return key;
+}

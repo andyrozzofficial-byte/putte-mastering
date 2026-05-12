@@ -6,7 +6,6 @@ import {
   mergeOrderUploadDraft,
   readOrderUploadDraft,
 } from "@/lib/order-flow-session";
-import { submitOrderToSupabase } from "@/lib/submit-order";
 import { PricingCard } from "@/components/order/pricing-card";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
@@ -59,19 +58,27 @@ export function OrderPlansClient() {
 
       setLoadingPlan(planTitle);
       try {
-        await submitOrderToSupabase({
-          customer_name: name,
-          customer_email: email,
-          customer_message: customerMessage,
-          track_name: draft.trackName,
-          service: planTitle,
-          status: "new",
-          uploaded_file: draft.storageRef,
-          mastered_file: null,
-          price,
+        const res = await fetch("/api/stripe/checkout", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            customer_name: name,
+            customer_email: email,
+            customer_message: customerMessage,
+            track_name: draft.trackName,
+            uploaded_file: draft.storageRef,
+            service: planTitle,
+            price_label: price,
+          }),
         });
+
+        const json = (await res.json()) as { url?: string; error?: string };
+        if (!res.ok || !json.url) {
+          throw new Error(json.error || "Could not start checkout. Please try again.");
+        }
+
         clearOrderUploadDraft();
-        router.push("/?order=received");
+        window.location.href = json.url;
       } catch (e) {
         console.error("[order-plans] submitOrderToSupabase failed:", e);
         const msg =

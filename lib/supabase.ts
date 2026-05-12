@@ -9,7 +9,6 @@ import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 /** INSERT columns on `public.orders` (excluding defaults), sorted for payload checks. */
 export const ORDERS_INSERT_COLUMNS = [
   "customer_email",
-  "customer_message",
   "customer_name",
   "mastered_file",
   "notes",
@@ -24,7 +23,7 @@ export const ORDERS_INSERT_COLUMNS = [
 export type OrderInsert = {
   customer_name: string;
   customer_email: string;
-  /** Optional note from customer; stored in `customer_message` (empty → null). */
+  /** Optional note from customer; stored in `notes` for current schema compatibility. */
   customer_message: string;
   track_name: string;
   service: string;
