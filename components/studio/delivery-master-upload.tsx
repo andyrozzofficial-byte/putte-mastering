@@ -1,17 +1,23 @@
 "use client";
 
 import { parseApiJsonBody } from "@/lib/api/client-parse";
+import { uploadFileToSupabaseSignedUrlWithProgress } from "@/lib/studio/supabase-signed-upload-xhr";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 type Props = {
   orderId: string;
 };
 
+type Phase = "idle" | "signing" | "uploading" | "completing";
+
 export function DeliveryMasterUpload({ orderId }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const [drag, setDrag] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
+  const [phase, setPhase] = useState<Phase>("idle");
+  const [uploadPercent, setUploadPercent] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [deliveryUrl, setDeliveryUrl] = useState<string | null>(null);
 
@@ -28,45 +34,109 @@ export function DeliveryMasterUpload({ orderId }: Props) {
     return file.name;
   }, [file]);
 
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
   const upload = useCallback(async () => {
     if (!file) return;
+    if (!anonKey?.trim()) {
+      setError("Missing Supabase configuration (NEXT_PUBLIC_SUPABASE_ANON_KEY).");
+      return;
+    }
+
+    const ac = new AbortController();
+    abortRef.current = ac;
+
     setBusy(true);
     setError(null);
     setDeliveryUrl(null);
+    setUploadPercent(0);
+    setPhase("signing");
+
     try {
-      const form = new FormData();
-      form.append("file", file);
-      const res = await fetch(`/api/studio/orders/${orderId}/deliver`, {
+      const signRes = await fetch(`/api/studio/orders/${orderId}/deliver/sign`, {
         method: "POST",
-        body: form,
+        headers: { "Content-Type": "application/json" },
         credentials: "same-origin",
+        body: JSON.stringify({ fileName: file.name }),
+        signal: ac.signal,
       });
-      const raw = await res.text();
-      const json = parseApiJsonBody(raw, res) as {
+      const signRaw = await signRes.text();
+      const signJson = parseApiJsonBody(signRaw, signRes) as {
+        success?: boolean;
+        error?: string;
+        signedUrl?: string;
+        objectPath?: string;
+      };
+      if (!signRes.ok || signJson.success === false) {
+        throw new Error(
+          typeof signJson.error === "string" && signJson.error.length > 0
+            ? signJson.error
+            : "Could not start upload.",
+        );
+      }
+      if (
+        signJson.success !== true ||
+        typeof signJson.signedUrl !== "string" ||
+        typeof signJson.objectPath !== "string"
+      ) {
+        throw new Error("Invalid response from sign step.");
+      }
+
+      setPhase("uploading");
+      await uploadFileToSupabaseSignedUrlWithProgress({
+        signedUrl: signJson.signedUrl,
+        file,
+        supabaseAnonKey: anonKey,
+        onProgress: (pct) => setUploadPercent(pct),
+        signal: ac.signal,
+      });
+
+      setPhase("completing");
+      const doneRes = await fetch(`/api/studio/orders/${orderId}/deliver/complete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ objectPath: signJson.objectPath }),
+        signal: ac.signal,
+      });
+      const doneRaw = await doneRes.text();
+      const doneJson = parseApiJsonBody(doneRaw, doneRes) as {
         success?: boolean;
         error?: string;
         deliveryUrl?: string;
       };
-      if (!res.ok || json.success === false) {
+      if (!doneRes.ok || doneJson.success === false) {
         throw new Error(
-          typeof json.error === "string" && json.error.length > 0
-            ? json.error
-            : "Upload failed.",
+          typeof doneJson.error === "string" && doneJson.error.length > 0
+            ? doneJson.error
+            : "Could not finalize delivery.",
         );
       }
-      if (json.success !== true || typeof json.deliveryUrl !== "string") {
+      if (doneJson.success !== true || typeof doneJson.deliveryUrl !== "string") {
         throw new Error("Missing delivery link in server response.");
       }
-      setDeliveryUrl(json.deliveryUrl);
+
+      setDeliveryUrl(doneJson.deliveryUrl);
       setFile(null);
+      setUploadPercent(100);
       if (inputRef.current) inputRef.current.value = "";
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Upload failed.";
       setError(msg);
     } finally {
+      abortRef.current = null;
       setBusy(false);
+      setPhase("idle");
     }
-  }, [file, orderId]);
+  }, [anonKey, file, orderId]);
+
+  const statusLabel = useMemo(() => {
+    if (!busy) return null;
+    if (phase === "signing") return "Preparing upload…";
+    if (phase === "uploading") return `Uploading… ${uploadPercent}%`;
+    if (phase === "completing") return "Saving order and sending emails…";
+    return "Working…";
+  }, [busy, phase, uploadPercent]);
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-6">
@@ -77,8 +147,8 @@ export function DeliveryMasterUpload({ orderId }: Props) {
         Upload finished master
       </h3>
       <p className="mt-1.5 text-[13px] text-gray-500 sm:text-sm">
-        Upload the final master (WAV or MP3). After upload, the order is marked as
-        completed and a customer download link is generated.
+        Upload the final master (WAV or MP3). After upload, the order is marked as completed and a
+        customer download link is generated.
       </p>
 
       <div
@@ -117,6 +187,7 @@ export function DeliveryMasterUpload({ orderId }: Props) {
           type="file"
           className="sr-only"
           accept=".wav,.mp3,audio/wav,audio/mpeg"
+          disabled={busy}
           onChange={(e) => {
             const f = e.target.files?.[0] ?? null;
             onPick(f);
@@ -131,6 +202,24 @@ export function DeliveryMasterUpload({ orderId }: Props) {
         </p>
       </div>
 
+      {busy && phase === "uploading" ? (
+        <div className="mt-4" aria-live="polite">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+            <div
+              className="h-full rounded-full bg-black transition-[width] duration-150 ease-out"
+              style={{ width: `${uploadPercent}%` }}
+            />
+          </div>
+          {statusLabel ? (
+            <p className="mt-2 text-[12px] text-gray-500 sm:text-[13px]">{statusLabel}</p>
+          ) : null}
+        </div>
+      ) : busy && statusLabel ? (
+        <p className="mt-4 text-[12px] text-gray-500 sm:text-[13px]" aria-live="polite">
+          {statusLabel}
+        </p>
+      ) : null}
+
       {error ? (
         <p className="mt-4 text-[13px] text-red-700 sm:text-sm" role="alert">
           {error}
@@ -139,9 +228,7 @@ export function DeliveryMasterUpload({ orderId }: Props) {
 
       {deliveryUrl ? (
         <div className="mt-5 rounded-lg border border-gray-200 bg-neutral-50/40 p-4">
-          <p className="text-[13px] font-medium text-black sm:text-sm">
-            Delivery link
-          </p>
+          <p className="text-[13px] font-medium text-black sm:text-sm">Delivery link</p>
           <a
             className="mt-1 block break-all text-[13px] text-gray-600 underline decoration-gray-300 underline-offset-4 hover:text-black hover:decoration-black sm:text-sm"
             href={deliveryUrl}
