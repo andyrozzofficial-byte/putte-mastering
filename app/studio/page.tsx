@@ -70,6 +70,7 @@ export default async function OverviewPage() {
           title="Recent orders"
           orders={recentOrders}
           orderDetailBase="/studio/orders"
+          emptyStateText="No orders yet. Incoming mastering projects will appear here."
         />
       </div>
     </main>

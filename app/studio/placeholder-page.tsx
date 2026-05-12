@@ -5,11 +5,11 @@ type PlaceholderPageProps = {
 
 export function PlaceholderPage({
   title,
-  description = "This view is coming soon. In the meantime, you can reach everything important from the overview.",
+  description = "Nothing here yet.",
 }: PlaceholderPageProps) {
   return (
-    <main className="flex-1 px-4 pb-10 pt-5 md:px-7 md:pb-14 md:pt-8 lg:px-10 lg:pt-10">
-      <div className="mx-auto max-w-2xl space-y-3">
+    <main className="flex-1 px-4 pb-10 pt-7 md:px-7 md:pb-14 md:pt-10 lg:px-10 lg:pt-12">
+      <div className="mx-auto max-w-2xl space-y-4">
         <h1 className="text-[1.375rem] font-semibold tracking-tight text-black sm:text-2xl md:text-[1.65rem]">
           {title}
         </h1>

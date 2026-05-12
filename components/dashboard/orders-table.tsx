@@ -7,12 +7,14 @@ type OrdersTableProps = {
   orders: OrderRow[];
   /** e.g. `/studio/orders` — row navigates here + /id */
   orderDetailBase?: string;
+  emptyStateText?: string;
 };
 
 export function OrdersTable({
   title,
   orders,
   orderDetailBase = "/studio/orders",
+  emptyStateText = "No orders yet. Incoming mastering projects will appear here.",
 }: OrdersTableProps) {
   const hasOrders = orders.length > 0;
 
@@ -61,7 +63,7 @@ export function OrdersTable({
           </div>
         ) : (
           <p className="px-5 py-14 text-center text-[13px] text-gray-500 sm:px-6 sm:text-sm">
-            No orders yet
+            {emptyStateText}
           </p>
         )}
       </div>

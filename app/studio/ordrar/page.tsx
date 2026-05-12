@@ -22,6 +22,7 @@ export default async function OrdersPage() {
           title="All orders"
           orders={orders}
           orderDetailBase="/studio/orders"
+          emptyStateText="No orders yet. Incoming mastering projects will appear here."
         />
       </div>
     </main>
