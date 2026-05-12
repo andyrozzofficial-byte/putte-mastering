@@ -4,8 +4,8 @@ import {
   deliverMasterObjectExists,
   finalizeDeliverMasterUpload,
 } from "@/lib/studio/deliver-master-workflow";
+import { getServiceRoleClientOrApiError } from "@/lib/supabase/server-supabase-env";
 import { requireStudioSessionUser } from "@/lib/supabase/studio-api-auth";
-import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -79,16 +79,11 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       return apiJsonError("Invalid object path", 400);
     }
 
-    let supabase;
-    try {
-      supabase = createServiceRoleSupabaseClient();
-    } catch (envErr) {
-      console.error("[deliver-complete] supabase client init failed", {
-        orderId,
-        message: envErr instanceof Error ? envErr.message : String(envErr),
-      });
-      return apiJsonError("Server configuration error", 500);
-    }
+    const clientResult = getServiceRoleClientOrApiError("[deliver-complete]", {
+      orderId: orderId ?? "unknown",
+    });
+    if (!clientResult.ok) return clientResult.response;
+    const supabase = clientResult.supabase;
 
     const exists = await deliverMasterObjectExists(supabase, orderId, objectPath);
     if (!exists) {

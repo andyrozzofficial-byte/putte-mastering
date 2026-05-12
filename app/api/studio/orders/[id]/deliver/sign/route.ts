@@ -5,8 +5,8 @@ import {
   buildDeliverObjectPath,
   DELIVER_MASTER_BUCKET,
 } from "@/lib/studio/deliver-master-workflow";
+import { getServiceRoleClientOrApiError, isPublicSupabaseAnonKeyPresent } from "@/lib/supabase/server-supabase-env";
 import { requireStudioSessionUser } from "@/lib/supabase/studio-api-auth";
-import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -48,15 +48,17 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       return apiJsonError("Only WAV or MP3 files are allowed.", 400);
     }
 
-    let supabase;
-    try {
-      supabase = createServiceRoleSupabaseClient();
-    } catch (envErr) {
-      console.error("[deliver-sign] supabase client init failed", {
+    const clientResult = getServiceRoleClientOrApiError("[deliver-sign]", {
+      orderId: orderId ?? "unknown",
+    });
+    if (!clientResult.ok) return clientResult.response;
+    const supabase = clientResult.supabase;
+
+    if (!isPublicSupabaseAnonKeyPresent()) {
+      console.warn("[deliver-sign] NEXT_PUBLIC_SUPABASE_ANON_KEY missing in deployment env", {
         orderId,
-        message: envErr instanceof Error ? envErr.message : String(envErr),
+        hint: "Studio upload uses the anon key in the browser for Storage XHR; add NEXT_PUBLIC_SUPABASE_ANON_KEY for Production and redeploy.",
       });
-      return apiJsonError("Server configuration error", 500);
     }
 
     const { data: orderRow, error: orderErr } = await supabase
@@ -95,6 +97,12 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
 
     const objectPath = buildDeliverObjectPath(orderId, fileName);
 
+    console.info("[deliver-sign] calling createSignedUploadUrl", {
+      orderId,
+      bucket: DELIVER_MASTER_BUCKET,
+      pathPrefix: objectPath.slice(0, 96),
+    });
+
     const { data: signData, error: signErr } = await supabase.storage
       .from(DELIVER_MASTER_BUCKET)
       .createSignedUploadUrl(objectPath, { upsert: false });
@@ -103,10 +111,12 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       const se = signErr as { statusCode?: string; status?: number } | null;
       console.error("[deliver-sign] createSignedUploadUrl failed", {
         orderId,
+        bucket: DELIVER_MASTER_BUCKET,
         message: signErr?.message,
         statusCode: se?.statusCode,
         status: se?.status,
-        pathPrefix: objectPath.slice(0, 80),
+        pathPrefix: objectPath.slice(0, 96),
+        hint: "Confirm Supabase bucket name matches DELIVER_MASTER_BUCKET and policies allow signed uploads (service role).",
       });
       return apiJsonError(
         signErr?.message?.trim() || "Could not create upload URL",
@@ -114,7 +124,18 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       );
     }
 
-    console.info("[deliver-sign] ok", { orderId, pathPrefix: objectPath.slice(0, 64) });
+    console.info("[deliver-sign] ok", {
+      orderId,
+      bucket: DELIVER_MASTER_BUCKET,
+      pathPrefix: objectPath.slice(0, 96),
+      signedUrlHost: (() => {
+        try {
+          return new URL(signData.signedUrl).host;
+        } catch {
+          return "invalid_signed_url";
+        }
+      })(),
+    });
 
     return apiJsonSuccess({
       signedUrl: signData.signedUrl,
