@@ -13,9 +13,9 @@ export function HeroSection() {
       aria-labelledby="hero-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="grid min-h-0 grid-cols-1 items-stretch gap-0 lg:min-h-[min(90vh,960px)] lg:grid-cols-2">
+        <div className="grid min-h-[min(96vh,1040px)] grid-cols-1 items-stretch gap-0 lg:min-h-[min(98vh,1120px)] lg:grid-cols-2">
           {/* Left column — copy + upload as one vertical story */}
-          <div className="flex flex-col justify-center gap-8 py-12 sm:gap-9 sm:py-14 md:py-16 lg:gap-10 lg:py-12 lg:pr-8 xl:pr-12">
+          <div className="flex flex-col justify-center gap-8 py-14 sm:gap-9 sm:py-16 md:py-18 lg:gap-10 lg:py-16 lg:pr-8 xl:pr-12">
             <div className="space-y-6 sm:space-y-7">
               <div className="space-y-3">
                 <div className="h-px w-10 bg-neutral-300" aria-hidden />
@@ -26,7 +26,7 @@ export function HeroSection() {
               <div className="space-y-5 sm:space-y-6">
                 <h1
                   id="hero-heading"
-                  className="max-w-[14ch] text-[2.5rem] font-bold leading-[1.02] tracking-[-0.042em] text-black min-[420px]:text-[2.85rem] sm:text-6xl sm:leading-[0.98] lg:text-[3.65rem] lg:leading-[0.97] xl:text-[4.15rem] 2xl:text-[4.45rem]"
+                  className="max-w-[12ch] text-[2.9rem] font-bold leading-[0.98] tracking-[-0.05em] text-black min-[420px]:text-[3.25rem] sm:text-7xl sm:leading-[0.94] lg:text-[4.35rem] lg:leading-[0.92] xl:text-[4.85rem]"
                 >
                   Mastered to be heard.
                 </h1>
@@ -54,7 +54,7 @@ export function HeroSection() {
               </Link>
             </div>
 
-            <div className="w-full max-w-md pt-2 lg:max-w-[26rem]">
+            <div className="w-full max-w-lg pt-2 lg:max-w-xl">
               <UploadDropzone variant="embedded" />
             </div>
           </div>
@@ -72,7 +72,7 @@ export function HeroSection() {
               />
               {/* Soft blend into white column (reference fade) */}
               <div
-                className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white from-[-15%] via-white/65 to-transparent to-[48%] lg:from-[-25%] lg:via-white/50 lg:to-[46%]"
+                className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white from-[-35%] via-white/70 via-[18%] via-white/30 via-[38%] to-transparent to-[58%] lg:from-[-45%] lg:via-white/65 lg:via-[16%] lg:via-white/25 lg:via-[34%] lg:to-[56%]"
                 aria-hidden
               />
               <div

@@ -57,7 +57,7 @@ export function UploadDropzone({
       id="upload"
       className={`rounded-2xl transition-colors ${
         embedded
-          ? `border border-neutral-200/40 bg-white/90 p-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.04)] ${
+          ? `border border-neutral-200/35 bg-white/70 p-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.03)] ${
               active ? "ring-1 ring-neutral-300/40" : ""
             }`
           : `border border-neutral-200/50 bg-gradient-to-b from-white to-neutral-50/40 p-1 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.05)] sm:p-1.5 ${
@@ -93,10 +93,10 @@ export function UploadDropzone({
         }}
         className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed text-center transition-colors ${
           embedded
-            ? `px-4 py-8 sm:py-9 ${
+            ? `px-5 py-9 sm:px-6 sm:py-10 ${
                 active
                   ? "border-neutral-400/60 bg-neutral-50/90"
-                  : "border-neutral-300/50 bg-neutral-50/30 hover:border-neutral-400/70"
+                  : "border-neutral-300/45 bg-white/40 hover:border-neutral-400/70"
               }`
             : `px-5 py-11 sm:px-8 sm:py-14 ${
                 active
@@ -118,10 +118,7 @@ export function UploadDropzone({
             e.target.value = "";
           }}
         />
-        <UploadCloudIcon
-          className="mb-3 text-gray-400"
-          embedded={embedded}
-        />
+        <UploadCloudIcon className="mb-3 text-gray-400" embedded={embedded} />
         <p
           className={`font-semibold tracking-tight text-black ${
             embedded ? "text-[15px] sm:text-base" : "text-base sm:text-[17px]"

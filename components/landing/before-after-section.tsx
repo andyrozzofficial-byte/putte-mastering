@@ -12,19 +12,19 @@ export function BeforeAfterSection() {
   return (
     <section
       id="before-after"
-      className="border-t border-neutral-200/90 bg-white py-12 sm:py-14 md:py-16"
+      className="border-t border-neutral-200/90 bg-white py-10 sm:py-12 md:py-14"
       aria-labelledby="before-after-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="rounded-2xl border border-neutral-200/70 bg-neutral-100/45 p-7 shadow-[0_2px_16px_-8px_rgba(0,0,0,0.08)] sm:p-9 md:p-10 lg:p-11">
-          <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-14">
-            <div className="max-w-md space-y-3.5 lg:space-y-4">
+        <div className="rounded-2xl border border-neutral-200/70 bg-neutral-100/45 p-8 shadow-[0_6px_28px_-14px_rgba(0,0,0,0.14)] sm:p-10 md:p-12">
+          <div className="grid gap-10 lg:grid-cols-[360px_1fr] lg:items-start lg:gap-14">
+            <div className="space-y-4">
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gray-500">
                 Hear the difference
               </p>
               <h2
                 id="before-after-heading"
-                className="text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.03em] text-black sm:text-[1.75rem] md:text-[1.9375rem]"
+                className="text-[1.75rem] font-semibold leading-[1.06] tracking-[-0.04em] text-black sm:text-[2rem] md:text-[2.25rem]"
               >
                 Before &amp; after mastering
               </h2>
@@ -34,13 +34,13 @@ export function BeforeAfterSection() {
               </p>
             </div>
 
-            <div className="min-w-0 flex-1 space-y-5">
+            <div className="min-w-0 space-y-5">
               <p className="text-[13px] font-medium text-black sm:text-sm">
                 Artist name — Track title
               </p>
 
               <div
-                className="flex h-14 items-end gap-0.5 rounded-lg border border-neutral-200/95 bg-white px-2 py-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] sm:h-16 sm:px-3"
+                className="flex h-16 items-end gap-0.5 rounded-lg border border-neutral-200/95 bg-white px-3 py-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] sm:h-20 sm:px-4"
                 aria-hidden
               >
                 {Array.from({ length: 48 }).map((_, i) => {
@@ -60,7 +60,7 @@ export function BeforeAfterSection() {
 
               <div className="flex flex-wrap items-center gap-4">
                 <div
-                  className="inline-flex rounded-full border border-gray-200 bg-white p-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
+                  className="inline-flex rounded-full border border-neutral-200 bg-white p-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
                   role="group"
                   aria-label="Compare before and after"
                 >

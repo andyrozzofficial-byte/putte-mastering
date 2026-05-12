@@ -81,14 +81,14 @@ export function HowItWorksSection() {
   return (
     <section
       id="how"
-      className="border-t border-neutral-200/90 bg-white py-12 sm:py-14 md:py-16"
+      className="border-t border-neutral-200/90 bg-white py-10 sm:py-12 md:py-14"
       aria-labelledby="how-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-2xl space-y-4 text-center">
+        <div className="mx-auto max-w-3xl space-y-4 text-center">
           <h2
             id="how-heading"
-            className="text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.03em] text-black sm:text-[1.75rem] md:text-[1.9375rem]"
+            className="text-[1.5rem] font-semibold leading-[1.08] tracking-[-0.035em] text-black sm:text-[1.9rem] md:text-[2.15rem]"
           >
             A simple process. Professional result.
           </h2>
@@ -98,24 +98,23 @@ export function HowItWorksSection() {
           </p>
         </div>
 
-        <div className="relative mt-12 md:mt-14">
-          <div
-            className="pointer-events-none absolute left-[8%] right-[8%] top-[2.25rem] hidden h-px bg-neutral-200/95 md:block lg:left-[12%] lg:right-[12%]"
-            aria-hidden
-          />
-          <ol className="relative grid gap-10 md:grid-cols-3 md:gap-6 lg:gap-8">
+        <div className="mt-10 md:mt-12">
+          <ol className="mx-auto grid max-w-6xl gap-10 md:grid-cols-3 md:gap-0">
             {steps.map(({ step, title, text, icon: Icon }, i) => (
-              <li
-                key={step}
-                className={`flex flex-col items-center text-center md:items-center ${
-                  i > 0 ? "md:border-l md:border-neutral-200/80 md:pl-6 lg:pl-8" : ""
-                }`}
-              >
-                <div className="flex flex-col items-center gap-4 md:gap-5">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 ring-1 ring-neutral-200/80 md:h-[4.25rem] md:w-[4.25rem]">
-                    <Icon />
+              <li key={step} className="relative">
+                <div className="flex flex-col items-center text-center">
+                  <div className="flex items-center gap-6 md:gap-8">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100 text-neutral-700 ring-1 ring-neutral-200/80 md:h-[4.25rem] md:w-[4.25rem]">
+                      <Icon />
+                    </div>
+                    {i < steps.length - 1 ? (
+                      <div
+                        className="hidden h-px w-24 bg-neutral-200/95 md:block lg:w-28"
+                        aria-hidden
+                      />
+                    ) : null}
                   </div>
-                  <div className="max-w-[16rem] space-y-2 md:space-y-2.5">
+                  <div className="mt-5 max-w-[16rem] space-y-2">
                     <span className="text-[11px] font-semibold tabular-nums tracking-[0.12em] text-gray-400">
                       {step}
                     </span>
@@ -142,13 +141,13 @@ export function PricingTeaserSection() {
   return (
     <section
       id="pricing"
-      className="border-t border-neutral-200/90 bg-neutral-50/50 py-12 sm:py-14 md:py-16"
+      className="border-t border-neutral-200/90 bg-neutral-50/50 py-10 sm:py-12 md:py-14"
       aria-labelledby="pricing-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
         <h2
           id="pricing-heading"
-          className="text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.03em] text-black sm:text-[1.75rem] md:text-[1.9375rem]"
+          className="text-[1.5rem] font-semibold leading-[1.08] tracking-[-0.035em] text-black sm:text-[1.9rem] md:text-[2.15rem]"
         >
           Pricing
         </h2>
@@ -157,20 +156,20 @@ export function PricingTeaserSection() {
           start.
         </p>
 
-        <div className="mx-auto mt-10 grid max-w-3xl gap-5 md:mt-11 md:grid-cols-2 md:gap-6">
-          <article className="flex min-h-[280px] flex-col rounded-2xl border border-neutral-200/70 bg-white p-7 sm:min-h-[300px] sm:p-8 md:p-9">
+        <div className="mt-9 grid gap-6 md:mt-10 md:grid-cols-2 md:gap-7 lg:gap-8">
+          <article className="flex min-h-[320px] flex-col rounded-2xl border border-neutral-200/70 bg-white p-8 sm:min-h-[340px] sm:p-10 md:p-11">
             <div className="text-left">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">
                 Standard
               </p>
-              <p className="mt-5 text-[2.125rem] font-semibold leading-none tracking-[-0.035em] text-black sm:text-[2.35rem]">
+              <p className="mt-6 text-[2.35rem] font-semibold leading-none tracking-[-0.04em] text-black sm:text-[2.65rem]">
                 $60
               </p>
               <p className="mt-3 text-[13px] leading-snug text-gray-600 sm:text-sm">
                 3 business days
               </p>
             </div>
-            <ul className="mt-auto flex flex-col gap-2.5 border-t border-neutral-100/90 pt-7 text-left text-[13px] leading-snug text-gray-600 sm:gap-3 sm:pt-8 sm:text-sm">
+            <ul className="mt-auto flex flex-col gap-3 border-t border-neutral-100/90 pt-8 text-left text-[13px] leading-snug text-gray-600 sm:text-sm">
               {bullets.map((b) => (
                 <li key={b} className="flex gap-3">
                   <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-neutral-400" />
@@ -180,19 +179,19 @@ export function PricingTeaserSection() {
             </ul>
           </article>
 
-          <article className="flex min-h-[280px] flex-col rounded-2xl border border-neutral-300/80 bg-white p-7 shadow-[0_2px_12px_-8px_rgba(0,0,0,0.08)] sm:min-h-[300px] sm:p-8 md:p-9">
+          <article className="flex min-h-[320px] flex-col rounded-2xl border border-neutral-300/80 bg-white p-8 shadow-[0_6px_26px_-14px_rgba(0,0,0,0.14)] sm:min-h-[340px] sm:p-10 md:p-11">
             <div className="text-left">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">
                 Express
               </p>
-              <p className="mt-5 text-[2.125rem] font-semibold leading-none tracking-[-0.035em] text-black sm:text-[2.35rem]">
+              <p className="mt-6 text-[2.35rem] font-semibold leading-none tracking-[-0.04em] text-black sm:text-[2.65rem]">
                 $80
               </p>
               <p className="mt-3 text-[13px] leading-snug text-gray-600 sm:text-sm">
                 24 hour delivery
               </p>
             </div>
-            <ul className="mt-auto flex flex-col gap-2.5 border-t border-neutral-100/90 pt-7 text-left text-[13px] leading-snug text-gray-600 sm:gap-3 sm:pt-8 sm:text-sm">
+            <ul className="mt-auto flex flex-col gap-3 border-t border-neutral-100/90 pt-8 text-left text-[13px] leading-snug text-gray-600 sm:text-sm">
               {bullets.map((b) => (
                 <li key={b} className="flex gap-3">
                   <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-neutral-400" />
@@ -238,7 +237,7 @@ export function FaqSection() {
       aria-labelledby="faq-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto max-w-2xl">
           <h2
             id="faq-heading"
             className="text-center text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.03em] text-black sm:text-[1.75rem] md:text-[1.9375rem]"
