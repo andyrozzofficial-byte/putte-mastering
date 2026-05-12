@@ -1,9 +1,14 @@
 import { apiJsonError } from "@/lib/api/json-response";
-import { NextResponse } from "next/server";
-
+import {
+  basenameFromStoragePath,
+  buildContentDispositionAttachment,
+  guessAudioContentType,
+} from "@/lib/delivery/download-headers";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+export const maxDuration = 300;
 
 function parseStorageRef(ref: string): { bucket: string; path: string } {
   const slash = ref.indexOf("/");
@@ -95,7 +100,54 @@ export async function GET(
       });
     }
 
-    return NextResponse.redirect(signed.signedUrl, { status: 302 });
+    const range = req.headers.get("range");
+    const upstream = await fetch(signed.signedUrl, {
+      method: "GET",
+      redirect: "follow",
+      headers: {
+        Accept: "*/*",
+        ...(range ? { Range: range } : {}),
+      },
+      cache: "no-store",
+    });
+
+    if (!upstream.ok || !upstream.body) {
+      console.error("[delivery-download] upstream fetch failed", {
+        status: upstream.status,
+        bucket,
+        pathPrefix: path.slice(0, 64),
+      });
+      return apiJsonError("Could not fetch file", 502);
+    }
+
+    const downloadName = basenameFromStoragePath(path);
+    const disposition = buildContentDispositionAttachment(downloadName);
+
+    const upstreamCt = upstream.headers.get("content-type");
+    const contentType =
+      upstreamCt?.split(";")[0]?.trim() || guessAudioContentType(downloadName);
+
+    const headers = new Headers();
+    headers.set("Content-Disposition", disposition);
+    headers.set("Content-Type", contentType || guessAudioContentType(downloadName));
+    headers.set("Cache-Control", "private, no-store");
+
+    const contentLength = upstream.headers.get("content-length");
+    if (contentLength) {
+      headers.set("Content-Length", contentLength);
+    }
+
+    const contentRange = upstream.headers.get("content-range");
+    if (contentRange) {
+      headers.set("Content-Range", contentRange);
+    }
+
+    const acceptRanges = upstream.headers.get("accept-ranges");
+    if (acceptRanges) {
+      headers.set("Accept-Ranges", acceptRanges);
+    }
+
+    return new Response(upstream.body, { status: upstream.status, headers });
   } catch (e) {
     const err = e instanceof Error ? e : new Error(String(e));
     console.error("[delivery-download] unhandled", {
