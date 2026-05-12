@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { apiJsonError, apiJsonSuccess } from "@/lib/api/json-response";
 import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
 import { generateDeliveryAccessToken } from "@/lib/delivery/access-token";
 import { escapeHtml } from "@/lib/email/escape-html";
@@ -8,6 +9,8 @@ import { requireStudioSessionUser } from "@/lib/supabase/studio-api-auth";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+export const maxDuration = 300;
 
 const BUCKET = "uploads";
 
@@ -29,17 +32,37 @@ export async function POST(
   req: Request,
   ctx: { params: Promise<{ id: string }> },
 ) {
+  let id: string | undefined;
   try {
-    const { user } = await requireStudioSessionUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireStudioSessionUser();
+    if (!auth.user) {
+      console.warn("[deliver] unauthorized", { hasSessionError: !!auth.error });
+      return apiJsonError("Unauthorized", 401);
     }
 
-    const { id } = await ctx.params;
-    const form = await req.formData();
+    const params = await ctx.params;
+    id = params.id;
+
+    let form: FormData;
+    try {
+      form = await req.formData();
+    } catch (formErr) {
+      const msg =
+        formErr instanceof Error ? formErr.message : String(formErr);
+      console.error("[deliver] formData failed", {
+        id,
+        message: msg,
+        stack: formErr instanceof Error ? formErr.stack : undefined,
+      });
+      return apiJsonError(
+        "Could not read upload. The file may be too large for this deployment, or the connection was interrupted.",
+        413,
+      );
+    }
+
     const file = form.get("file");
     if (!(file instanceof File)) {
-      return NextResponse.json({ error: "Missing file" }, { status: 400 });
+      return apiJsonError("Missing file", 400);
     }
 
     const supabase = createServiceRoleSupabaseClient();
@@ -53,8 +76,12 @@ export async function POST(
       .maybeSingle();
 
     if (orderErr || !orderRow) {
-      console.error("[deliver] order load failed", { id, orderErr });
-      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+      console.error("[deliver] order load failed", {
+        id,
+        orderErr: orderErr?.message,
+        code: orderErr?.code,
+      });
+      return apiJsonError("Order not found", 404);
     }
 
     let accessToken = orderRow.delivery_access_token as string | null;
@@ -68,11 +95,9 @@ export async function POST(
         console.error("[deliver] token backfill failed", {
           id,
           message: tokErr.message,
+          code: tokErr.code,
         });
-        return NextResponse.json(
-          { error: "Could not prepare delivery link" },
-          { status: 500 },
-        );
+        return apiJsonError("Could not prepare delivery link", 500);
       }
     }
 
@@ -90,11 +115,15 @@ export async function POST(
       console.error("[deliver] storage upload failed", {
         id,
         message: uploadError.message,
+        path: objectPath,
       });
-      return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+      return apiJsonError(
+        `Upload failed: ${uploadError.message || "storage error"}`,
+        500,
+      );
     }
 
-    const mastered_file = `${BUCKET}/${objectPath}`;
+    const masteredFile = `${BUCKET}/${objectPath}`;
 
     const { data: maxVerRow } = await supabase
       .from("order_master_versions")
@@ -110,7 +139,7 @@ export async function POST(
       .from("order_master_versions")
       .insert({
         order_id: id,
-        storage_ref: mastered_file,
+        storage_ref: masteredFile,
         version: nextVersion,
       });
 
@@ -118,17 +147,15 @@ export async function POST(
       console.error("[deliver] version insert failed", {
         id,
         message: verInsErr.message,
+        code: verInsErr.code,
       });
-      return NextResponse.json(
-        { error: "Could not record master version" },
-        { status: 500 },
-      );
+      return apiJsonError("Could not record master version", 500);
     }
 
     const { error: updateError } = await supabase
       .from("orders")
       .update({
-        mastered_file,
+        mastered_file: masteredFile,
         status: "completed",
         delivery_completed_at: new Date().toISOString(),
       })
@@ -140,10 +167,7 @@ export async function POST(
         code: updateError.code,
         message: updateError.message,
       });
-      return NextResponse.json(
-        { error: "Could not update order" },
-        { status: 500 },
-      );
+      return apiJsonError("Could not update order", 500);
     }
 
     const deliveryUrl = resolveDeliveryUrlForStudio(accessToken, req);
@@ -172,14 +196,24 @@ export async function POST(
       });
     }
 
-    return NextResponse.json({
-      ok: true,
-      mastered_file,
+    console.info("[deliver] success", {
+      id,
+      version: nextVersion,
+      path: objectPath,
+    });
+
+    return apiJsonSuccess({
       deliveryUrl,
+      masteredFile,
       version: nextVersion,
     });
   } catch (e) {
-    console.error("[deliver] unhandled", e);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    const err = e instanceof Error ? e : new Error(String(e));
+    console.error("[deliver] unhandled", {
+      id,
+      message: err.message,
+      stack: err.stack,
+    });
+    return apiJsonError("Server error", 500);
   }
 }

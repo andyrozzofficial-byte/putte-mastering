@@ -1,3 +1,4 @@
+import { apiJsonError } from "@/lib/api/json-response";
 import { NextResponse } from "next/server";
 
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
@@ -19,7 +20,7 @@ export async function GET(
     const { token } = await ctx.params;
     const t = decodeURIComponent(token).trim();
     if (!t) {
-      return NextResponse.json({ error: "Invalid link" }, { status: 403 });
+      return apiJsonError("Invalid link", 403);
     }
 
     const url = new URL(req.url);
@@ -33,7 +34,7 @@ export async function GET(
       .maybeSingle();
 
     if (orderErr || !order?.delivery_access_token) {
-      return NextResponse.json({ error: "Invalid link" }, { status: 403 });
+      return apiJsonError("Invalid link", 403);
     }
 
     let storageRef: string | null = null;
@@ -59,7 +60,7 @@ export async function GET(
     }
 
     if (!storageRef) {
-      return NextResponse.json({ error: "No master available" }, { status: 404 });
+      return apiJsonError("No master available", 404);
     }
 
     const { bucket, path } = parseStorageRef(storageRef);
@@ -71,11 +72,10 @@ export async function GET(
     if (signError || !signed?.signedUrl) {
       console.error("[delivery-download] signed url failed", {
         message: signError?.message,
+        bucket,
+        pathPrefix: path.slice(0, 64),
       });
-      return NextResponse.json(
-        { error: "Could not create download link" },
-        { status: 500 },
-      );
+      return apiJsonError("Could not create download link", 500);
     }
 
     const { error: rpcErr } = await supabase.rpc(
@@ -85,13 +85,17 @@ export async function GET(
     if (rpcErr) {
       console.error("[delivery-download] increment counter failed", {
         message: rpcErr.message,
+        code: rpcErr.code,
       });
-      /* Still redirect: file is ready; counter is best-effort. */
     }
 
     return NextResponse.redirect(signed.signedUrl, { status: 302 });
   } catch (e) {
-    console.error("[delivery-download] unhandled", e);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    const err = e instanceof Error ? e : new Error(String(e));
+    console.error("[delivery-download] unhandled", {
+      message: err.message,
+      stack: err.stack,
+    });
+    return apiJsonError("Server error", 500);
   }
 }

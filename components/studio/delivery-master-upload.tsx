@@ -1,5 +1,6 @@
 "use client";
 
+import { parseApiJsonBody } from "@/lib/api/client-parse";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 type Props = {
@@ -38,13 +39,24 @@ export function DeliveryMasterUpload({ orderId }: Props) {
       const res = await fetch(`/api/studio/orders/${orderId}/deliver`, {
         method: "POST",
         body: form,
+        credentials: "same-origin",
       });
       const raw = await res.text();
-      const json = raw
-        ? (JSON.parse(raw) as { error?: string; deliveryUrl?: string })
-        : {};
-      if (!res.ok) throw new Error(json.error || "Upload failed.");
-      if (!json.deliveryUrl) throw new Error("Missing delivery link.");
+      const json = parseApiJsonBody(raw, res) as {
+        success?: boolean;
+        error?: string;
+        deliveryUrl?: string;
+      };
+      if (!res.ok || json.success === false) {
+        throw new Error(
+          typeof json.error === "string" && json.error.length > 0
+            ? json.error
+            : "Upload failed.",
+        );
+      }
+      if (json.success !== true || typeof json.deliveryUrl !== "string") {
+        throw new Error("Missing delivery link in server response.");
+      }
       setDeliveryUrl(json.deliveryUrl);
       setFile(null);
       if (inputRef.current) inputRef.current.value = "";

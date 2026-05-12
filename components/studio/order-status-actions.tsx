@@ -1,5 +1,6 @@
 "use client";
 
+import { parseApiJsonBody } from "@/lib/api/client-parse";
 import { useMemo, useState } from "react";
 
 import type { OrderStatus } from "@/components/dashboard/order-status-badge";
@@ -46,11 +47,21 @@ export function OrderStatusActions({ orderId, currentStatus }: Props) {
       const res = await fetch(`/api/studio/orders/${orderId}/status`, {
         method: "POST",
         headers: { "content-type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({ status: to }),
       });
       const raw = await res.text();
-      const json = raw ? (JSON.parse(raw) as { error?: string }) : {};
-      if (!res.ok) throw new Error(json.error || "Could not update status.");
+      const json = parseApiJsonBody(raw, res) as {
+        success?: boolean;
+        error?: string;
+      };
+      if (!res.ok || json.success === false) {
+        throw new Error(
+          typeof json.error === "string" && json.error.length > 0
+            ? json.error
+            : "Could not update status.",
+        );
+      }
       window.location.reload();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Could not update status.";

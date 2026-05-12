@@ -1,5 +1,4 @@
-import { NextResponse } from "next/server";
-
+import { apiJsonError, apiJsonSuccess } from "@/lib/api/json-response";
 import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
 import { escapeHtml } from "@/lib/email/escape-html";
 import { getStudioNotifyEmail, sendResendEmail } from "@/lib/email/resend";
@@ -18,29 +17,23 @@ export async function POST(
     const { token } = await ctx.params;
     const t = decodeURIComponent(token).trim();
     if (!t) {
-      return NextResponse.json({ error: "Invalid link" }, { status: 403 });
+      return apiJsonError("Invalid link", 403);
     }
 
     let body: { message?: unknown };
     try {
       body = (await req.json()) as { message?: unknown };
     } catch {
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+      return apiJsonError("Invalid JSON", 400);
     }
 
     const message =
       typeof body.message === "string" ? body.message.trim() : "";
     if (message.length < MIN_LEN) {
-      return NextResponse.json(
-        { error: `Please enter at least ${MIN_LEN} characters.` },
-        { status: 400 },
-      );
+      return apiJsonError(`Please enter at least ${MIN_LEN} characters.`, 400);
     }
     if (message.length > MAX_LEN) {
-      return NextResponse.json(
-        { error: "Message is too long." },
-        { status: 400 },
-      );
+      return apiJsonError("Message is too long.", 400);
     }
 
     const supabase = createServiceRoleSupabaseClient();
@@ -51,7 +44,7 @@ export async function POST(
       .maybeSingle();
 
     if (orderErr || !order?.delivery_access_token) {
-      return NextResponse.json({ error: "Invalid link" }, { status: 403 });
+      return apiJsonError("Invalid link", 403);
     }
 
     const { error: insErr } = await supabase
@@ -61,8 +54,9 @@ export async function POST(
     if (insErr) {
       console.error("[delivery-revision] insert failed", {
         message: insErr.message,
+        code: insErr.code,
       });
-      return NextResponse.json({ error: "Could not save request" }, { status: 500 });
+      return apiJsonError("Could not save request", 500);
     }
 
     const { error: updErr } = await supabase
@@ -73,8 +67,9 @@ export async function POST(
     if (updErr) {
       console.error("[delivery-revision] status update failed", {
         message: updErr.message,
+        code: updErr.code,
       });
-      return NextResponse.json({ error: "Could not update order" }, { status: 500 });
+      return apiJsonError("Could not update order", 500);
     }
 
     const trackLabel =
@@ -103,9 +98,13 @@ export async function POST(
       });
     }
 
-    return NextResponse.json({ ok: true });
+    return apiJsonSuccess({});
   } catch (e) {
-    console.error("[delivery-revision] unhandled", e);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    const err = e instanceof Error ? e : new Error(String(e));
+    console.error("[delivery-revision] unhandled", {
+      message: err.message,
+      stack: err.stack,
+    });
+    return apiJsonError("Server error", 500);
   }
 }

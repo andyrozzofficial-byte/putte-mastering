@@ -1,5 +1,4 @@
-import { NextResponse } from "next/server";
-
+import { apiJsonError, apiJsonSuccess } from "@/lib/api/json-response";
 import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
 import { escapeHtml } from "@/lib/email/escape-html";
 import { sendResendEmail } from "@/lib/email/resend";
@@ -15,11 +14,17 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   try {
     const { supabase, user } = await requireStudioSessionUser();
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return apiJsonError("Unauthorized", 401);
     }
 
     const { id } = await ctx.params;
-    const body = (await req.json()) as Partial<Body>;
+    let body: Partial<Body>;
+    try {
+      body = (await req.json()) as Partial<Body>;
+    } catch {
+      return apiJsonError("Invalid JSON body", 400);
+    }
+
     const status = body.status;
     if (
       status !== "new" &&
@@ -27,7 +32,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       status !== "waiting_revision" &&
       status !== "completed"
     ) {
-      return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+      return apiJsonError("Invalid status", 400);
     }
 
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
@@ -40,14 +45,12 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
         details: error.details,
         hint: error.hint,
       });
-      return NextResponse.json({ error: "Update failed" }, { status: 500 });
+      return apiJsonError("Update failed", 500);
     }
 
     const { data: row } = await supabase
       .from("orders")
-      .select(
-        "customer_email, track_name, delivery_access_token",
-      )
+      .select("customer_email, track_name, delivery_access_token")
       .eq("id", id)
       .maybeSingle();
 
@@ -68,9 +71,13 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       }
     }
 
-    return NextResponse.json({ ok: true, status });
+    return apiJsonSuccess({ status });
   } catch (e) {
-    console.error("[studio-status] unhandled", e);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    const err = e instanceof Error ? e : new Error(String(e));
+    console.error("[studio-status] unhandled", {
+      message: err.message,
+      stack: err.stack,
+    });
+    return apiJsonError("Server error", 500);
   }
 }

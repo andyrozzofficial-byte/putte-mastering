@@ -1,5 +1,6 @@
 "use client";
 
+import { parseApiJsonBody } from "@/lib/api/client-parse";
 import { useRouter } from "next/navigation";
 import { useCallback, useState, type FormEvent } from "react";
 
@@ -26,12 +27,22 @@ export function DeliveryRevisionForm({ accessToken }: Props) {
           {
             method: "POST",
             headers: { "content-type": "application/json" },
+            credentials: "same-origin",
             body: JSON.stringify({ message }),
           },
         );
         const raw = await res.text();
-        const json = raw ? (JSON.parse(raw) as { error?: string }) : {};
-        if (!res.ok) throw new Error(json.error || "Could not send request.");
+        const json = parseApiJsonBody(raw, res) as {
+          success?: boolean;
+          error?: string;
+        };
+        if (!res.ok || json.success === false) {
+          throw new Error(
+            typeof json.error === "string" && json.error.length > 0
+              ? json.error
+              : "Could not send request.",
+          );
+        }
         setMessage("");
         setDone(true);
         router.refresh();
