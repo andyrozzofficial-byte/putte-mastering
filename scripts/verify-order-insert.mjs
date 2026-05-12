@@ -28,7 +28,7 @@ const payload = {
   uploaded_file: null,
   mastered_file: null,
   price: 60,
-  delivery_access_token: randomBytes(32).toString("base64url"),
+  delivery_access_token: randomBytes(32).toString("hex"),
 };
 
 const supabase = createClient(url, key);
