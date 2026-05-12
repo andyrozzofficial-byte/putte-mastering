@@ -11,13 +11,13 @@ export function DeliveryMasterUpload() {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-6">
       <p className="text-xs font-medium uppercase tracking-[0.12em] text-gray-400">
-        Leverans
+        Delivery
       </p>
       <h3 className="mt-2 text-[15px] font-semibold tracking-tight text-black sm:text-base">
-        Ladda upp färdig master
+        Upload finished master
       </h3>
       <p className="mt-1.5 text-[13px] text-gray-500 sm:text-sm">
-        WAV eller AIFF i målformat som kunden beställt.
+        WAV or AIFF in the delivery format the customer ordered.
       </p>
 
       <div
@@ -57,10 +57,10 @@ export function DeliveryMasterUpload() {
         />
         <UploadGlyph className="mb-4 text-gray-400" />
         <p className="text-[15px] font-semibold text-black sm:text-base">
-          Dra & släpp din fil här
+          Drag & drop your file here
         </p>
         <p className="mt-1.5 text-[13px] text-gray-500 sm:text-sm">
-          eller klicka för att välja fil
+          or click to choose a file
         </p>
       </div>
 
@@ -68,7 +68,7 @@ export function DeliveryMasterUpload() {
         type="button"
         className="mt-6 w-full rounded-lg bg-black py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-neutral-800 sm:text-sm"
       >
-        Markera som klar
+        Mark as completed
       </button>
     </div>
   );

@@ -7,9 +7,9 @@ const styles: Record<OrderStatus, string> = {
 };
 
 const labels: Record<OrderStatus, string> = {
-  ny: "Ny",
-  in_progress: "Pågår",
-  klar: "Klar",
+  ny: "New",
+  in_progress: "In progress",
+  klar: "Completed",
 };
 
 type OrderStatusBadgeProps = {

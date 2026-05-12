@@ -17,24 +17,24 @@ export default async function OverviewPage() {
 
   const statCards = [
     {
-      label: "Totalt antal ordrar",
+      label: "Total orders",
       value: String(stats.total),
-      hint: "Alla registrerade",
+      hint: "All time",
     },
     {
-      label: "Nya ordrar",
+      label: "New orders",
       value: String(stats.newOrders),
-      hint: "Väntar på dig",
+      hint: "Needs attention",
     },
     {
-      label: "Klara ordrar",
+      label: "Completed orders",
       value: String(stats.completed),
-      hint: "Avslutade",
+      hint: "Delivered",
     },
     {
-      label: "Intäkter",
+      label: "Revenue",
       value: formatKr(stats.revenueKr),
-      hint: "Summa orderpriser",
+      hint: "Sum of prices",
     },
   ] as const;
 
@@ -44,15 +44,15 @@ export default async function OverviewPage() {
         <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-0.5">
             <h1 className="text-[1.375rem] font-semibold tracking-tight text-black sm:text-2xl md:text-[1.65rem]">
-              Översikt
+              Overview
             </h1>
             <p className="text-[13px] text-gray-500 sm:text-sm">
-              Din studio — handgjord mastering, inga genvägar.
+              Your studio — manual mastering, no shortcuts.
             </p>
           </div>
           <Button type="button" className="shrink-0 self-stretch sm:self-auto">
             <span className="text-base leading-none sm:text-[15px]">+</span>
-            Ny order
+            New order
           </Button>
         </header>
 
@@ -65,7 +65,7 @@ export default async function OverviewPage() {
         </section>
 
         <OrdersTable
-          title="Senaste ordrar"
+          title="Recent orders"
           orders={recentOrders}
           orderDetailBase="/studio/orders"
         />

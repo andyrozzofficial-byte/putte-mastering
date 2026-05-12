@@ -5,7 +5,7 @@ type PlaceholderPageProps = {
 
 export function PlaceholderPage({
   title,
-  description = "Den här vyn är på gång. Under tiden når du allt viktigt från översikten.",
+  description = "This view is coming soon. In the meantime, you can reach everything important from the overview.",
 }: PlaceholderPageProps) {
   return (
     <main className="flex-1 px-4 pb-10 pt-5 md:px-7 md:pb-14 md:pt-8 lg:px-10 lg:pt-10">

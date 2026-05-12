@@ -28,25 +28,25 @@ export function OrdersTable({
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/80">
                   <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
-                    Kund
+                    Customer
                   </th>
                   <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
-                    Spår
+                    Track
                   </th>
                   <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
-                    Tjänst
+                    Service
                   </th>
                   <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
                     Status
                   </th>
                   <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
-                    Pris
+                    Price
                   </th>
                   <th className="px-4 py-2.5 font-medium text-gray-500 sm:px-5">
-                    Datum
+                    Date
                   </th>
                   <th className="px-2 py-2.5 font-medium text-gray-400 sm:px-3">
-                    <span className="sr-only">Åtgärder</span>
+                    <span className="sr-only">Actions</span>
                   </th>
                 </tr>
               </thead>
@@ -61,7 +61,7 @@ export function OrdersTable({
           </div>
         ) : (
           <p className="px-5 py-14 text-center text-[13px] text-gray-500 sm:px-6 sm:text-sm">
-            Inga ordrar ännu
+            No orders yet
           </p>
         )}
       </div>
