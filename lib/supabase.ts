@@ -10,6 +10,7 @@ import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 export const ORDERS_INSERT_COLUMNS = [
   "customer_email",
   "customer_name",
+  "delivery_access_token",
   "mastered_file",
   "notes",
   "price",

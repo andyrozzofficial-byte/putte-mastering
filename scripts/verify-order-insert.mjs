@@ -6,6 +6,7 @@
  */
 
 import { createClient } from "@supabase/supabase-js";
+import { randomBytes } from "node:crypto";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
@@ -27,6 +28,7 @@ const payload = {
   uploaded_file: null,
   mastered_file: null,
   price: 60,
+  delivery_access_token: randomBytes(32).toString("base64url"),
 };
 
 const supabase = createClient(url, key);

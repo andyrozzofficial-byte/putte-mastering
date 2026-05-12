@@ -2,9 +2,13 @@ import { OrderStatusBadge } from "@/components/dashboard/order-status-badge";
 import { CustomerSourceFile } from "@/components/studio/customer-source-file";
 import { DeliveryMasterUpload } from "@/components/studio/delivery-master-upload";
 import { OrderStatusActions } from "@/components/studio/order-status-actions";
+import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
 import {
   dbRowToStudioDetail,
+  fetchOrderMasterVersions,
+  fetchOrderRevisionRequests,
   fetchStudioOrderById,
+  formatOrderCreatedAt,
 } from "@/lib/studio/orders-data";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -31,6 +35,19 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
   if (!row) notFound();
 
   const order = dbRowToStudioDetail(row);
+  const [masterVersions, revisionRequests] = await Promise.all([
+    fetchOrderMasterVersions(id),
+    fetchOrderRevisionRequests(id),
+  ]);
+
+  const portalToken = (row.delivery_access_token ?? "").trim();
+  const customerPortalUrl = portalToken
+    ? deliveryPortalAbsoluteUrl(portalToken)
+    : "";
+  const currentVersion =
+    masterVersions.length > 0
+      ? Math.max(...masterVersions.map((v) => v.version))
+      : null;
 
   return (
     <main className="flex-1 bg-neutral-50/40 px-4 pb-12 pt-5 md:px-7 md:pb-16 md:pt-7 lg:px-10">
@@ -132,6 +149,91 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
           </section>
 
           <OrderStatusActions orderId={order.id} currentStatus={order.status} />
+
+          <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-6">
+            <h2 className="text-xs font-medium uppercase tracking-[0.12em] text-gray-400">
+              Customer delivery
+            </h2>
+            <dl className="mt-5 space-y-3 text-[13px] sm:text-sm">
+              <div className="flex flex-col gap-1 sm:flex-row sm:gap-8">
+                <dt className="w-36 shrink-0 text-gray-500">Current version</dt>
+                <dd className="font-medium text-black">
+                  {currentVersion != null ? `v${currentVersion}` : "—"}
+                </dd>
+              </div>
+              <div className="flex flex-col gap-1 sm:flex-row sm:gap-8">
+                <dt className="w-36 shrink-0 text-gray-500">Portal link</dt>
+                <dd className="min-w-0 break-all">
+                  {customerPortalUrl ? (
+                    <a
+                      href={customerPortalUrl}
+                      className="font-medium text-black underline decoration-gray-300 underline-offset-4 hover:decoration-black"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {customerPortalUrl}
+                    </a>
+                  ) : (
+                    <span className="text-gray-400">
+                      Will appear after the next master upload (legacy orders without a
+                      token).
+                    </span>
+                  )}
+                </dd>
+              </div>
+            </dl>
+          </section>
+
+          {revisionRequests.length > 0 ? (
+            <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-6">
+              <h2 className="text-xs font-medium uppercase tracking-[0.12em] text-gray-400">
+                Revision requests
+              </h2>
+              <ul className="mt-4 space-y-3 text-[13px] text-gray-800 sm:text-sm">
+                {revisionRequests.map((r) => (
+                  <li
+                    key={r.id}
+                    className="rounded-lg border border-gray-100 bg-neutral-50/40 px-3 py-2.5"
+                  >
+                    <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">
+                      {formatOrderCreatedAt(r.created_at)}
+                    </p>
+                    <p className="mt-1 whitespace-pre-wrap leading-relaxed">
+                      {r.message}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          {masterVersions.length > 0 ? (
+            <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-6">
+              <h2 className="text-xs font-medium uppercase tracking-[0.12em] text-gray-400">
+                Master upload history
+              </h2>
+              <ul className="mt-4 space-y-2 text-[13px] sm:text-sm">
+                {masterVersions.map((v) => (
+                  <li
+                    key={v.id}
+                    className="flex flex-col justify-between gap-1 rounded-lg border border-gray-100 px-3 py-2 sm:flex-row sm:items-center"
+                  >
+                    <span className="font-medium text-black">
+                      Version {v.version}
+                      {v.version === currentVersion ? (
+                        <span className="ml-2 inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-900">
+                          Latest
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="text-gray-500">
+                      {formatOrderCreatedAt(v.created_at)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
 
           <DeliveryMasterUpload orderId={order.id} />
         </div>

@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 
+import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
+import { escapeHtml } from "@/lib/email/escape-html";
+import { sendResendEmail } from "@/lib/email/resend";
+
 function getStripeWebhookSecret(): string {
   const secret = process.env.STRIPE_WEBHOOK_SECRET?.trim();
   if (!secret) {
@@ -22,13 +26,19 @@ export async function POST(req: Request) {
     );
   }
 
-  const [{ createClient }, { getSupabaseServiceRoleKey, getSupabaseUrl }, { parseOrderPriceLabelToUsd }, { default: Stripe }] =
-    await Promise.all([
-      import("@supabase/supabase-js"),
-      import("@/lib/supabase/env"),
-      import("@/lib/supabase"),
-      import("stripe"),
-    ]);
+  const [
+    { createClient },
+    { getSupabaseServiceRoleKey, getSupabaseUrl },
+    { parseOrderPriceLabelToUsd },
+    { default: Stripe },
+    { generateDeliveryAccessToken },
+  ] = await Promise.all([
+    import("@supabase/supabase-js"),
+    import("@/lib/supabase/env"),
+    import("@/lib/supabase"),
+    import("stripe"),
+    import("@/lib/delivery/access-token"),
+  ]);
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: "2026-04-22.dahlia",
@@ -94,6 +104,8 @@ export async function POST(req: Request) {
 
   const price = parseOrderPriceLabelToUsd(price_label);
 
+  const delivery_access_token = generateDeliveryAccessToken();
+
   const { error } = await supabase.from("orders").insert({
     customer_name: customer_name || null,
     customer_email,
@@ -104,6 +116,7 @@ export async function POST(req: Request) {
     uploaded_file,
     mastered_file: null,
     price,
+    delivery_access_token,
   });
 
   if (error) {
@@ -115,6 +128,17 @@ export async function POST(req: Request) {
     });
     return NextResponse.json({ error: "Insert failed" }, { status: 500 });
   }
+
+  const portal = deliveryPortalAbsoluteUrl(delivery_access_token);
+  void sendResendEmail({
+    to: customer_email,
+    subject: "We received your mastering order",
+    html: `<p>Hi ${escapeHtml(customer_name || "there")},</p>
+<p>Thanks for your order. We’ve received your payment and files.</p>
+<p>Track status and download your master when it’s ready:</p>
+<p><a href="${escapeHtml(portal)}">${escapeHtml(portal)}</a></p>
+<p>— First Listen Mastering</p>`,
+  });
 
   return NextResponse.json({ received: true });
 }

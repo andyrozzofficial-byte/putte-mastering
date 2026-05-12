@@ -6,7 +6,11 @@ import {
   parseOrderPriceLabelToUsd,
   type OrderInsert,
 } from "@/lib/supabase";
+import { generateDeliveryAccessToken } from "@/lib/delivery/access-token";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
+import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
+import { escapeHtml } from "@/lib/email/escape-html";
+import { sendResendEmail } from "@/lib/email/resend";
 
 function logEnvFingerprint(): void {
   const url = getSupabaseUrl();
@@ -51,6 +55,8 @@ export type OrdersInsertPayload = {
   mastered_file: string | null;
   /** Integer USD whole dollars (Supabase `bigint`). */
   price: number;
+  /** Opaque public delivery portal token. */
+  delivery_access_token: string;
 };
 
 /** Empty strings → null for nullable text columns (avoids CHECK / NOT NULL edge cases). */
@@ -78,6 +84,7 @@ function toOrdersInsertPayload(row: OrderInsert): OrdersInsertPayload {
     uploaded_file: row.uploaded_file,
     mastered_file: row.mastered_file,
     price: priceUsd,
+    delivery_access_token: generateDeliveryAccessToken(),
   };
 }
 
@@ -100,6 +107,7 @@ export async function submitOrderToSupabase(row: OrderInsert): Promise<void> {
 
   console.info("[submit-order] Insert payload (sanitized):", {
     ...payload,
+    delivery_access_token: "[redacted]",
     customer_email: `${payload.customer_email.slice(0, 2)}…@${payload.customer_email.includes("@") ? payload.customer_email.split("@")[1] : "?"}`,
     price_raw_label: row.price,
     uploaded_file:
@@ -110,7 +118,7 @@ export async function submitOrderToSupabase(row: OrderInsert): Promise<void> {
 
   console.info("[submit-order] Calling insert into public.orders …");
 
-  const { error } = await client.from("orders").insert(payload);
+  const { data, error } = await client.from("orders").insert(payload).select("id").maybeSingle();
 
   if (error) {
     const serialized = serializePostgrestError(error);
@@ -122,4 +130,17 @@ export async function submitOrderToSupabase(row: OrderInsert): Promise<void> {
   }
 
   console.info("[submit-order] Insert finished without error.");
+
+  if (data?.id) {
+    const deliveryUrl = deliveryPortalAbsoluteUrl(payload.delivery_access_token);
+    void sendResendEmail({
+      to: payload.customer_email,
+      subject: "We received your mastering order",
+      html: `<p>Hi ${escapeHtml(row.customer_name.trim())},</p>
+<p>Thanks for your order. We’ve received your files and will begin work soon.</p>
+<p>You can track status and download your master here when it’s ready:</p>
+<p><a href="${escapeHtml(deliveryUrl)}">${escapeHtml(deliveryUrl)}</a></p>
+<p>— First Listen Mastering</p>`,
+    });
+  }
 }

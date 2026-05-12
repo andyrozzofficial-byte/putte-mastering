@@ -18,6 +18,23 @@ export type OrdersDbRow = {
   uploaded_file: string | null;
   mastered_file: string | null;
   created_at: string;
+  /** Opaque token for `/delivery/[token]` (may be null on legacy rows). */
+  delivery_access_token: string | null;
+};
+
+export type OrderMasterVersionRow = {
+  id: string;
+  order_id: string;
+  storage_ref: string;
+  version: number;
+  created_at: string;
+};
+
+export type OrderRevisionRequestRow = {
+  id: string;
+  order_id: string;
+  message: string;
+  created_at: string;
 };
 
 export type StudioOrderDetail = {
@@ -208,7 +225,7 @@ export async function fetchStudioOrders(): Promise<OrdersDbRow[]> {
     const { data, error } = await supabase
       .from("orders")
       .select(
-        "id, customer_name, customer_email, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at",
+        "id, customer_name, customer_email, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at, delivery_access_token",
       )
       .order("created_at", { ascending: false });
 
@@ -237,7 +254,7 @@ export async function fetchStudioOrderById(
     const { data, error } = await supabase
       .from("orders")
       .select(
-        "id, customer_name, customer_email, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at",
+        "id, customer_name, customer_email, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at, delivery_access_token",
       )
       .eq("id", id)
       .maybeSingle();
@@ -257,5 +274,55 @@ export async function fetchStudioOrderById(
   } catch (e) {
     console.error("[studio] fetchStudioOrderById threw:", { id, error: e });
     return null;
+  }
+}
+
+export async function fetchOrderMasterVersions(
+  orderId: string,
+): Promise<OrderMasterVersionRow[]> {
+  try {
+    const supabase = await createStudioServerClient();
+    const { data, error } = await supabase
+      .from("order_master_versions")
+      .select("id, order_id, storage_ref, version, created_at")
+      .eq("order_id", orderId)
+      .order("version", { ascending: false });
+
+    if (error) {
+      console.error("[studio] fetchOrderMasterVersions failed:", {
+        orderId,
+        message: error.message,
+      });
+      return [];
+    }
+    return (data ?? []) as OrderMasterVersionRow[];
+  } catch (e) {
+    console.error("[studio] fetchOrderMasterVersions threw:", { orderId, e });
+    return [];
+  }
+}
+
+export async function fetchOrderRevisionRequests(
+  orderId: string,
+): Promise<OrderRevisionRequestRow[]> {
+  try {
+    const supabase = await createStudioServerClient();
+    const { data, error } = await supabase
+      .from("order_revision_requests")
+      .select("id, order_id, message, created_at")
+      .eq("order_id", orderId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("[studio] fetchOrderRevisionRequests failed:", {
+        orderId,
+        message: error.message,
+      });
+      return [];
+    }
+    return (data ?? []) as OrderRevisionRequestRow[];
+  } catch (e) {
+    console.error("[studio] fetchOrderRevisionRequests threw:", { orderId, e });
+    return [];
   }
 }
