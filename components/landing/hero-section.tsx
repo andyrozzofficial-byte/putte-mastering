@@ -67,7 +67,7 @@ export function HeroSection() {
                 alt=""
                 fill
                 priority
-                className="object-cover object-[center_28%] grayscale contrast-[1.03] brightness-[1.04] saturate-0"
+                className="object-cover object-[center_38%] grayscale contrast-[1.03] brightness-[1.04] saturate-0"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
               {/* Soft blend into white column (reference fade) */}
