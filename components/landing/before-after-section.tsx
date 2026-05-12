@@ -12,19 +12,19 @@ export function BeforeAfterSection() {
   return (
     <section
       id="before-after"
-      className="border-t border-neutral-200/85 bg-white py-20 sm:py-24 md:py-28"
+      className="border-t border-neutral-200/90 bg-white py-12 sm:py-14 md:py-16"
       aria-labelledby="before-after-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="rounded-[1.125rem] border border-neutral-200/90 bg-neutral-50/50 p-7 shadow-[0_2px_14px_-6px_rgba(0,0,0,0.07)] md:p-11 lg:rounded-2xl lg:p-12">
-          <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-            <div className="max-w-md space-y-4">
+        <div className="rounded-2xl border border-neutral-200/70 bg-neutral-100/45 p-7 shadow-[0_2px_16px_-8px_rgba(0,0,0,0.08)] sm:p-9 md:p-10 lg:p-11">
+          <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-14">
+            <div className="max-w-md space-y-3.5 lg:space-y-4">
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gray-500">
                 Hear the difference
               </p>
               <h2
                 id="before-after-heading"
-                className="text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.028em] text-black sm:text-[1.6875rem] md:text-[1.9375rem]"
+                className="text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.03em] text-black sm:text-[1.75rem] md:text-[1.9375rem]"
               >
                 Before &amp; after mastering
               </h2>

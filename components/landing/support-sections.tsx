@@ -81,14 +81,14 @@ export function HowItWorksSection() {
   return (
     <section
       id="how"
-      className="border-t border-neutral-200/85 bg-white py-20 sm:py-24 md:py-28"
+      className="border-t border-neutral-200/90 bg-white py-12 sm:py-14 md:py-16"
       aria-labelledby="how-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="max-w-2xl space-y-4">
+        <div className="mx-auto max-w-2xl space-y-4 text-center">
           <h2
             id="how-heading"
-            className="text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.028em] text-black sm:text-[1.6875rem] md:text-[1.9375rem]"
+            className="text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.03em] text-black sm:text-[1.75rem] md:text-[1.9375rem]"
           >
             A simple process. Professional result.
           </h2>
@@ -98,21 +98,25 @@ export function HowItWorksSection() {
           </p>
         </div>
 
-        <div className="mt-16 md:mt-20">
-          <ol className="grid gap-14 md:grid-cols-3 md:gap-10 lg:gap-12">
+        <div className="relative mt-12 md:mt-14">
+          <div
+            className="pointer-events-none absolute left-[8%] right-[8%] top-[2.25rem] hidden h-px bg-neutral-200/95 md:block lg:left-[12%] lg:right-[12%]"
+            aria-hidden
+          />
+          <ol className="relative grid gap-10 md:grid-cols-3 md:gap-6 lg:gap-8">
             {steps.map(({ step, title, text, icon: Icon }, i) => (
               <li
                 key={step}
-                className={`relative pl-0 md:border-l md:border-neutral-200/90 md:pl-9 lg:pl-11 ${
-                  i === 0 ? "md:border-l-0 md:pl-0" : ""
+                className={`flex flex-col items-center text-center md:items-center ${
+                  i > 0 ? "md:border-l md:border-neutral-200/80 md:pl-6 lg:pl-8" : ""
                 }`}
               >
-                <div className="flex flex-col items-start gap-5">
-                  <div className="flex h-[3.75rem] w-[3.75rem] items-center justify-center rounded-full border border-neutral-200/90 bg-white text-gray-900 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.06)]">
+                <div className="flex flex-col items-center gap-4 md:gap-5">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 ring-1 ring-neutral-200/80 md:h-[4.25rem] md:w-[4.25rem]">
                     <Icon />
                   </div>
-                  <div className="space-y-2.5">
-                    <span className="text-[11px] font-semibold tabular-nums tracking-wide text-gray-400">
+                  <div className="max-w-[16rem] space-y-2 md:space-y-2.5">
+                    <span className="text-[11px] font-semibold tabular-nums tracking-[0.12em] text-gray-400">
                       {step}
                     </span>
                     <h3 className="text-[15px] font-semibold tracking-[-0.02em] text-black sm:text-base md:text-[17px]">
@@ -138,35 +142,35 @@ export function PricingTeaserSection() {
   return (
     <section
       id="pricing"
-      className="border-t border-neutral-200/85 bg-neutral-50/55 py-20 sm:py-24 md:py-28"
+      className="border-t border-neutral-200/90 bg-neutral-50/50 py-12 sm:py-14 md:py-16"
       aria-labelledby="pricing-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
         <h2
           id="pricing-heading"
-          className="text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.028em] text-black sm:text-[1.6875rem] md:text-[1.9375rem]"
+          className="text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.03em] text-black sm:text-[1.75rem] md:text-[1.9375rem]"
         >
           Pricing
         </h2>
-        <p className="mt-4 max-w-2xl text-[13px] leading-[1.65] text-gray-600 sm:text-[15px] sm:leading-relaxed">
+        <p className="mt-3 max-w-2xl text-[13px] leading-[1.65] text-gray-600 sm:mt-4 sm:text-[15px] sm:leading-relaxed">
           Clear tiers — no hidden fees. You get a straightforward quote before we
           start.
         </p>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2 md:gap-8 lg:max-w-4xl">
-          <article className="flex min-h-[300px] flex-col rounded-[1.125rem] border border-neutral-200/90 bg-white p-8 shadow-[0_2px_12px_-6px_rgba(0,0,0,0.06)] sm:p-9 md:min-h-[320px] md:p-10">
-            <div>
-              <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+        <div className="mx-auto mt-10 grid max-w-3xl gap-5 md:mt-11 md:grid-cols-2 md:gap-6">
+          <article className="flex min-h-[280px] flex-col rounded-2xl border border-neutral-200/70 bg-white p-7 sm:min-h-[300px] sm:p-8 md:p-9">
+            <div className="text-left">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">
                 Standard
               </p>
-              <p className="mt-4 text-[2.25rem] font-semibold leading-none tracking-[-0.03em] text-black sm:text-[2.5rem]">
+              <p className="mt-5 text-[2.125rem] font-semibold leading-none tracking-[-0.035em] text-black sm:text-[2.35rem]">
                 $60
               </p>
               <p className="mt-3 text-[13px] leading-snug text-gray-600 sm:text-sm">
                 3 business days
               </p>
             </div>
-            <ul className="mt-auto flex flex-col gap-3 border-t border-neutral-100 pt-8 text-[13px] leading-snug text-gray-600 sm:text-sm">
+            <ul className="mt-auto flex flex-col gap-2.5 border-t border-neutral-100/90 pt-7 text-left text-[13px] leading-snug text-gray-600 sm:gap-3 sm:pt-8 sm:text-sm">
               {bullets.map((b) => (
                 <li key={b} className="flex gap-3">
                   <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-neutral-400" />
@@ -176,19 +180,19 @@ export function PricingTeaserSection() {
             </ul>
           </article>
 
-          <article className="flex min-h-[300px] flex-col rounded-[1.125rem] border border-black/[0.12] bg-white p-8 shadow-[0_2px_14px_-5px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.06] sm:p-9 md:min-h-[320px] md:p-10">
-            <div>
-              <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+          <article className="flex min-h-[280px] flex-col rounded-2xl border border-neutral-300/80 bg-white p-7 shadow-[0_2px_12px_-8px_rgba(0,0,0,0.08)] sm:min-h-[300px] sm:p-8 md:p-9">
+            <div className="text-left">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">
                 Express
               </p>
-              <p className="mt-4 text-[2.25rem] font-semibold leading-none tracking-[-0.03em] text-black sm:text-[2.5rem]">
+              <p className="mt-5 text-[2.125rem] font-semibold leading-none tracking-[-0.035em] text-black sm:text-[2.35rem]">
                 $80
               </p>
               <p className="mt-3 text-[13px] leading-snug text-gray-600 sm:text-sm">
                 24 hour delivery
               </p>
             </div>
-            <ul className="mt-auto flex flex-col gap-3 border-t border-neutral-100 pt-8 text-[13px] leading-snug text-gray-600 sm:text-sm">
+            <ul className="mt-auto flex flex-col gap-2.5 border-t border-neutral-100/90 pt-7 text-left text-[13px] leading-snug text-gray-600 sm:gap-3 sm:pt-8 sm:text-sm">
               {bullets.map((b) => (
                 <li key={b} className="flex gap-3">
                   <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-neutral-400" />
@@ -199,7 +203,7 @@ export function PricingTeaserSection() {
           </article>
         </div>
 
-        <p className="mt-12 text-[13px] leading-relaxed text-gray-500 sm:mt-14 sm:text-sm">
+        <p className="mt-10 text-[13px] leading-relaxed text-gray-500 sm:mt-11 sm:text-sm">
           Need a custom quote for an EP or album?{" "}
           <a href="#contact" className="font-medium text-black underline decoration-neutral-300 underline-offset-[5px] transition-colors hover:decoration-black">
             Get in touch
@@ -230,18 +234,18 @@ export function FaqSection() {
   return (
     <section
       id="faq"
-      className="border-t border-neutral-200/85 bg-white py-20 sm:py-24 md:py-28"
+      className="border-t border-neutral-200/90 bg-white py-12 sm:py-14 md:py-16"
       aria-labelledby="faq-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="max-w-2xl">
+        <div className="mx-auto max-w-lg">
           <h2
             id="faq-heading"
-            className="text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.028em] text-black sm:text-[1.6875rem] md:text-[1.9375rem]"
+            className="text-center text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.03em] text-black sm:text-[1.75rem] md:text-[1.9375rem]"
           >
             FAQ
           </h2>
-          <dl className="mt-12 space-y-10 md:mt-14 md:space-y-12">
+          <dl className="mt-10 space-y-9 text-left sm:mt-11 sm:space-y-10">
             {faqs.map(({ q, a }) => (
               <div
                 key={q}
@@ -266,38 +270,42 @@ export function ContactSection() {
   return (
     <footer
       id="contact"
-      className="border-t border-neutral-200/85 bg-neutral-50/45 py-20 md:py-28"
+      className="border-t border-neutral-200/90 bg-neutral-50/50 py-12 sm:py-14 md:py-16"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <h2 className="text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.028em] text-black sm:text-[1.6875rem] md:text-[1.9375rem]">
-          Contact
-        </h2>
-        <p className="mt-5 max-w-xl text-[13px] leading-[1.65] text-gray-600 sm:text-[15px] sm:leading-relaxed">
-          Want to talk through your project before uploading? Send a note — you will
-          hear back directly from the engineer.
-        </p>
-        <p className="mt-5">
-          <a
-            href="mailto:studio@mastrad.se"
-            className="text-[13px] font-medium text-black underline decoration-neutral-300 underline-offset-[4px] transition-colors hover:decoration-black sm:text-sm"
-          >
-            studio@mastrad.se
-          </a>
-        </p>
-        <p className="mt-12 text-[11px] text-gray-400 sm:mt-14 sm:text-xs">
-          © {new Date().getFullYear()} FIRST LISTEN MASTERING. Manual mastering.
-        </p>
-        <p className="mt-4 text-[11px] leading-relaxed text-gray-400/70 sm:text-xs">
-          Design &amp; development by{" "}
-          <a
-            href="https://lunov.dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-500/90 underline decoration-gray-300/60 underline-offset-[3px] transition-colors hover:text-gray-800 hover:decoration-gray-500/80"
-          >
-            Lunov
-          </a>
-        </p>
+        <div className="mx-auto max-w-lg rounded-2xl border border-neutral-200/70 bg-white/90 px-7 py-9 shadow-[0_2px_14px_-8px_rgba(0,0,0,0.06)] sm:px-9 sm:py-10 md:px-10 md:py-11">
+          <h2 className="text-center text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.03em] text-black sm:text-[1.75rem] md:text-[1.9375rem]">
+            Contact
+          </h2>
+          <p className="mt-4 text-center text-[13px] leading-[1.65] text-gray-600 sm:mt-5 sm:text-[15px] sm:leading-relaxed">
+            Want to talk through your project before uploading? Send a note — you
+            will hear back directly from the engineer.
+          </p>
+          <p className="mt-6 text-center sm:mt-7">
+            <a
+              href="mailto:studio@mastrad.se"
+              className="text-[13px] font-medium text-black underline decoration-neutral-300 underline-offset-[5px] transition-colors hover:decoration-black sm:text-sm"
+            >
+              studio@mastrad.se
+            </a>
+          </p>
+        </div>
+        <div className="mx-auto mt-10 max-w-lg text-center sm:mt-11">
+          <p className="text-[11px] text-gray-400 sm:text-xs">
+            © {new Date().getFullYear()} FIRST LISTEN MASTERING. Manual mastering.
+          </p>
+          <p className="mt-3 text-[11px] leading-relaxed text-gray-400/80 sm:text-xs">
+            Design &amp; development by{" "}
+            <a
+              href="https://lunov.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500/90 underline decoration-neutral-300/70 underline-offset-[3px] transition-colors hover:text-gray-800 hover:decoration-gray-500/80"
+            >
+              Lunov
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );

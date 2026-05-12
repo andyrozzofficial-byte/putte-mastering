@@ -8,10 +8,13 @@ import { useCallback, useRef, useState } from "react";
 type UploadDropzoneProps = {
   /** Navigates here after a file is chosen or dropped (order flow). */
   nextStepHref?: string;
+  /** Tighter treatment when nested in the hero column. */
+  variant?: "default" | "embedded";
 };
 
 export function UploadDropzone({
   nextStepHref = "/order/tjanst",
+  variant = "default",
 }: UploadDropzoneProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -47,11 +50,19 @@ export function UploadDropzone({
     inputRef.current?.click();
   }, []);
 
+  const embedded = variant === "embedded";
+
   return (
     <div
       id="upload"
-      className={`rounded-2xl border border-neutral-200/50 bg-gradient-to-b from-white to-neutral-50/40 p-1 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.05)] transition-colors sm:p-1.5 ${
-        active ? "ring-1 ring-neutral-300/50" : ""
+      className={`rounded-2xl transition-colors ${
+        embedded
+          ? `border border-neutral-200/40 bg-white/90 p-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.04)] ${
+              active ? "ring-1 ring-neutral-300/40" : ""
+            }`
+          : `border border-neutral-200/50 bg-gradient-to-b from-white to-neutral-50/40 p-1 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.05)] sm:p-1.5 ${
+              active ? "ring-1 ring-neutral-300/50" : ""
+            }`
       } ${busy ? "pointer-events-none opacity-70" : ""}`}
       aria-busy={busy}
     >
@@ -80,10 +91,18 @@ export function UploadDropzone({
           const file = e.dataTransfer.files?.[0];
           if (file) void handleFile(file);
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-5 py-11 text-center transition-colors sm:px-8 sm:py-14 ${
-          active
-            ? "border-neutral-400/70 bg-neutral-50/80"
-            : "border-neutral-300/55 bg-white/80 hover:border-neutral-400/80"
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed text-center transition-colors ${
+          embedded
+            ? `px-4 py-8 sm:py-9 ${
+                active
+                  ? "border-neutral-400/60 bg-neutral-50/90"
+                  : "border-neutral-300/50 bg-neutral-50/30 hover:border-neutral-400/70"
+              }`
+            : `px-5 py-11 sm:px-8 sm:py-14 ${
+                active
+                  ? "border-neutral-400/70 bg-neutral-50/80"
+                  : "border-neutral-300/55 bg-white/80 hover:border-neutral-400/80"
+              }`
         }`}
         aria-label="Upload audio file"
       >
@@ -99,14 +118,29 @@ export function UploadDropzone({
             e.target.value = "";
           }}
         />
-        <UploadCloudIcon className="mb-4 text-gray-400" />
-        <p className="text-base font-semibold tracking-tight text-black sm:text-[17px]">
+        <UploadCloudIcon
+          className="mb-3 text-gray-400"
+          embedded={embedded}
+        />
+        <p
+          className={`font-semibold tracking-tight text-black ${
+            embedded ? "text-[15px] sm:text-base" : "text-base sm:text-[17px]"
+          }`}
+        >
           Drag &amp; drop your file here
         </p>
-        <p className="mt-1.5 text-[13px] text-gray-500 sm:text-sm">
+        <p
+          className={`mt-1.5 text-gray-500 ${
+            embedded ? "text-[12px] sm:text-[13px]" : "text-[13px] sm:text-sm"
+          }`}
+        >
           or click to choose a file
         </p>
-        <p className="mt-6 text-[11px] text-gray-400 sm:text-xs">
+        <p
+          className={`mt-5 text-gray-400 ${
+            embedded ? "text-[10px] sm:text-[11px]" : "text-[11px] sm:text-xs"
+          }`}
+        >
           WAV, AIFF, FLAC, MP3 up to 500MB
         </p>
         {busy ? (
@@ -122,12 +156,18 @@ export function UploadDropzone({
   );
 }
 
-function UploadCloudIcon({ className }: { className?: string }) {
+function UploadCloudIcon({
+  className,
+  embedded,
+}: {
+  className?: string;
+  embedded?: boolean;
+}) {
   return (
     <svg
       className={className}
-      width="48"
-      height="48"
+      width={embedded ? 40 : 48}
+      height={embedded ? 40 : 48}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
