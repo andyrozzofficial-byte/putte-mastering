@@ -118,7 +118,7 @@ export async function submitOrderToSupabase(row: OrderInsert): Promise<void> {
 
   console.info("[submit-order] Calling insert into public.orders …");
 
-  const { data, error } = await client.from("orders").insert(payload).select("id").maybeSingle();
+  const { error } = await client.from("orders").insert(payload);
 
   if (error) {
     const serialized = serializePostgrestError(error);
@@ -131,16 +131,14 @@ export async function submitOrderToSupabase(row: OrderInsert): Promise<void> {
 
   console.info("[submit-order] Insert finished without error.");
 
-  if (data?.id) {
-    const deliveryUrl = deliveryPortalAbsoluteUrl(payload.delivery_access_token);
-    void sendResendEmail({
-      to: payload.customer_email,
-      subject: "We received your mastering order",
-      html: `<p>Hi ${escapeHtml(row.customer_name.trim())},</p>
+  const deliveryUrl = deliveryPortalAbsoluteUrl(payload.delivery_access_token);
+  void sendResendEmail({
+    to: payload.customer_email,
+    subject: "We received your mastering order",
+    html: `<p>Hi ${escapeHtml(row.customer_name.trim())},</p>
 <p>Thanks for your order. We’ve received your files and will begin work soon.</p>
 <p>You can track status and download your master here when it’s ready:</p>
 <p><a href="${escapeHtml(deliveryUrl)}">${escapeHtml(deliveryUrl)}</a></p>
 <p>— First Listen Mastering</p>`,
-    });
-  }
+  });
 }

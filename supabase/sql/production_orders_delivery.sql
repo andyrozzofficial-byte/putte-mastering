@@ -1,6 +1,7 @@
 -- =============================================================================
 -- PRODUCTION: paste this entire file in Supabase SQL Editor and click RUN once.
 -- Idempotent (safe to re-run). Fixes PGRST204 missing `delivery_access_token`.
+-- After this succeeds, also run `supabase/sql/production_orders_rls.sql` for checkout RLS.
 --
 -- WHERE: https://supabase.com/dashboard → your project → left sidebar
 --        "SQL Editor" → green "New query" → paste below → "Run" (or Cmd/Ctrl+Enter)

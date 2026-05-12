@@ -1,9 +1,7 @@
--- RLS for `public.orders`: anon INSERT-only; authenticated full access.
--- Applied via migration `20260220120000_orders_rls_anon_insert_authenticated_all.sql`
--- or paste `supabase/sql/production_orders_rls.sql` in Dashboard → SQL Editor.
---
--- App uses anon key without login for checkout (`submit-order.ts`) — INSERT only, no `.select()` after insert.
--- Studio uses authenticated role for SELECT/UPDATE; service role APIs bypass RLS.
+-- =============================================================================
+-- ORDERS RLS (run in SQL Editor after `production_orders_delivery.sql` if needed)
+-- Anon: INSERT only. Authenticated: full CRUD. Anon cannot read other orders.
+-- =============================================================================
 
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 
@@ -52,3 +50,5 @@ CREATE POLICY "orders authenticated delete"
   FOR DELETE
   TO authenticated
   USING (true);
+
+NOTIFY pgrst, 'reload schema';
