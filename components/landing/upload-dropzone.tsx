@@ -57,7 +57,7 @@ export function UploadDropzone({
       id="upload"
       className={`rounded-2xl transition-colors ${
         embedded
-          ? `border border-neutral-200/35 bg-white/70 p-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.03)] ${
+          ? `border border-neutral-200/40 bg-neutral-50/40 p-0.5 shadow-[0_2px_12px_-8px_rgba(0,0,0,0.14)] ${
               active ? "ring-1 ring-neutral-300/40" : ""
             }`
           : `border border-neutral-200/50 bg-gradient-to-b from-white to-neutral-50/40 p-1 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.05)] sm:p-1.5 ${
@@ -93,10 +93,10 @@ export function UploadDropzone({
         }}
         className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed text-center transition-colors ${
           embedded
-            ? `px-5 py-9 sm:px-6 sm:py-10 ${
+            ? `px-6 py-10 sm:px-7 sm:py-11 ${
                 active
                   ? "border-neutral-400/60 bg-neutral-50/90"
-                  : "border-neutral-300/45 bg-white/40 hover:border-neutral-400/70"
+                  : "border-neutral-300/55 bg-white/65 hover:border-neutral-400/80"
               }`
             : `px-5 py-11 sm:px-8 sm:py-14 ${
                 active

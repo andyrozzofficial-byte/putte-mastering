@@ -81,14 +81,14 @@ export function HowItWorksSection() {
   return (
     <section
       id="how"
-      className="border-t border-neutral-200/90 bg-white py-10 sm:py-12 md:py-14"
+      className="border-t border-neutral-200/90 bg-white py-9 sm:py-10 md:py-12"
       aria-labelledby="how-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl space-y-4 text-center">
           <h2
             id="how-heading"
-            className="text-[1.5rem] font-semibold leading-[1.08] tracking-[-0.035em] text-black sm:text-[1.9rem] md:text-[2.15rem]"
+            className="text-[1.5rem] font-bold leading-[1.06] tracking-[-0.038em] text-black sm:text-[1.95rem] md:text-[2.2rem]"
           >
             A simple process. Professional result.
           </h2>
@@ -98,7 +98,7 @@ export function HowItWorksSection() {
           </p>
         </div>
 
-        <div className="mt-10 md:mt-12">
+        <div className="mt-9 md:mt-11">
           <ol className="mx-auto grid max-w-6xl gap-10 md:grid-cols-3 md:gap-0">
             {steps.map(({ step, title, text, icon: Icon }, i) => (
               <li key={step} className="relative">
@@ -141,13 +141,13 @@ export function PricingTeaserSection() {
   return (
     <section
       id="pricing"
-      className="border-t border-neutral-200/90 bg-neutral-50/50 py-10 sm:py-12 md:py-14"
+      className="border-t border-neutral-200/90 bg-neutral-50/50 py-9 sm:py-10 md:py-12"
       aria-labelledby="pricing-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
         <h2
           id="pricing-heading"
-          className="text-[1.5rem] font-semibold leading-[1.08] tracking-[-0.035em] text-black sm:text-[1.9rem] md:text-[2.15rem]"
+          className="text-[1.5rem] font-bold leading-[1.06] tracking-[-0.038em] text-black sm:text-[1.95rem] md:text-[2.2rem]"
         >
           Pricing
         </h2>
@@ -157,9 +157,9 @@ export function PricingTeaserSection() {
         </p>
 
         <div className="mt-9 grid gap-6 md:mt-10 md:grid-cols-2 md:gap-7 lg:gap-8">
-          <article className="flex min-h-[320px] flex-col rounded-2xl border border-neutral-200/70 bg-white p-8 sm:min-h-[340px] sm:p-10 md:p-11">
+          <article className="flex min-h-[360px] flex-col rounded-2xl border border-neutral-200/70 bg-white p-9 shadow-[0_6px_26px_-14px_rgba(0,0,0,0.12)] sm:min-h-[380px] sm:p-11 md:p-12">
             <div className="text-left">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
                 Standard
               </p>
               <p className="mt-6 text-[2.35rem] font-semibold leading-none tracking-[-0.04em] text-black sm:text-[2.65rem]">
@@ -169,7 +169,7 @@ export function PricingTeaserSection() {
                 3 business days
               </p>
             </div>
-            <ul className="mt-auto flex flex-col gap-3 border-t border-neutral-100/90 pt-8 text-left text-[13px] leading-snug text-gray-600 sm:text-sm">
+            <ul className="mt-auto flex flex-col gap-3 border-t border-neutral-100/90 pt-9 text-left text-[13px] leading-snug text-gray-600 sm:text-sm">
               {bullets.map((b) => (
                 <li key={b} className="flex gap-3">
                   <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-neutral-400" />
@@ -179,9 +179,9 @@ export function PricingTeaserSection() {
             </ul>
           </article>
 
-          <article className="flex min-h-[320px] flex-col rounded-2xl border border-neutral-300/80 bg-white p-8 shadow-[0_6px_26px_-14px_rgba(0,0,0,0.14)] sm:min-h-[340px] sm:p-10 md:p-11">
+          <article className="flex min-h-[360px] flex-col rounded-2xl border border-neutral-300/80 bg-white p-9 shadow-[0_10px_44px_-20px_rgba(0,0,0,0.18)] sm:min-h-[380px] sm:p-11 md:p-12">
             <div className="text-left">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
                 Express
               </p>
               <p className="mt-6 text-[2.35rem] font-semibold leading-none tracking-[-0.04em] text-black sm:text-[2.65rem]">
@@ -191,7 +191,7 @@ export function PricingTeaserSection() {
                 24 hour delivery
               </p>
             </div>
-            <ul className="mt-auto flex flex-col gap-3 border-t border-neutral-100/90 pt-8 text-left text-[13px] leading-snug text-gray-600 sm:text-sm">
+            <ul className="mt-auto flex flex-col gap-3 border-t border-neutral-100/90 pt-9 text-left text-[13px] leading-snug text-gray-600 sm:text-sm">
               {bullets.map((b) => (
                 <li key={b} className="flex gap-3">
                   <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-neutral-400" />
