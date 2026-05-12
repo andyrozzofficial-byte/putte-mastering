@@ -50,17 +50,7 @@ export default async function DeliveryPage({ params }: PageProps) {
   const { data: order, error } = await supabase
     .from("orders")
     .select(
-      `
-      id,
-      track_name,
-      status,
-      service,
-      created_at,
-      mastered_file,
-      delivery_access_token,
-      order_master_versions ( id, version, storage_ref, created_at ),
-      order_revision_requests ( id, message, created_at )
-    `,
+      "id, track_name, status, service, created_at, mastered_file, delivery_access_token",
     )
     .eq("delivery_access_token", token)
     .maybeSingle();
@@ -69,8 +59,31 @@ export default async function DeliveryPage({ params }: PageProps) {
     return invalidLink();
   }
 
-  const versions = (order.order_master_versions ?? []) as VersionRow[];
-  const revisions = (order.order_revision_requests ?? []) as RevisionRow[];
+  const orderId = order.id;
+
+  const [{ data: versionRows, error: vErr }, { data: revisionRows, error: rErr }] =
+    await Promise.all([
+      supabase
+        .from("order_master_versions")
+        .select("id, version, storage_ref, created_at")
+        .eq("order_id", orderId)
+        .order("version", { ascending: false }),
+      supabase
+        .from("order_revision_requests")
+        .select("id, message, created_at")
+        .eq("order_id", orderId)
+        .order("created_at", { ascending: false }),
+    ]);
+
+  if (vErr) {
+    console.error("[delivery-page] versions query failed", vErr.message);
+  }
+  if (rErr) {
+    console.error("[delivery-page] revisions query failed", rErr.message);
+  }
+
+  const versions = (versionRows ?? []) as VersionRow[];
+  const revisions = (revisionRows ?? []) as RevisionRow[];
 
   versions.sort((a, b) => b.version - a.version);
   revisions.sort(

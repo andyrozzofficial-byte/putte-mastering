@@ -162,6 +162,28 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
                 </dd>
               </div>
               <div className="flex flex-col gap-1 sm:flex-row sm:gap-8">
+                <dt className="w-36 shrink-0 text-gray-500">Master ready at</dt>
+                <dd className="font-medium text-black">
+                  {row.delivery_completed_at
+                    ? formatOrderCreatedAt(row.delivery_completed_at)
+                    : "—"}
+                </dd>
+              </div>
+              <div className="flex flex-col gap-1 sm:flex-row sm:gap-8">
+                <dt className="w-36 shrink-0 text-gray-500">Customer downloads</dt>
+                <dd className="font-medium text-black">
+                  {row.delivery_download_count ?? 0}
+                </dd>
+              </div>
+              <div className="flex flex-col gap-1 sm:flex-row sm:gap-8">
+                <dt className="w-36 shrink-0 text-gray-500">Last download</dt>
+                <dd className="font-medium text-black">
+                  {row.delivery_last_downloaded_at
+                    ? formatOrderCreatedAt(row.delivery_last_downloaded_at)
+                    : "—"}
+                </dd>
+              </div>
+              <div className="flex flex-col gap-1 sm:flex-row sm:gap-8">
                 <dt className="w-36 shrink-0 text-gray-500">Portal link</dt>
                 <dd className="min-w-0 break-all">
                   {customerPortalUrl ? (

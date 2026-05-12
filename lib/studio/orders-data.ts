@@ -20,6 +20,9 @@ export type OrdersDbRow = {
   created_at: string;
   /** Opaque token for `/delivery/[token]` (may be null on legacy rows). */
   delivery_access_token: string | null;
+  delivery_completed_at: string | null;
+  delivery_download_count: number | null;
+  delivery_last_downloaded_at: string | null;
 };
 
 export type OrderMasterVersionRow = {
@@ -225,7 +228,7 @@ export async function fetchStudioOrders(): Promise<OrdersDbRow[]> {
     const { data, error } = await supabase
       .from("orders")
       .select(
-        "id, customer_name, customer_email, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at, delivery_access_token",
+        "id, customer_name, customer_email, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at, delivery_access_token, delivery_completed_at, delivery_download_count, delivery_last_downloaded_at",
       )
       .order("created_at", { ascending: false });
 
@@ -254,7 +257,7 @@ export async function fetchStudioOrderById(
     const { data, error } = await supabase
       .from("orders")
       .select(
-        "id, customer_name, customer_email, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at, delivery_access_token",
+        "id, customer_name, customer_email, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at, delivery_access_token, delivery_completed_at, delivery_download_count, delivery_last_downloaded_at",
       )
       .eq("id", id)
       .maybeSingle();

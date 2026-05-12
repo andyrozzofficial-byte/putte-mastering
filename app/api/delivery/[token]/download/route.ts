@@ -78,6 +78,17 @@ export async function GET(
       );
     }
 
+    const { error: rpcErr } = await supabase.rpc(
+      "increment_order_delivery_download",
+      { p_order_id: order.id },
+    );
+    if (rpcErr) {
+      console.error("[delivery-download] increment counter failed", {
+        message: rpcErr.message,
+      });
+      /* Still redirect: file is ready; counter is best-effort. */
+    }
+
     return NextResponse.redirect(signed.signedUrl, { status: 302 });
   } catch (e) {
     console.error("[delivery-download] unhandled", e);

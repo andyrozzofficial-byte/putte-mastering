@@ -127,7 +127,11 @@ export async function POST(
 
     const { error: updateError } = await supabase
       .from("orders")
-      .update({ mastered_file, status: "completed" })
+      .update({
+        mastered_file,
+        status: "completed",
+        delivery_completed_at: new Date().toISOString(),
+      })
       .eq("id", id);
 
     if (updateError) {

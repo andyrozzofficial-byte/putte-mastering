@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
+import type { Database } from "@/lib/supabase/database.types";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 
 /**
@@ -48,6 +49,6 @@ export function parseOrderPriceLabelToUsd(label: string): number {
  * Only call from Client Components or client-side handlers.
  */
 /** Anonymous/public flows (customer upload + order insert). Cookie-less browser client. */
-export function createSupabaseClient(): SupabaseClient {
-  return createClient(getSupabaseUrl(), getSupabaseAnonKey());
+export function createSupabaseClient(): SupabaseClient<Database> {
+  return createClient<Database>(getSupabaseUrl(), getSupabaseAnonKey());
 }

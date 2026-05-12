@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "verify:order-insert": "node --env-file=.env.local scripts/verify-order-insert.mjs"
+    "verify:order-insert": "node --env-file=.env.local scripts/verify-order-insert.mjs",
+    "supabase:gen-types": "supabase gen types typescript --linked --schema public > lib/supabase/database.types.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
