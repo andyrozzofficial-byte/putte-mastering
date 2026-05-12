@@ -57,7 +57,7 @@ export function UploadDropzone({
       id="upload"
       className={`rounded-2xl transition-colors ${
         embedded
-          ? `border border-neutral-200/40 bg-neutral-50/40 p-0.5 shadow-[0_2px_12px_-8px_rgba(0,0,0,0.14)] ${
+          ? `bg-neutral-50/55 p-0.5 shadow-[0_10px_40px_-22px_rgba(0,0,0,0.22)] ring-1 ring-black/[0.04] ${
               active ? "ring-1 ring-neutral-300/40" : ""
             }`
           : `border border-neutral-200/50 bg-gradient-to-b from-white to-neutral-50/40 p-1 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.05)] sm:p-1.5 ${
@@ -96,7 +96,7 @@ export function UploadDropzone({
             ? `px-6 py-10 sm:px-7 sm:py-11 ${
                 active
                   ? "border-neutral-400/60 bg-neutral-50/90"
-                  : "border-neutral-300/55 bg-white/65 hover:border-neutral-400/80"
+                  : "border-neutral-300/45 bg-white/75 hover:border-neutral-400/80"
               }`
             : `px-5 py-11 sm:px-8 sm:py-14 ${
                 active

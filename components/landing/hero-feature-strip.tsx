@@ -32,7 +32,7 @@ const items = [
 export function HeroFeatureStrip() {
   return (
     <section
-      className="border-b border-neutral-200/85 bg-white py-7 sm:py-8 md:py-9"
+      className="bg-white py-6 sm:py-7 md:py-8"
       aria-label="Studio standards"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">

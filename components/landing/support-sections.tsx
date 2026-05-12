@@ -81,7 +81,7 @@ export function HowItWorksSection() {
   return (
     <section
       id="how"
-      className="border-t border-neutral-200/90 bg-white py-9 sm:py-10 md:py-12"
+      className="bg-white py-8 sm:py-9 md:py-10"
       aria-labelledby="how-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
@@ -141,7 +141,7 @@ export function PricingTeaserSection() {
   return (
     <section
       id="pricing"
-      className="border-t border-neutral-200/90 bg-neutral-50/50 py-9 sm:py-10 md:py-12"
+      className="bg-neutral-50/50 py-8 sm:py-9 md:py-10"
       aria-labelledby="pricing-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
@@ -156,8 +156,8 @@ export function PricingTeaserSection() {
           start.
         </p>
 
-        <div className="mt-9 grid gap-6 md:mt-10 md:grid-cols-2 md:gap-7 lg:gap-8">
-          <article className="flex min-h-[360px] flex-col rounded-2xl border border-neutral-200/70 bg-white p-9 shadow-[0_6px_26px_-14px_rgba(0,0,0,0.12)] sm:min-h-[380px] sm:p-11 md:p-12">
+        <div className="mt-8 grid gap-6 md:mt-9 md:grid-cols-2 md:gap-7 lg:gap-8">
+          <article className="flex min-h-[380px] flex-col rounded-2xl bg-white p-10 shadow-[0_14px_60px_-30px_rgba(0,0,0,0.22)] ring-1 ring-black/[0.04] sm:min-h-[400px] sm:p-12 md:p-13">
             <div className="text-left">
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
                 Standard
@@ -179,7 +179,7 @@ export function PricingTeaserSection() {
             </ul>
           </article>
 
-          <article className="flex min-h-[360px] flex-col rounded-2xl border border-neutral-300/80 bg-white p-9 shadow-[0_10px_44px_-20px_rgba(0,0,0,0.18)] sm:min-h-[380px] sm:p-11 md:p-12">
+          <article className="flex min-h-[380px] flex-col rounded-2xl bg-white p-10 shadow-[0_18px_72px_-34px_rgba(0,0,0,0.26)] ring-1 ring-black/[0.06] sm:min-h-[400px] sm:p-12 md:p-13">
             <div className="text-left">
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
                 Express
@@ -233,7 +233,7 @@ export function FaqSection() {
   return (
     <section
       id="faq"
-      className="border-t border-neutral-200/90 bg-white py-12 sm:py-14 md:py-16"
+      className="bg-white py-9 sm:py-10 md:py-12"
       aria-labelledby="faq-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
@@ -269,10 +269,10 @@ export function ContactSection() {
   return (
     <footer
       id="contact"
-      className="border-t border-neutral-200/90 bg-neutral-50/50 py-12 sm:py-14 md:py-16"
+      className="bg-neutral-50/50 py-10 sm:py-11 md:py-12"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-lg rounded-2xl border border-neutral-200/70 bg-white/90 px-7 py-9 shadow-[0_2px_14px_-8px_rgba(0,0,0,0.06)] sm:px-9 sm:py-10 md:px-10 md:py-11">
+        <div className="mx-auto max-w-2xl rounded-2xl bg-white px-8 py-10 shadow-[0_18px_72px_-34px_rgba(0,0,0,0.26)] ring-1 ring-black/[0.04] sm:px-10 sm:py-11 md:px-12 md:py-12">
           <h2 className="text-center text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.03em] text-black sm:text-[1.75rem] md:text-[1.9375rem]">
             Contact
           </h2>
@@ -289,7 +289,7 @@ export function ContactSection() {
             </a>
           </p>
         </div>
-        <div className="mx-auto mt-10 max-w-lg text-center sm:mt-11">
+        <div className="mx-auto mt-7 max-w-2xl text-center sm:mt-8">
           <p className="text-[11px] text-gray-400 sm:text-xs">
             © {new Date().getFullYear()} FIRST LISTEN MASTERING. Manual mastering.
           </p>

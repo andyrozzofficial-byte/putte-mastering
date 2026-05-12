@@ -13,12 +13,12 @@ export function HeroSection() {
       aria-labelledby="hero-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="grid min-h-[min(94vh,980px)] grid-cols-1 items-stretch gap-0 lg:min-h-[min(96vh,1040px)] lg:grid-cols-2">
+        <div className="grid min-h-[min(88vh,900px)] grid-cols-1 items-stretch gap-0 lg:min-h-[min(84vh,920px)] lg:grid-cols-2">
           {/* Left column — copy + upload as one vertical story */}
-          <div className="flex flex-col justify-center gap-7 py-12 sm:gap-8 sm:py-14 md:py-16 lg:gap-9 lg:py-14 lg:pr-8 xl:pr-12">
+          <div className="flex flex-col justify-center gap-7 py-11 sm:gap-8 sm:py-12 md:py-14 lg:gap-9 lg:py-12 lg:pr-8 xl:pr-12">
             <div className="space-y-6 sm:space-y-7">
               <div className="space-y-3">
-                <div className="h-px w-10 bg-neutral-300" aria-hidden />
+                <div className="h-px w-10 bg-neutral-300/80" aria-hidden />
                 <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gray-500">
                   Professional mastering
                 </p>
@@ -54,14 +54,14 @@ export function HeroSection() {
               </Link>
             </div>
 
-            <div className="w-full max-w-lg pt-2 lg:max-w-xl">
+            <div className="w-full max-w-xl pt-1">
               <UploadDropzone variant="embedded" />
             </div>
           </div>
 
           {/* Right column — full-height cinematic frame */}
           <div className="relative min-h-[min(48vh,400px)] w-full lg:min-h-0 lg:h-full">
-            <div className="relative h-full min-h-[min(48vh,400px)] overflow-hidden rounded-2xl border border-neutral-200/50 bg-neutral-200/30 shadow-[0_10px_44px_-18px_rgba(0,0,0,0.22)] ring-1 ring-black/[0.04] lg:ml-2 lg:min-h-full lg:rounded-[1.25rem]">
+            <div className="relative h-full min-h-[min(48vh,400px)] overflow-hidden rounded-2xl bg-neutral-200/30 shadow-[0_12px_54px_-24px_rgba(0,0,0,0.24)] ring-1 ring-black/[0.05] lg:ml-2 lg:min-h-full lg:rounded-[1.25rem]">
               <Image
                 src={HERO_IMAGE}
                 alt=""

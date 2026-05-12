@@ -4,11 +4,11 @@ export function TrustedBySection() {
   return (
     <section
       id="trusted"
-      className="border-t border-neutral-200/90 bg-neutral-100/40 py-9 sm:py-10 md:py-12"
+      className="bg-neutral-100/40 py-8 sm:py-9 md:py-10"
       aria-labelledby="trusted-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="rounded-2xl border border-neutral-200/70 bg-white px-9 py-13 shadow-[0_10px_44px_-18px_rgba(0,0,0,0.18)] sm:px-12 sm:py-14 md:px-14 md:py-16 lg:px-16 lg:py-18">
+        <div className="rounded-2xl bg-white px-10 py-14 shadow-[0_18px_72px_-34px_rgba(0,0,0,0.26)] ring-1 ring-black/[0.05] sm:px-12 sm:py-14 md:px-14 md:py-16 lg:px-16 lg:py-18">
           <p className="text-center text-[10px] font-semibold uppercase tracking-[0.24em] text-gray-500">
             Trusted by
           </p>
@@ -19,7 +19,7 @@ export function TrustedBySection() {
           <h2 id="trusted-heading" className="sr-only">
             Artists and partners
           </h2>
-          <div className="mt-10 flex flex-wrap items-baseline justify-center gap-x-12 gap-y-7 sm:mt-11 md:gap-x-16 lg:gap-x-18">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-12 gap-y-7 sm:mt-11 md:gap-x-16 lg:gap-x-18">
             {names.map((name) => (
               <span
                 key={name}
