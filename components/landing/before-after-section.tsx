@@ -12,23 +12,23 @@ export function BeforeAfterSection() {
   return (
     <section
       id="before-after"
-      className="border-t border-gray-100/90 bg-white py-16 md:py-24"
+      className="border-t border-neutral-200/85 bg-white py-20 sm:py-24 md:py-28"
       aria-labelledby="before-after-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="rounded-2xl border border-gray-200/90 bg-neutral-50/60 p-6 shadow-[0_1px_2px_rgba(0,0,0,0.04)] md:p-10 lg:p-12">
-          <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-            <div className="max-w-md space-y-3">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+        <div className="rounded-[1.125rem] border border-neutral-200/90 bg-neutral-50/50 p-7 shadow-[0_2px_14px_-6px_rgba(0,0,0,0.07)] md:p-11 lg:rounded-2xl lg:p-12">
+          <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
+            <div className="max-w-md space-y-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gray-500">
                 Hear the difference
               </p>
               <h2
                 id="before-after-heading"
-                className="text-[1.375rem] font-semibold tracking-tight text-black sm:text-2xl md:text-[1.65rem]"
+                className="text-[1.5rem] font-semibold leading-[1.15] tracking-[-0.028em] text-black sm:text-[1.6875rem] md:text-[1.9375rem]"
               >
                 Before &amp; after mastering
               </h2>
-              <p className="text-[13px] leading-relaxed text-gray-600 sm:text-sm">
+              <p className="text-[13px] leading-[1.65] text-gray-600 sm:text-sm">
                 Industry-ready translation — clarity, punch and balance designed
                 to make your music catch attention from the first second.
               </p>
@@ -40,7 +40,7 @@ export function BeforeAfterSection() {
               </p>
 
               <div
-                className="flex h-14 items-end gap-0.5 rounded-lg border border-gray-200/80 bg-white px-2 py-2 sm:h-16"
+                className="flex h-14 items-end gap-0.5 rounded-lg border border-neutral-200/95 bg-white px-2 py-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] sm:h-16 sm:px-3"
                 aria-hidden
               >
                 {Array.from({ length: 48 }).map((_, i) => {

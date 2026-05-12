@@ -50,8 +50,8 @@ export function UploadDropzone({
   return (
     <div
       id="upload"
-      className={`rounded-2xl border border-gray-200/80 bg-white p-6 transition-colors md:p-7 ${
-        active ? "ring-1 ring-gray-300/60" : ""
+      className={`rounded-2xl border border-neutral-200/50 bg-gradient-to-b from-white to-neutral-50/40 p-1 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.05)] transition-colors sm:p-1.5 ${
+        active ? "ring-1 ring-neutral-300/50" : ""
       } ${busy ? "pointer-events-none opacity-70" : ""}`}
       aria-busy={busy}
     >
@@ -80,10 +80,10 @@ export function UploadDropzone({
           const file = e.dataTransfer.files?.[0];
           if (file) void handleFile(file);
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-5 py-10 text-center transition-colors sm:px-6 md:py-12 ${
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-5 py-11 text-center transition-colors sm:px-8 sm:py-14 ${
           active
-            ? "border-gray-400 bg-neutral-50"
-            : "border-gray-200/90 bg-white hover:border-gray-300"
+            ? "border-neutral-400/70 bg-neutral-50/80"
+            : "border-neutral-300/55 bg-white/80 hover:border-neutral-400/80"
         }`}
         aria-label="Upload audio file"
       >
