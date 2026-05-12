@@ -9,6 +9,8 @@ import {
 import { PricingCard } from "@/components/order/pricing-card";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
+import { isTestMode } from "@/lib/test-mode";
+import { submitOrderToSupabase } from "@/lib/submit-order";
 
 function isValidEmail(value: string): boolean {
   const v = value.trim();
@@ -58,6 +60,24 @@ export function OrderPlansClient() {
 
       setLoadingPlan(planTitle);
       try {
+        if (isTestMode()) {
+          await submitOrderToSupabase({
+            customer_name: name,
+            customer_email: email,
+            customer_message: customerMessage,
+            track_name: draft.trackName,
+            service: planTitle,
+            status: "new",
+            uploaded_file: draft.storageRef,
+            mastered_file: null,
+            price,
+          });
+
+          clearOrderUploadDraft();
+          router.push("/order/confirm?mode=test");
+          return;
+        }
+
         const res = await fetch("/api/stripe/checkout", {
           method: "POST",
           headers: { "content-type": "application/json" },
