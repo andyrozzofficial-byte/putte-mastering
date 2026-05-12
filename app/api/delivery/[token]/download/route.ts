@@ -64,6 +64,12 @@ export async function GET(
     }
 
     const { bucket, path } = parseStorageRef(storageRef);
+    if (!path?.trim()) {
+      console.error("[delivery-download] empty storage path after parse", {
+        storageRefPrefix: storageRef.slice(0, 120),
+      });
+      return apiJsonError("No master available", 404);
+    }
 
     const { data: signed, error: signError } = await supabase.storage
       .from(bucket)

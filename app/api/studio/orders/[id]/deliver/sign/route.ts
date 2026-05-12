@@ -48,7 +48,16 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       return apiJsonError("Only WAV or MP3 files are allowed.", 400);
     }
 
-    const supabase = createServiceRoleSupabaseClient();
+    let supabase;
+    try {
+      supabase = createServiceRoleSupabaseClient();
+    } catch (envErr) {
+      console.error("[deliver-sign] supabase client init failed", {
+        orderId,
+        message: envErr instanceof Error ? envErr.message : String(envErr),
+      });
+      return apiJsonError("Server configuration error", 500);
+    }
 
     const { data: orderRow, error: orderErr } = await supabase
       .from("orders")
@@ -61,6 +70,8 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
         orderId,
         message: orderErr?.message,
         code: orderErr?.code,
+        details: orderErr?.details,
+        hint: orderErr?.hint,
       });
       return apiJsonError("Order not found", 404);
     }
@@ -89,9 +100,12 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       .createSignedUploadUrl(objectPath, { upsert: false });
 
     if (signErr || !signData?.signedUrl) {
+      const se = signErr as { statusCode?: string; status?: number } | null;
       console.error("[deliver-sign] createSignedUploadUrl failed", {
         orderId,
         message: signErr?.message,
+        statusCode: se?.statusCode,
+        status: se?.status,
         pathPrefix: objectPath.slice(0, 80),
       });
       return apiJsonError(
