@@ -26,7 +26,7 @@ const payload = {
   notes: "verify-script-note",
   uploaded_file: null,
   mastered_file: null,
-  price: 1500,
+  price: 60,
 };
 
 const supabase = createClient(url, key);

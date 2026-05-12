@@ -2,7 +2,7 @@
 -- Apply in Supabase SQL Editor if inserts fail with RLS / permission errors.
 --
 -- Prerequisites: table `public.orders` with columns matching the app insert payload:
--- customer_name, track_name, service, status, notes, uploaded_file, mastered_file, price (integer SEK / bigint)
+-- customer_name, track_name, service, status, notes, uploaded_file, mastered_file, price (integer USD whole dollars / bigint)
 -- (+ id, created_at with defaults).
 
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;

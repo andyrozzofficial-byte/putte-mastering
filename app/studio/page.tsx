@@ -5,8 +5,8 @@ import {
   computeDashboardStats,
   dbRowToOrderRow,
   fetchStudioOrders,
-  formatKr,
 } from "@/lib/studio/orders-data";
+import { formatPrice } from "@/lib/currency";
 
 export const dynamic = "force-dynamic";
 
@@ -35,8 +35,8 @@ export default async function OverviewPage() {
     },
     {
       label: "Revenue",
-      value: formatKr(stats.revenueKr),
-      hint: "Sum of prices",
+      value: formatPrice(stats.revenueUsd),
+      hint: "Completed orders (USD)",
     },
   ] as const;
 

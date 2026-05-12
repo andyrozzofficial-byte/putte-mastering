@@ -31,18 +31,17 @@ export type OrderInsert = {
   /** Storage reference `bucket/path` (private buckets OK). */
   uploaded_file: string | null;
   mastered_file: string | null;
-  /** Display label from UI (e.g. `"1 500 kr"`); stored as integer SEK in `orders.price`. */
+  /** Display label from UI (e.g. `"$60"`); stored as integer USD dollars in `orders.price`. */
   price: string;
 };
 
-/** Maps plan labels like `"1 500 kr"` → `1500` for `bigint` / integer `price` column. */
-export function parseOrderPriceLabelToKr(label: string): number {
+/** Maps plan labels like `"$60"` → `60` for `bigint` / integer `price` column (whole USD). */
+export function parseOrderPriceLabelToUsd(label: string): number {
   const normalized = label.replace(/\u00a0/g, " ").replace(/\s/g, "");
   const digits = normalized.replace(/[^\d]/g, "");
   const n = Number.parseInt(digits, 10);
   return Number.isFinite(n) ? n : 0;
 }
-
 /**
  * Browser/client-side Supabase client (uses the anon key).
  * Only call from Client Components or client-side handlers.

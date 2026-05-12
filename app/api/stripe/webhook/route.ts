@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const [{ createClient }, { getSupabaseServiceRoleKey, getSupabaseUrl }, { parseOrderPriceLabelToKr }, { default: Stripe }] =
+  const [{ createClient }, { getSupabaseServiceRoleKey, getSupabaseUrl }, { parseOrderPriceLabelToUsd }, { default: Stripe }] =
     await Promise.all([
       import("@supabase/supabase-js"),
       import("@/lib/supabase/env"),
@@ -92,7 +92,7 @@ export async function POST(req: Request) {
     auth: { persistSession: false },
   });
 
-  const price = parseOrderPriceLabelToKr(price_label);
+  const price = parseOrderPriceLabelToUsd(price_label);
 
   const { error } = await supabase.from("orders").insert({
     customer_name: customer_name || null,

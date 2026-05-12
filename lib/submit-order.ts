@@ -3,7 +3,7 @@ import { PostgrestError } from "@supabase/supabase-js";
 import {
   ORDERS_INSERT_COLUMNS,
   createSupabaseClient,
-  parseOrderPriceLabelToKr,
+  parseOrderPriceLabelToUsd,
   type OrderInsert,
 } from "@/lib/supabase";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
@@ -49,7 +49,7 @@ export type OrdersInsertPayload = {
   notes: string | null;
   uploaded_file: string | null;
   mastered_file: string | null;
-  /** Integer SEK (Supabase `bigint`). */
+  /** Integer USD whole dollars (Supabase `bigint`). */
   price: number;
 };
 
@@ -60,8 +60,8 @@ function toOrdersInsertPayload(row: OrderInsert): OrdersInsertPayload {
     return t.length === 0 ? null : t;
   };
 
-  const priceKr = parseOrderPriceLabelToKr(row.price);
-  if (!Number.isFinite(priceKr) || priceKr <= 0) {
+  const priceUsd = parseOrderPriceLabelToUsd(row.price);
+  if (!Number.isFinite(priceUsd) || priceUsd <= 0) {
     console.warn(
       "[submit-order] Parsed price is missing or zero from label:",
       row.price,
@@ -77,7 +77,7 @@ function toOrdersInsertPayload(row: OrderInsert): OrdersInsertPayload {
     notes: trimOrNull(row.customer_message),
     uploaded_file: row.uploaded_file,
     mastered_file: row.mastered_file,
-    price: priceKr,
+    price: priceUsd,
   };
 }
 

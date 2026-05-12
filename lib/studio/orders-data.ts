@@ -1,5 +1,6 @@
 import type { OrderStatus } from "@/components/dashboard/order-status-badge";
 import type { OrderRow } from "@/components/dashboard/orders-table";
+import { formatPrice } from "@/lib/currency";
 
 import { createStudioServerClient } from "@/lib/supabase/studio-server";
 
@@ -11,7 +12,7 @@ export type OrdersDbRow = {
   track_name: string | null;
   service: string | null;
   status: string | null;
-  /** Integer SEK from DB (`bigint`); PostgREST may return number or string. */
+  /** Integer USD (whole dollars) from DB (`bigint`); PostgREST may return number or string. */
   price: string | number | null;
   notes: string | null;
   uploaded_file: string | null;
@@ -43,7 +44,7 @@ export type DashboardOrderStats = {
   total: number;
   newOrders: number;
   completed: number;
-  revenueKr: number;
+  revenueUsd: number;
 };
 
 export function mapDbStatusToBadge(status: string | null): OrderStatus {
@@ -74,7 +75,8 @@ export function mapDbStatusToBadge(status: string | null): OrderStatus {
   return "new";
 }
 
-export function parsePriceToKr(
+/** Parse stored price as whole USD dollars. */
+export function parsePriceUsd(
   price: string | number | null | undefined,
 ): number {
   if (price == null) return 0;
@@ -90,15 +92,11 @@ function displayPriceFromDb(
   price: string | number | null | undefined,
 ): string {
   if (price == null) return "—";
-  if (typeof price === "number") return formatKr(price);
+  if (typeof price === "number") return formatPrice(price);
   const s = price.trim();
   if (!s) return "—";
-  const n = parsePriceToKr(s);
-  return n > 0 ? formatKr(n) : s;
-}
-
-export function formatKr(amount: number): string {
-  return `${amount.toLocaleString("sv-SE")} kr`;
+  const n = parsePriceUsd(s);
+  return n > 0 ? formatPrice(n) : s;
 }
 
 export function displayCustomerName(name: string | null | undefined): string {
@@ -137,20 +135,20 @@ export function formatOrderCreatedAt(iso: string): string {
 export function computeDashboardStats(rows: OrdersDbRow[]): DashboardOrderStats {
   let newOrders = 0;
   let completed = 0;
-  let revenueKr = 0;
+  let revenueUsd = 0;
 
   for (const row of rows) {
     const badge = mapDbStatusToBadge(row.status);
     if (badge === "new") newOrders += 1;
     if (badge === "completed") completed += 1;
-    if (badge === "completed") revenueKr += parsePriceToKr(row.price);
+    if (badge === "completed") revenueUsd += parsePriceUsd(row.price);
   }
 
   return {
     total: rows.length,
     newOrders,
     completed,
-    revenueKr,
+    revenueUsd,
   };
 }
 
