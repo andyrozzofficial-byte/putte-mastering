@@ -1,28 +1,24 @@
 export const ORDER_PLANS = [
   {
     title: "Standard Master",
-    price: "1 500 kr",
+    price: "$60",
     features: [
-      "Professionell mastering",
-      "1 revision",
-      "Leverans inom 2–3 dagar",
+      "WAV + MP3",
+      "Revisions included",
+      "Manual mastering",
+      "3 business days",
     ],
     popular: false as boolean,
   },
   {
-    title: "Premium Master",
-    price: "2 000 kr",
+    title: "Express Master",
+    price: "$80",
     features: [
-      "Professionell mastering",
-      "2 revisioner",
-      "Expressleverans (1–2 dagar)",
+      "WAV + MP3",
+      "Revisions included",
+      "Manual mastering",
+      "24 hour delivery",
     ],
-    popular: true as boolean,
-  },
-  {
-    title: "Stem Master",
-    price: "3 000 kr",
-    features: ["För stems / mixar", "Mer kontroll & balans", "2 revisioner"],
     popular: false as boolean,
   },
 ] as const;

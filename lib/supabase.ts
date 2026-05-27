@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
+import type { Database } from "@/lib/supabase/database.types";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 
 /**
@@ -9,8 +10,8 @@ import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 /** INSERT columns on `public.orders` (excluding defaults), sorted for payload checks. */
 export const ORDERS_INSERT_COLUMNS = [
   "customer_email",
-  "customer_message",
   "customer_name",
+  "delivery_access_token",
   "mastered_file",
   "notes",
   "price",
@@ -24,7 +25,7 @@ export const ORDERS_INSERT_COLUMNS = [
 export type OrderInsert = {
   customer_name: string;
   customer_email: string;
-  /** Optional note from customer; stored in `customer_message` (empty → null). */
+  /** Optional note from customer; stored in `notes` for current schema compatibility. */
   customer_message: string;
   track_name: string;
   service: string;
@@ -32,23 +33,22 @@ export type OrderInsert = {
   /** Storage reference `bucket/path` (private buckets OK). */
   uploaded_file: string | null;
   mastered_file: string | null;
-  /** Display label from UI (e.g. `"1 500 kr"`); stored as integer SEK in `orders.price`. */
+  /** Display label from UI (e.g. `"$60"`); stored as integer USD dollars in `orders.price`. */
   price: string;
 };
 
-/** Maps plan labels like `"1 500 kr"` → `1500` for `bigint` / integer `price` column. */
-export function parseOrderPriceLabelToKr(label: string): number {
+/** Maps plan labels like `"$60"` → `60` for `bigint` / integer `price` column (whole USD). */
+export function parseOrderPriceLabelToUsd(label: string): number {
   const normalized = label.replace(/\u00a0/g, " ").replace(/\s/g, "");
   const digits = normalized.replace(/[^\d]/g, "");
   const n = Number.parseInt(digits, 10);
   return Number.isFinite(n) ? n : 0;
 }
-
 /**
  * Browser/client-side Supabase client (uses the anon key).
  * Only call from Client Components or client-side handlers.
  */
 /** Anonymous/public flows (customer upload + order insert). Cookie-less browser client. */
-export function createSupabaseClient(): SupabaseClient {
-  return createClient(getSupabaseUrl(), getSupabaseAnonKey());
+export function createSupabaseClient(): SupabaseClient<Database> {
+  return createClient<Database>(getSupabaseUrl(), getSupabaseAnonKey());
 }

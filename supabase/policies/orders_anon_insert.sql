@@ -1,21 +1,54 @@
--- Example RLS for anonymous customer order inserts (`submit-order.ts` uses the anon key).
--- Apply in Supabase SQL Editor if inserts fail with RLS / permission errors.
+-- RLS for `public.orders`: anon INSERT-only; authenticated full access.
+-- Applied via migration `20260220120000_orders_rls_anon_insert_authenticated_all.sql`
+-- or paste `supabase/sql/production_orders_rls.sql` in Dashboard → SQL Editor.
 --
--- Prerequisites: table `public.orders` with columns matching the app insert payload:
--- customer_name, track_name, service, status, notes, uploaded_file, mastered_file, price (integer SEK / bigint)
--- (+ id, created_at with defaults).
+-- App uses anon key without login for checkout (`submit-order.ts`) — INSERT only, no `.select()` after insert.
+-- Studio uses authenticated role for SELECT/UPDATE; service role APIs bypass RLS.
+
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+
+REVOKE ALL ON TABLE public.orders FROM anon;
+GRANT INSERT ON TABLE public.orders TO anon;
+
+REVOKE ALL ON TABLE public.orders FROM authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.orders TO authenticated;
 
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 
--- Allow unauthenticated API role to create orders from the marketing site.
 DROP POLICY IF EXISTS "Allow anon insert orders" ON public.orders;
-CREATE POLICY "Allow anon insert orders"
+DROP POLICY IF EXISTS "orders anon insert" ON public.orders;
+DROP POLICY IF EXISTS "orders authenticated select" ON public.orders;
+DROP POLICY IF EXISTS "orders authenticated insert" ON public.orders;
+DROP POLICY IF EXISTS "orders authenticated update" ON public.orders;
+DROP POLICY IF EXISTS "orders authenticated delete" ON public.orders;
+
+CREATE POLICY "orders anon insert"
   ON public.orders
   FOR INSERT
   TO anon
   WITH CHECK (true);
 
--- Studio/dashboard reads use the authenticated role; add separate SELECT policies for `authenticated`
--- (often restricted to your admin users), e.g.:
--- CREATE POLICY "Studio users read orders"
---   ON public.orders FOR SELECT TO authenticated USING (true);
+CREATE POLICY "orders authenticated select"
+  ON public.orders
+  FOR SELECT
+  TO authenticated
+  USING (true);
+
+CREATE POLICY "orders authenticated insert"
+  ON public.orders
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (true);
+
+CREATE POLICY "orders authenticated update"
+  ON public.orders
+  FOR UPDATE
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
+
+CREATE POLICY "orders authenticated delete"
+  ON public.orders
+  FOR DELETE
+  TO authenticated
+  USING (true);

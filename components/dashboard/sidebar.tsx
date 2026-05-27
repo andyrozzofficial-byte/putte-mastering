@@ -24,21 +24,15 @@ const nav: {
   href: string;
   label: string;
   icon: NavIcon;
-  badge?: string;
 }[] = [
-  { href: STUDIO, label: "Översikt", icon: IconOverview },
-  { href: `${STUDIO}/ordrar`, label: "Ordrar", icon: IconOrders },
-  {
-    href: `${STUDIO}/nya-ordrar`,
-    label: "Nya ordrar",
-    icon: IconOrders,
-    badge: "2",
-  },
-  { href: `${STUDIO}/kunder`, label: "Kunder", icon: IconUsers },
-  { href: `${STUDIO}/filer`, label: "Filer", icon: IconFolder },
+  { href: STUDIO, label: "Overview", icon: IconOverview },
+  { href: `${STUDIO}/ordrar`, label: "Orders", icon: IconOrders },
+  { href: `${STUDIO}/nya-ordrar`, label: "New orders", icon: IconOrders },
+  { href: `${STUDIO}/kunder`, label: "Customers", icon: IconUsers },
+  { href: `${STUDIO}/filer`, label: "Files", icon: IconFolder },
   {
     href: `${STUDIO}/installningar`,
-    label: "Inställningar",
+    label: "Settings",
     icon: IconSettings,
   },
 ];
@@ -61,8 +55,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col gap-1" aria-label="Huvudnavigation">
-      {nav.map(({ href, label, icon: Icon, badge }) => {
+    <nav className="flex flex-col gap-1" aria-label="Primary navigation">
+      {nav.map(({ href, label, icon: Icon }) => {
         const active = navItemActive(pathname, href);
         return (
           <Link
@@ -78,11 +72,6 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             <Icon className="shrink-0 text-gray-500" />
             <span className="flex flex-1 items-center justify-between gap-2">
               {label}
-              {badge ? (
-                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-                  {badge}
-                </span>
-              ) : null}
             </span>
           </Link>
         );
@@ -120,14 +109,14 @@ export function Sidebar() {
           className="flex min-w-0 items-center gap-2 font-semibold"
         >
           <IconWaveform className="shrink-0 text-black" />
-          <span className="truncate tracking-tight">Putte Mastering</span>
+          <span className="truncate tracking-tight">First Listen Mastering</span>
         </Link>
         <button
           type="button"
           className="rounded-lg p-2 text-gray-600 hover:bg-gray-100"
           onClick={() => setOpen(true)}
           aria-expanded={open}
-          aria-label="Öppna meny"
+          aria-label="Open menu"
         >
           <IconMenu />
         </button>
@@ -139,7 +128,7 @@ export function Sidebar() {
           <Link href={STUDIO} className="mb-8 flex items-center gap-2">
             <IconWaveform className="shrink-0 text-black" />
             <span className="text-sm font-semibold tracking-tight text-black">
-              Putte Mastering
+              First Listen Mastering
             </span>
           </Link>
           <NavLinks />
@@ -158,7 +147,7 @@ export function Sidebar() {
           className={`absolute inset-0 bg-black/20 transition-opacity ${
             open ? "opacity-100" : "opacity-0"
           }`}
-          aria-label="Stäng meny"
+          aria-label="Close menu"
           onClick={() => setOpen(false)}
         />
         <div
@@ -168,13 +157,13 @@ export function Sidebar() {
         >
           <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
             <span className="text-sm font-semibold tracking-[0.12em]">
-              Meny
+              Menu
             </span>
             <button
               type="button"
               className="rounded-lg p-2 text-gray-600 hover:bg-gray-100"
               onClick={() => setOpen(false)}
-              aria-label="Stäng"
+              aria-label="Close"
             >
               <IconClose />
             </button>

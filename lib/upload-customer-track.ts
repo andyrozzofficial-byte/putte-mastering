@@ -1,3 +1,8 @@
+import {
+  getUploadSizeValidationError,
+  mapStorageUploadError,
+} from "@/lib/upload-limits";
+import { ensureStorageLimitsSynced } from "@/lib/storage/sync-limits-client";
 import { createSupabaseClient } from "@/lib/supabase";
 
 export const CUSTOMER_UPLOAD_BUCKET = "uploads";
@@ -22,6 +27,13 @@ export type UploadCustomerTrackResult = {
 export async function uploadCustomerTrack(
   file: File,
 ): Promise<UploadCustomerTrackResult> {
+  const sizeError = getUploadSizeValidationError(file, "customer-upload");
+  if (sizeError) {
+    throw new Error(sizeError);
+  }
+
+  await ensureStorageLimitsSynced();
+
   const supabase = createSupabaseClient();
   const objectPath = `incoming/${crypto.randomUUID()}-${sanitizeFileName(file.name)}`;
 
@@ -34,7 +46,7 @@ export async function uploadCustomerTrack(
     });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapStorageUploadError(error.message, file.size));
   }
 
   return {

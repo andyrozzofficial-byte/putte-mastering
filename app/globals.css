@@ -44,4 +44,52 @@ body {
   html {
     scroll-behavior: auto;
   }
+
+  .editorial-waveform-bar--live {
+    animation: none !important;
+  }
+
+  .studio-editorial-photo img {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Studio editorial — subtle image motion on hover */
+.studio-editorial-photo img {
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .studio-editorial-photo:hover img {
+    transform: scale(1.025);
+  }
+
+  .studio-editorial-photo--hero:hover img {
+    transform: scale(1.02);
+  }
+}
+
+/* Before/after demo player — subtle live motion while playing */
+@keyframes editorial-waveform-live {
+  0%,
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleY(var(--bar-pulse, 1.06));
+    opacity: 0.88;
+  }
+}
+
+.editorial-waveform-bar {
+  transform-origin: bottom center;
+  transition:
+    background-color 140ms ease,
+    height 320ms ease;
+}
+
+.editorial-waveform-bar--live {
+  animation: editorial-waveform-live 1.35s ease-in-out infinite;
 }

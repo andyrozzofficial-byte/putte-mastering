@@ -6,6 +6,7 @@
  */
 
 import { createClient } from "@supabase/supabase-js";
+import { randomBytes } from "node:crypto";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
@@ -20,14 +21,14 @@ if (!url || !key) {
 const payload = {
   customer_name: "Verify Script",
   customer_email: "verify@example.com",
-  customer_message: null,
   track_name: "verify-script-test",
   service: "Standard Master",
   status: "new",
-  notes: null,
+  notes: "verify-script-note",
   uploaded_file: null,
   mastered_file: null,
-  price: 1500,
+  price: 60,
+  delivery_access_token: randomBytes(32).toString("hex"),
 };
 
 const supabase = createClient(url, key);

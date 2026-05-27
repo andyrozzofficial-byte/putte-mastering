@@ -1,5 +1,6 @@
 import type { OrderStatus } from "@/components/dashboard/order-status-badge";
 import type { OrderRow } from "@/components/dashboard/orders-table";
+import { formatPrice } from "@/lib/currency";
 
 import { createStudioServerClient } from "@/lib/supabase/studio-server";
 
@@ -8,15 +9,34 @@ export type OrdersDbRow = {
   id: string;
   customer_name: string | null;
   customer_email: string | null;
-  customer_message: string | null;
   track_name: string | null;
   service: string | null;
   status: string | null;
-  /** Integer SEK from DB (`bigint`); PostgREST may return number or string. */
+  /** Integer USD (whole dollars) from DB (`bigint`); PostgREST may return number or string. */
   price: string | number | null;
   notes: string | null;
   uploaded_file: string | null;
   mastered_file: string | null;
+  created_at: string;
+  /** Opaque token for `/delivery/[token]` (may be null on legacy rows). */
+  delivery_access_token: string | null;
+  delivery_completed_at: string | null;
+  delivery_download_count: number | null;
+  delivery_last_downloaded_at: string | null;
+};
+
+export type OrderMasterVersionRow = {
+  id: string;
+  order_id: string;
+  storage_ref: string;
+  version: number;
+  created_at: string;
+};
+
+export type OrderRevisionRequestRow = {
+  id: string;
+  order_id: string;
+  message: string;
   created_at: string;
 };
 
@@ -44,12 +64,12 @@ export type DashboardOrderStats = {
   total: number;
   newOrders: number;
   completed: number;
-  revenueKr: number;
+  revenueUsd: number;
 };
 
 export function mapDbStatusToBadge(status: string | null): OrderStatus {
   const s = (status ?? "").toLowerCase().trim();
-  if (s === "new" || s === "ny") return "ny";
+  if (s === "new" || s === "ny") return "new";
   if (
     s === "in_progress" ||
     s === "in progress" ||
@@ -58,16 +78,25 @@ export function mapDbStatusToBadge(status: string | null): OrderStatus {
   )
     return "in_progress";
   if (
+    s === "waiting_revision" ||
+    s === "waiting revision" ||
+    s === "revision" ||
+    s === "needs_revision" ||
+    s === "needs revision"
+  )
+    return "waiting_revision";
+  if (
     s === "klar" ||
     s === "completed" ||
     s === "complete" ||
     s === "done"
   )
-    return "klar";
-  return "ny";
+    return "completed";
+  return "new";
 }
 
-export function parsePriceToKr(
+/** Parse stored price as whole USD dollars. */
+export function parsePriceUsd(
   price: string | number | null | undefined,
 ): number {
   if (price == null) return 0;
@@ -83,15 +112,11 @@ function displayPriceFromDb(
   price: string | number | null | undefined,
 ): string {
   if (price == null) return "—";
-  if (typeof price === "number") return formatKr(price);
+  if (typeof price === "number") return formatPrice(price);
   const s = price.trim();
   if (!s) return "—";
-  const n = parsePriceToKr(s);
-  return n > 0 ? formatKr(n) : s;
-}
-
-export function formatKr(amount: number): string {
-  return `${amount.toLocaleString("sv-SE")} kr`;
+  const n = parsePriceUsd(s);
+  return n > 0 ? formatPrice(n) : s;
 }
 
 export function displayCustomerName(name: string | null | undefined): string {
@@ -130,20 +155,20 @@ export function formatOrderCreatedAt(iso: string): string {
 export function computeDashboardStats(rows: OrdersDbRow[]): DashboardOrderStats {
   let newOrders = 0;
   let completed = 0;
-  let revenueKr = 0;
+  let revenueUsd = 0;
 
   for (const row of rows) {
     const badge = mapDbStatusToBadge(row.status);
-    if (badge === "ny") newOrders += 1;
-    if (badge === "klar") completed += 1;
-    revenueKr += parsePriceToKr(row.price);
+    if (badge === "new") newOrders += 1;
+    if (badge === "completed") completed += 1;
+    if (badge === "completed") revenueUsd += parsePriceUsd(row.price);
   }
 
   return {
     total: rows.length,
     newOrders,
     completed,
-    revenueKr,
+    revenueUsd,
   };
 }
 
@@ -185,8 +210,6 @@ export function dbRowToStudioDetail(row: OrdersDbRow): StudioOrderDetail {
     service: (row.service ?? "").trim() || "—",
     price: displayPriceFromDb(row.price),
     customerNote: (() => {
-      const fromCol = (row.customer_message ?? "").trim();
-      if (fromCol) return fromCol;
       const legacy = (row.notes ?? "").trim();
       return legacy.length > 0 ? legacy : null;
     })(),
@@ -200,30 +223,109 @@ export function dbRowToStudioDetail(row: OrdersDbRow): StudioOrderDetail {
 }
 
 export async function fetchStudioOrders(): Promise<OrdersDbRow[]> {
-  const supabase = await createStudioServerClient();
-  const { data, error } = await supabase
-    .from("orders")
-    .select(
-      "id, customer_name, customer_email, customer_message, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at",
-    )
-    .order("created_at", { ascending: false });
+  try {
+    const supabase = await createStudioServerClient();
+    const { data, error } = await supabase
+      .from("orders")
+      .select(
+        "id, customer_name, customer_email, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at, delivery_access_token, delivery_completed_at, delivery_download_count, delivery_last_downloaded_at",
+      )
+      .order("created_at", { ascending: false });
 
-  if (error) throw new Error(error.message);
-  return (data ?? []) as OrdersDbRow[];
+    if (error) {
+      console.error("[studio] fetchStudioOrders failed:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+      return [];
+    }
+
+    return (data ?? []) as OrdersDbRow[];
+  } catch (e) {
+    console.error("[studio] fetchStudioOrders threw:", e);
+    return [];
+  }
 }
 
 export async function fetchStudioOrderById(
   id: string,
 ): Promise<OrdersDbRow | null> {
-  const supabase = await createStudioServerClient();
-  const { data, error } = await supabase
-    .from("orders")
-    .select(
-      "id, customer_name, customer_email, customer_message, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at",
-    )
-    .eq("id", id)
-    .maybeSingle();
+  try {
+    const supabase = await createStudioServerClient();
+    const { data, error } = await supabase
+      .from("orders")
+      .select(
+        "id, customer_name, customer_email, track_name, service, status, price, notes, uploaded_file, mastered_file, created_at, delivery_access_token, delivery_completed_at, delivery_download_count, delivery_last_downloaded_at",
+      )
+      .eq("id", id)
+      .maybeSingle();
 
-  if (error) throw new Error(error.message);
-  return data as OrdersDbRow | null;
+    if (error) {
+      console.error("[studio] fetchStudioOrderById failed:", {
+        id,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+      return null;
+    }
+
+    return data as OrdersDbRow | null;
+  } catch (e) {
+    console.error("[studio] fetchStudioOrderById threw:", { id, error: e });
+    return null;
+  }
+}
+
+export async function fetchOrderMasterVersions(
+  orderId: string,
+): Promise<OrderMasterVersionRow[]> {
+  try {
+    const supabase = await createStudioServerClient();
+    const { data, error } = await supabase
+      .from("order_master_versions")
+      .select("id, order_id, storage_ref, version, created_at")
+      .eq("order_id", orderId)
+      .order("version", { ascending: false });
+
+    if (error) {
+      console.error("[studio] fetchOrderMasterVersions failed:", {
+        orderId,
+        message: error.message,
+      });
+      return [];
+    }
+    return (data ?? []) as OrderMasterVersionRow[];
+  } catch (e) {
+    console.error("[studio] fetchOrderMasterVersions threw:", { orderId, e });
+    return [];
+  }
+}
+
+export async function fetchOrderRevisionRequests(
+  orderId: string,
+): Promise<OrderRevisionRequestRow[]> {
+  try {
+    const supabase = await createStudioServerClient();
+    const { data, error } = await supabase
+      .from("order_revision_requests")
+      .select("id, order_id, message, created_at")
+      .eq("order_id", orderId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("[studio] fetchOrderRevisionRequests failed:", {
+        orderId,
+        message: error.message,
+      });
+      return [];
+    }
+    return (data ?? []) as OrderRevisionRequestRow[];
+  } catch (e) {
+    console.error("[studio] fetchOrderRevisionRequests threw:", { orderId, e });
+    return [];
+  }
 }

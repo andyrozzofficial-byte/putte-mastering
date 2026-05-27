@@ -1,15 +1,21 @@
-export type OrderStatus = "ny" | "in_progress" | "klar";
+export type OrderStatus =
+  | "new"
+  | "in_progress"
+  | "waiting_revision"
+  | "completed";
 
 const styles: Record<OrderStatus, string> = {
-  ny: "bg-gray-100 text-gray-700",
+  new: "bg-gray-100 text-gray-700",
   in_progress: "bg-[var(--accent-warm-strong)] text-amber-950/90",
-  klar: "bg-emerald-50 text-emerald-900",
+  waiting_revision: "bg-blue-50 text-blue-900",
+  completed: "bg-emerald-50 text-emerald-900",
 };
 
 const labels: Record<OrderStatus, string> = {
-  ny: "Ny",
-  in_progress: "Pågår",
-  klar: "Klar",
+  new: "New",
+  in_progress: "In progress",
+  waiting_revision: "Waiting revision",
+  completed: "Completed",
 };
 
 type OrderStatusBadgeProps = {

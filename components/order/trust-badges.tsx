@@ -1,14 +1,14 @@
 const items = [
   {
-    title: "Nöjd kund-garanti",
+    title: "Satisfaction guarantee",
     icon: IconShield,
   },
   {
-    title: "Säker betalning",
+    title: "Secure payment",
     icon: IconCard,
   },
   {
-    title: "Högsta kvalitet",
+    title: "Highest quality",
     icon: IconQuality,
   },
 ] as const;

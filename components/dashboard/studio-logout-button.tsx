@@ -41,7 +41,7 @@ export function StudioLogoutButton({
       onClick={() => void logout()}
     >
       <IconLogout />
-      {busy ? "Loggar ut…" : "Logga ut"}
+      {busy ? "Signing out…" : "Sign out"}
     </button>
   );
 }

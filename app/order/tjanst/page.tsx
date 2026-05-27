@@ -5,9 +5,9 @@ import { TrustBadges } from "@/components/order/trust-badges";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Välj tjänst — MASTRAD",
+  title: "Choose service — FIRST LISTEN MASTERING",
   description:
-    "Välj masteringpaket: Standard, Premium eller Stem Master. Enkelt och tydligt.",
+    "Choose your mastering service: Standard Master or Express Master.",
 };
 
 export default function OrderServicePage() {
@@ -18,7 +18,7 @@ export default function OrderServicePage() {
         <StepProgress activeStep={1} />
 
         <h1 className="mt-10 text-center text-[1.375rem] font-semibold tracking-tight text-black sm:text-xl md:mt-12 md:text-2xl">
-          Välj tjänst
+          Choose your service
         </h1>
 
         <OrderPlansClient />

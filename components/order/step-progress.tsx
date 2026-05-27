@@ -1,19 +1,19 @@
 const steps = [
   {
-    title: "Skicka in",
-    description: "Ladda upp ditt spår och välj tjänst.",
+    title: "Upload",
+    description: "Upload your track and choose a service.",
   },
   {
-    title: "Betala",
-    description: "Säker betalning med kort.",
+    title: "Pay",
+    description: "Secure card payment.",
   },
   {
-    title: "Jag mastrar",
-    description: "Jag mastrar ditt spår för hand.",
+    title: "Mastering",
+    description: "Manual mastering by an engineer.",
   },
   {
-    title: "Få din master",
-    description: "Du laddar ner din färdiga master i hög kvalitet.",
+    title: "Receive",
+    description: "Download your finished master in high quality.",
   },
 ] as const;
 
@@ -49,7 +49,7 @@ export function StepProgress({ activeStep = 1 }: StepProgressProps) {
         id="flow-steps-heading"
         className="text-center text-[13px] font-medium text-gray-500 sm:text-sm"
       >
-        Så fungerar det
+        How it works
       </p>
 
       {/* Mobile: vertical list */}

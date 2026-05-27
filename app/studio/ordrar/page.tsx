@@ -1,6 +1,8 @@
 import { OrdersTable } from "@/components/dashboard/orders-table";
 import { dbRowToOrderRow, fetchStudioOrders } from "@/lib/studio/orders-data";
 
+export const dynamic = "force-dynamic";
+
 export default async function OrdersPage() {
   const rows = await fetchStudioOrders();
   const orders = rows.map(dbRowToOrderRow);
@@ -10,16 +12,17 @@ export default async function OrdersPage() {
       <div className="mx-auto max-w-6xl space-y-6 md:space-y-7">
         <header className="space-y-0.5">
           <h1 className="text-[1.375rem] font-semibold tracking-tight text-black sm:text-2xl md:text-[1.65rem]">
-            Ordrar
+            Orders
           </h1>
           <p className="text-[13px] text-gray-500 sm:text-sm">
-            Öppna en order för att se kundfil, detaljer och leverans.
+            Open an order to view the source file, details, and delivery.
           </p>
         </header>
         <OrdersTable
-          title="Alla ordrar"
+          title="All orders"
           orders={orders}
           orderDetailBase="/studio/orders"
+          emptyStateText="No orders yet. Incoming mastering projects will appear here."
         />
       </div>
     </main>

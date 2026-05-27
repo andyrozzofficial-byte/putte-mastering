@@ -3,10 +3,14 @@ import { PostgrestError } from "@supabase/supabase-js";
 import {
   ORDERS_INSERT_COLUMNS,
   createSupabaseClient,
-  parseOrderPriceLabelToKr,
+  parseOrderPriceLabelToUsd,
   type OrderInsert,
 } from "@/lib/supabase";
+import { generateDeliveryAccessToken } from "@/lib/delivery/access-token";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
+import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
+import { escapeHtml } from "@/lib/email/escape-html";
+import { sendResendEmail } from "@/lib/email/resend";
 
 function logEnvFingerprint(): void {
   const url = getSupabaseUrl();
@@ -42,7 +46,6 @@ function payloadMatchesOrdersColumns(payload: OrdersInsertPayload): boolean {
 /** Matches `public.orders` INSERT columns (excluding defaults). */
 export type OrdersInsertPayload = {
   customer_email: string;
-  customer_message: string | null;
   customer_name: string;
   track_name: string;
   service: string;
@@ -50,8 +53,10 @@ export type OrdersInsertPayload = {
   notes: string | null;
   uploaded_file: string | null;
   mastered_file: string | null;
-  /** Integer SEK (Supabase `bigint`). */
+  /** Integer USD whole dollars (Supabase `bigint`). */
   price: number;
+  /** Opaque public delivery portal token. */
+  delivery_access_token: string;
 };
 
 /** Empty strings → null for nullable text columns (avoids CHECK / NOT NULL edge cases). */
@@ -61,8 +66,8 @@ function toOrdersInsertPayload(row: OrderInsert): OrdersInsertPayload {
     return t.length === 0 ? null : t;
   };
 
-  const priceKr = parseOrderPriceLabelToKr(row.price);
-  if (!Number.isFinite(priceKr) || priceKr <= 0) {
+  const priceUsd = parseOrderPriceLabelToUsd(row.price);
+  if (!Number.isFinite(priceUsd) || priceUsd <= 0) {
     console.warn(
       "[submit-order] Parsed price is missing or zero from label:",
       row.price,
@@ -71,15 +76,15 @@ function toOrdersInsertPayload(row: OrderInsert): OrdersInsertPayload {
 
   return {
     customer_email: row.customer_email.trim(),
-    customer_message: trimOrNull(row.customer_message),
     customer_name: row.customer_name.trim(),
     track_name: row.track_name.trim(),
     service: row.service.trim(),
     status: row.status.trim(),
-    notes: null,
+    notes: trimOrNull(row.customer_message),
     uploaded_file: row.uploaded_file,
     mastered_file: row.mastered_file,
-    price: priceKr,
+    price: priceUsd,
+    delivery_access_token: generateDeliveryAccessToken(),
   };
 }
 
@@ -102,6 +107,7 @@ export async function submitOrderToSupabase(row: OrderInsert): Promise<void> {
 
   console.info("[submit-order] Insert payload (sanitized):", {
     ...payload,
+    delivery_access_token: "[redacted]",
     customer_email: `${payload.customer_email.slice(0, 2)}…@${payload.customer_email.includes("@") ? payload.customer_email.split("@")[1] : "?"}`,
     price_raw_label: row.price,
     uploaded_file:
@@ -124,4 +130,15 @@ export async function submitOrderToSupabase(row: OrderInsert): Promise<void> {
   }
 
   console.info("[submit-order] Insert finished without error.");
+
+  const deliveryUrl = deliveryPortalAbsoluteUrl(payload.delivery_access_token);
+  void sendResendEmail({
+    to: payload.customer_email,
+    subject: "We received your mastering order",
+    html: `<p>Hi ${escapeHtml(row.customer_name.trim())},</p>
+<p>Thanks for your order. We’ve received your files and will begin work soon.</p>
+<p>You can track status and download your master here when it’s ready:</p>
+<p><a href="${escapeHtml(deliveryUrl)}">${escapeHtml(deliveryUrl)}</a></p>
+<p>— First Listen Mastering</p>`,
+  });
 }

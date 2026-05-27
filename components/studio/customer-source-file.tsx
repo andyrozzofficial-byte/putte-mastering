@@ -24,7 +24,7 @@ export function CustomerSourceFile({
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-6">
       <p className="text-xs font-medium uppercase tracking-[0.12em] text-gray-400">
-        Kundfil
+        Source file
       </p>
       <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center">
         <button
@@ -32,7 +32,7 @@ export function CustomerSourceFile({
           onClick={toggle}
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-black shadow-sm transition-colors hover:border-gray-300 hover:bg-gray-50 sm:h-[3.25rem] sm:w-[3.25rem]"
           aria-pressed={playing}
-          aria-label={playing ? "Pausa" : "Spela"}
+          aria-label={playing ? "Pause" : "Play"}
         >
           {playing ? <PauseIcon /> : <PlayIcon />}
         </button>
@@ -50,7 +50,7 @@ export function CustomerSourceFile({
           type="button"
           className="shrink-0 rounded-lg border border-black bg-white px-4 py-2 text-[13px] font-medium text-black transition-colors hover:bg-gray-50 sm:text-sm"
         >
-          Ladda ner
+          Download
         </button>
       </div>
     </div>

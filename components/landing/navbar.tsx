@@ -25,7 +25,7 @@ export function LandingNavbar() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-100/90 bg-white/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-neutral-200/85 bg-white/[0.97] backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-5 py-3.5 sm:px-6 lg:px-10 lg:py-4">
         <div className="flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-6">
           <FirstListenLogo />
