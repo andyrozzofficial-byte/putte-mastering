@@ -4,7 +4,7 @@ import { UploadDropzone } from "./upload-dropzone";
 
 import {
   EDITORIAL_GRAIN_DATA_URI,
-  EDITORIAL_PHOTO_CLASS,
+  HERO_MONO_PHOTO_CLASS,
 } from "@/lib/landing/editorial-image";
 
 /** Portrait — mastering engineer in the studio (main hero). */
@@ -73,7 +73,7 @@ export function HeroSection() {
                   alt="Mastering engineer in the studio at the console"
                   fill
                   priority
-                  className={`object-cover object-[center_30%] scale-[1.14] sm:scale-[1.16] lg:object-[center_34%] lg:scale-[1.18] ${EDITORIAL_PHOTO_CLASS} contrast-[1.11] brightness-[0.92]`}
+                  className={`object-cover object-[center_30%] scale-[1.14] sm:scale-[1.16] lg:object-[center_34%] lg:scale-[1.18] ${HERO_MONO_PHOTO_CLASS} contrast-[1.11] brightness-[0.92]`}
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               </div>

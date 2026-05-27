@@ -5,6 +5,13 @@ export const EDITORIAL_GRAIN_DATA_URI =
     `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#g)" opacity="0.55"/></svg>`,
   );
 
-/** Shared monochrome grade for studio photography. */
-export const EDITORIAL_PHOTO_CLASS =
+/** Hero portrait only — monochrome editorial grade. */
+export const HERO_MONO_PHOTO_CLASS =
   "grayscale saturate-0 contrast-[1.08] brightness-[0.9]";
+
+/** @deprecated Use HERO_MONO_PHOTO_CLASS */
+export const EDITORIAL_PHOTO_CLASS = HERO_MONO_PHOTO_CLASS;
+
+/** Studio / gear photography — full color, light grade for warmth and depth. */
+export const STUDIO_COLOR_PHOTO_CLASS =
+  "contrast-[1.08] brightness-[0.96] saturate-[1.14]";
