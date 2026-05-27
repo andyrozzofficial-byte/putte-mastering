@@ -2,8 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { UploadDropzone } from "./upload-dropzone";
 
-const HERO_IMAGE =
-  "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=2000&h=2500&q=90";
+const HERO_IMAGE = "/images/hero-mastering-studio.jpg";
+
+/** Subtle monochrome grain — SVG turbulence, tiled (no external asset). */
+const HERO_GRAIN_DATA_URI =
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#g)" opacity="0.55"/></svg>`,
+  );
 
 export function HeroSection() {
   return (
@@ -61,22 +67,33 @@ export function HeroSection() {
 
           {/* Right column — cinematic frame, vertically balanced */}
           <div className="relative min-h-[min(48vh,400px)] w-full lg:flex lg:items-center lg:py-12">
-            <div className="relative h-full min-h-[min(48vh,400px)] overflow-hidden rounded-2xl bg-neutral-200/30 shadow-[0_12px_54px_-24px_rgba(0,0,0,0.24)] ring-1 ring-black/[0.05] lg:ml-2 lg:h-[min(72vh,780px)] lg:min-h-0 lg:w-full lg:rounded-[1.25rem]">
-              <Image
-                src={HERO_IMAGE}
-                alt=""
-                fill
-                priority
-                className="object-cover object-[center_44%] grayscale contrast-[1.03] brightness-[1.04] saturate-0 lg:object-[center_56%]"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
-              {/* Soft blend into white column (reference fade) */}
+            <div className="relative h-full min-h-[min(48vh,400px)] overflow-hidden rounded-2xl bg-neutral-900/20 shadow-[0_14px_58px_-26px_rgba(0,0,0,0.32)] ring-1 ring-black/[0.06] lg:ml-2 lg:h-[min(72vh,780px)] lg:min-h-0 lg:w-full lg:rounded-[1.25rem]">
+              <div className="absolute inset-0">
+                <Image
+                  src={HERO_IMAGE}
+                  alt="Mastering engineer in the studio at the console"
+                  fill
+                  priority
+                  className="object-cover object-[center_30%] grayscale saturate-0 contrast-[1.11] brightness-[0.92] scale-[1.14] sm:scale-[1.16] lg:object-[center_34%] lg:scale-[1.18]"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </div>
+              {/* Light editorial grain */}
               <div
-                className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white from-[-45%] via-white/52 via-[16%] via-white/18 via-[36%] to-transparent to-[56%] lg:from-[-55%] lg:via-white/48 lg:via-[14%] lg:via-white/16 lg:via-[32%] lg:to-[54%]"
+                className="pointer-events-none absolute inset-0 opacity-[0.16] mix-blend-soft-light"
+                style={{
+                  backgroundImage: `url("${HERO_GRAIN_DATA_URI}")`,
+                  backgroundSize: "200px 200px",
+                }}
+                aria-hidden
+              />
+              {/* Narrower blend into copy column — keeps the frame sharp */}
+              <div
+                className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/95 from-[-28%] via-white/22 via-[8%] via-white/8 via-[18%] to-transparent to-[34%] lg:from-[-32%] lg:via-white/18 lg:via-[7%] lg:via-white/6 lg:via-[16%] lg:to-[36%]"
                 aria-hidden
               />
               <div
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/[0.18] via-transparent to-transparent"
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/[0.22] via-black/[0.04] via-35% to-transparent"
                 aria-hidden
               />
             </div>
