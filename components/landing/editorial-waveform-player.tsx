@@ -95,6 +95,10 @@ export function EditorialWaveformPlayer() {
   const currentGainRef = useRef<GainNode | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
 
+  // React state can lag by a frame; refs keep timing/UI in sync.
+  const isPlayingRef = useRef(false);
+  const lastProgressRef = useRef(0);
+
   const startTimeRef = useRef(0); // audioCtx.currentTime when started
   const offsetRef = useRef(0); // seconds offset into buffer at startTime
   const durationRef = useRef(0); // seconds
@@ -134,6 +138,7 @@ export function EditorialWaveformPlayer() {
       const gain = currentGainRef.current;
       currentSourceRef.current = null;
       currentGainRef.current = null;
+      isPlayingRef.current = false;
 
       try {
         if (gain) gain.gain.cancelScheduledValues(0);
@@ -150,6 +155,7 @@ export function EditorialWaveformPlayer() {
       if (!opts?.keepProgress) {
         setProgress(0);
         offsetRef.current = 0;
+        lastProgressRef.current = 0;
       }
       setIsPlaying(false);
       setLiveLevel(0);
@@ -161,10 +167,11 @@ export function EditorialWaveformPlayer() {
   const getCurrentPositionSec = useCallback(() => {
     if (!durationRef.current) return 0;
     const ctx = audioCtxRef.current;
-    if (!ctx || !isPlaying) return offsetRef.current;
+    // Don't rely on React state here; it can lag behind actual playback start.
+    if (!ctx || !isPlayingRef.current) return offsetRef.current;
     const elapsed = Math.max(0, ctx.currentTime - startTimeRef.current);
     return Math.min(durationRef.current, offsetRef.current + elapsed);
-  }, [isPlaying]);
+  }, []);
 
   const startSource = useCallback(
     async (nextMode: Mode, offsetSec: number, opts?: { crossfadeFrom?: GainNode | null }) => {
@@ -229,6 +236,7 @@ export function EditorialWaveformPlayer() {
       // The MP3 assets are already trimmed to the preview range.
       // Start at the current offset and let playback end naturally.
       src.start(0, safeOffset);
+      isPlayingRef.current = true;
       setIsPlaying(true);
     },
     [getAudioCtx, stopPlayback],
@@ -239,7 +247,11 @@ export function EditorialWaveformPlayer() {
     if (!duration) return;
     const pos = getCurrentPositionSec();
     const nextProgress = clamp01(pos / duration);
-    setProgress(nextProgress);
+    // Avoid laggy rerenders: only update when it meaningfully changes.
+    if (Math.abs(nextProgress - lastProgressRef.current) >= 0.001) {
+      lastProgressRef.current = nextProgress;
+      setProgress(nextProgress);
+    }
     if (nextProgress >= 1) {
       stopPlayback();
       return;
@@ -273,8 +285,9 @@ export function EditorialWaveformPlayer() {
     const nextPos = pos >= duration ? 0 : pos;
     await startSource(modeRef.current, nextPos);
     stopRafs();
-    rafRef.current = requestAnimationFrame(tickProgress);
-    analyserRafRef.current = requestAnimationFrame(tickAnalyser);
+    // Start progress loop immediately; don't wait for a state update.
+    tickProgress();
+    tickAnalyser();
   }, [getCurrentPositionSec, startSource, stopRafs, tickAnalyser, tickProgress]);
 
   const pause = useCallback(() => {
@@ -282,7 +295,11 @@ export function EditorialWaveformPlayer() {
     stopPlayback({ keepProgress: true });
     offsetRef.current = pos;
     const duration = durationRef.current;
-    if (duration) setProgress(clamp01(pos / duration));
+    if (duration) {
+      const next = clamp01(pos / duration);
+      lastProgressRef.current = next;
+      setProgress(next);
+    }
   }, [getCurrentPositionSec, stopPlayback]);
 
   const togglePlay = useCallback(() => {
