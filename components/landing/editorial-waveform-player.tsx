@@ -9,8 +9,8 @@ import {
   waveformBarHeightPercent,
 } from "@/lib/landing/waveform-heights";
 
-const AUDIO_BEFORE_SRC = "/audio/before.wav";
-const AUDIO_AFTER_SRC = "/audio/after.wav";
+const AUDIO_BEFORE_PATH = "/audio/before.wav";
+const AUDIO_AFTER_PATH = "/audio/after.wav";
 
 const CROSSFADE_MS = 180;
 const LEVEL_SMOOTHING = 0.18;
@@ -47,6 +47,31 @@ function computeRms(buffer: AudioBuffer): number {
   }
   const meanSq = sumSq / Math.max(1, length * channelCount);
   return Math.sqrt(meanSq);
+}
+
+function audioUrlCandidates(path: string): string[] {
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  const candidates = new Set<string>([normalized]);
+  if (typeof window !== "undefined") {
+    const pathname = window.location.pathname.replace(/\/+$/, "");
+    if (pathname && pathname !== "/") {
+      candidates.add(`${pathname}${normalized}`);
+    }
+  }
+  return [...candidates];
+}
+
+async function fetchFirstAvailable(path: string): Promise<Response> {
+  const candidates = audioUrlCandidates(path);
+  let lastStatus: number | null = null;
+
+  for (const candidate of candidates) {
+    const res = await fetch(candidate);
+    if (res.ok) return res;
+    lastStatus = res.status;
+  }
+
+  throw new Error(`Failed to load ${path.split("/").pop() ?? "audio"} (${lastStatus ?? "404"})`);
 }
 
 export function EditorialWaveformPlayer() {
@@ -275,11 +300,9 @@ export function EditorialWaveformPlayer() {
       try {
         const ctx = getAudioCtx();
         const [beforeRes, afterRes] = await Promise.all([
-          fetch(AUDIO_BEFORE_SRC),
-          fetch(AUDIO_AFTER_SRC),
+          fetchFirstAvailable(AUDIO_BEFORE_PATH),
+          fetchFirstAvailable(AUDIO_AFTER_PATH),
         ]);
-        if (!beforeRes.ok) throw new Error(`Failed to load before.wav (${beforeRes.status})`);
-        if (!afterRes.ok) throw new Error(`Failed to load after.wav (${afterRes.status})`);
         const [beforeBuf, afterBuf] = await Promise.all([
           beforeRes.arrayBuffer(),
           afterRes.arrayBuffer(),
@@ -404,9 +427,10 @@ export function EditorialWaveformPlayer() {
   return (
     <div className="min-w-0 space-y-0">
       <p className="mb-4 text-[13px] font-medium tracking-[-0.01em] text-black/88 sm:text-sm">
-        Mastering preview
-        <span className="ml-2 text-black/45">—</span>
-        <span className="ml-2 text-black/55">Original mix vs final master</span>
+        4ever Falling, Miless — Walking Dead
+      </p>
+      <p className="-mt-3 mb-4 text-[11px] uppercase tracking-[0.18em] text-black/45 sm:text-xs">
+        Original mix vs final master
       </p>
 
       <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-[#fafafa] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
