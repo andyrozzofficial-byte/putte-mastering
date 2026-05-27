@@ -44,6 +44,12 @@ export async function middleware(request: NextRequest) {
   const betaRedirect = applyBetaGate(request, response);
   if (betaRedirect) return betaRedirect;
 
+  const path = request.nextUrl.pathname;
+  const needsAuth = path === "/login" || path.startsWith("/studio");
+  if (!needsAuth) {
+    return response;
+  }
+
   const supabase = createServerClient(getSupabaseUrl(), getSupabaseAnonKey(), {
     cookies: {
       getAll() {
@@ -63,8 +69,6 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const path = request.nextUrl.pathname;
 
   if (path.startsWith("/studio") && !user) {
     const redirectUrl = request.nextUrl.clone();
