@@ -2,14 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { UploadDropzone } from "./upload-dropzone";
 
-const HERO_IMAGE = "/images/hero-mastering-studio.jpg";
+import {
+  EDITORIAL_GRAIN_DATA_URI,
+  EDITORIAL_PHOTO_CLASS,
+} from "@/lib/landing/editorial-image";
 
-/** Subtle monochrome grain — SVG turbulence, tiled (no external asset). */
-const HERO_GRAIN_DATA_URI =
-  "data:image/svg+xml," +
-  encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#g)" opacity="0.55"/></svg>`,
-  );
+/** Portrait — mastering engineer in the studio (main hero). */
+const HERO_IMAGE = "/images/hero-mastering-studio.jpg";
 
 export function HeroSection() {
   return (
@@ -74,7 +73,7 @@ export function HeroSection() {
                   alt="Mastering engineer in the studio at the console"
                   fill
                   priority
-                  className="object-cover object-[center_30%] grayscale saturate-0 contrast-[1.11] brightness-[0.92] scale-[1.14] sm:scale-[1.16] lg:object-[center_34%] lg:scale-[1.18]"
+                  className={`object-cover object-[center_30%] scale-[1.14] sm:scale-[1.16] lg:object-[center_34%] lg:scale-[1.18] ${EDITORIAL_PHOTO_CLASS} contrast-[1.11] brightness-[0.92]`}
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               </div>
@@ -82,7 +81,7 @@ export function HeroSection() {
               <div
                 className="pointer-events-none absolute inset-0 opacity-[0.16] mix-blend-soft-light"
                 style={{
-                  backgroundImage: `url("${HERO_GRAIN_DATA_URI}")`,
+                  backgroundImage: `url("${EDITORIAL_GRAIN_DATA_URI}")`,
                   backgroundSize: "200px 200px",
                 }}
                 aria-hidden

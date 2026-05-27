@@ -1,3 +1,8 @@
+import {
+  STUDIO_CONTACT_EMAIL,
+  STUDIO_CONTACT_MAILTO,
+} from "@/lib/brand/contact";
+
 function IconStepUpload({ className }: { className?: string }) {
   return (
     <svg
@@ -204,7 +209,10 @@ export function PricingTeaserSection() {
 
         <p className="mt-10 text-[13px] leading-relaxed text-gray-500 sm:mt-11 sm:text-sm">
           Need a custom quote for an EP or album?{" "}
-          <a href="#contact" className="font-medium text-black underline decoration-neutral-300 underline-offset-[5px] transition-colors hover:decoration-black">
+          <a
+            href={STUDIO_CONTACT_MAILTO}
+            className="font-medium text-black/80 underline decoration-black/20 underline-offset-[4px] transition-colors hover:text-black hover:decoration-black/45"
+          >
             Get in touch
           </a>
           .
@@ -269,37 +277,51 @@ export function ContactSection() {
   return (
     <footer
       id="contact"
-      className="bg-neutral-50/55 py-9 sm:py-10 md:py-11"
+      className="border-t border-black/[0.06] bg-[#fafafa] py-14 sm:py-16 md:py-20"
     >
-      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-2xl rounded-2xl bg-white px-9 py-11 shadow-[0_22px_90px_-44px_rgba(0,0,0,0.3)] ring-1 ring-black/[0.05] sm:px-12 sm:py-13 md:px-14 md:py-14">
-          <h2 className="text-center text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.03em] text-black sm:text-[1.75rem] md:text-[1.9375rem]">
-            Contact
+      <div className="mx-auto max-w-5xl px-5 sm:px-8 lg:px-10">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-black/38 sm:text-[11px] sm:tracking-[0.44em]">
+            Studio
+          </p>
+          <h2 className="mt-4 text-[1.4rem] font-normal leading-[1.2] tracking-[-0.025em] text-black/[0.92] sm:text-2xl md:text-[1.8rem]">
+            Get in touch
           </h2>
-          <p className="mt-4 text-center text-[13px] leading-[1.65] text-gray-600 sm:mt-5 sm:text-[15px] sm:leading-relaxed">
-            Want to talk through your project before uploading? Send a note — you
-            will hear back directly from the engineer.
+          <p className="mx-auto mt-5 max-w-md text-[13px] leading-[1.7] text-black/44 sm:text-sm sm:leading-[1.75]">
+            Questions before you upload, custom quotes for EPs and albums, or
+            revision notes — write directly to the studio. You will hear back from
+            the engineer.
           </p>
-          <p className="mt-6 text-center sm:mt-7">
+
+          <div className="mt-10 sm:mt-11">
             <a
-              href="mailto:hello@firstlistenmastering.com"
-              className="text-[13px] font-medium text-black underline decoration-neutral-300 underline-offset-[5px] transition-colors hover:decoration-black sm:text-sm"
+              href={STUDIO_CONTACT_MAILTO}
+              className="inline-block font-mono text-[13px] tracking-[0.02em] text-black/72 transition-colors hover:text-black sm:text-sm"
             >
-              hello@firstlistenmastering.com
+              {STUDIO_CONTACT_EMAIL}
             </a>
-          </p>
+          </div>
+
+          <div
+            className="mx-auto mt-10 h-px w-14 bg-gradient-to-r from-transparent via-black/12 to-transparent sm:mt-11"
+            aria-hidden
+          />
         </div>
-        <div className="mx-auto mt-7 max-w-2xl text-center sm:mt-8">
-          <p className="text-[11px] text-gray-400 sm:text-xs">
-            © {new Date().getFullYear()} FIRST LISTEN MASTERING. Manual mastering.
+
+        <div className="mx-auto mt-12 max-w-2xl space-y-3 text-center sm:mt-14">
+          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-black/32 sm:text-[11px]">
+            First Listen Mastering
           </p>
-          <p className="mt-3 text-[11px] leading-relaxed text-gray-400/80 sm:text-xs">
-            Design &amp; development by{" "}
+          <p className="text-[11px] leading-relaxed text-black/34 sm:text-xs">
+            © {new Date().getFullYear()} First Listen Mastering. Manual mastering.
+          </p>
+          <p className="text-[10px] leading-relaxed text-black/28 sm:text-[11px]">
+            Site by{" "}
             <a
               href="https://lunov.dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-500/90 underline decoration-neutral-300/70 underline-offset-[3px] transition-colors hover:text-gray-800 hover:decoration-gray-500/80"
+              className="text-black/40 underline decoration-black/15 underline-offset-[3px] transition-colors hover:text-black/60 hover:decoration-black/30"
             >
               Lunov
             </a>
