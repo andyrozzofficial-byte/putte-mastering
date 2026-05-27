@@ -12,6 +12,6 @@ export const HERO_MONO_PHOTO_CLASS =
 /** @deprecated Use HERO_MONO_PHOTO_CLASS */
 export const EDITORIAL_PHOTO_CLASS = HERO_MONO_PHOTO_CLASS;
 
-/** Studio / gear photography — full color, light grade for warmth and depth. */
+/** Studio / gear photography — color with darker cinematic grade. */
 export const STUDIO_COLOR_PHOTO_CLASS =
-  "contrast-[1.08] brightness-[0.96] saturate-[1.14]";
+  "contrast-[1.14] brightness-[0.86] saturate-[1.08]";

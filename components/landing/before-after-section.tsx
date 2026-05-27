@@ -4,7 +4,7 @@ export function BeforeAfterSection() {
   return (
     <section
       id="before-after"
-      className="border-t border-neutral-200/90 bg-white py-9 sm:py-10 md:py-12"
+      className="border-t border-neutral-200/90 bg-white py-9 pb-12 sm:py-10 sm:pb-14 md:py-12 md:pb-16"
       aria-labelledby="before-after-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
