@@ -1,5 +1,3 @@
-"use client";
-
 import { EditorialWaveformPlayer } from "@/components/landing/editorial-waveform-player";
 
 export function BeforeAfterSection() {

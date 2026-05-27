@@ -8,30 +8,15 @@ import {
   useState,
 } from "react";
 
-const BAR_COUNT = 104;
+import {
+  WAVEFORM_BAR_COUNT,
+  WAVEFORM_HEIGHTS_AFTER,
+  WAVEFORM_HEIGHTS_BEFORE,
+  waveformBarHeightPercent,
+  waveformBarPulseScale,
+} from "@/lib/landing/waveform-heights";
+
 const DEMO_DURATION_SEC = 30;
-
-/** Organic, non-uniform bar heights — reads like a real waveform, not a randomizer. */
-function buildWaveformHeights(variant: "before" | "after"): number[] {
-  const scale = variant === "before" ? 0.68 : 1;
-  const detail = variant === "before" ? 0.55 : 1;
-
-  return Array.from({ length: BAR_COUNT }, (_, i) => {
-    const x = i / (BAR_COUNT - 1);
-    const envelope = 0.12 + 0.88 * Math.pow(Math.sin(x * Math.PI), 0.78);
-    const body =
-      0.34 +
-      Math.sin(x * Math.PI * 2.6 + 0.35) * 0.2 +
-      Math.sin(x * Math.PI * 6.4 + i * 0.11) * 0.14 * detail +
-      Math.sin(x * Math.PI * 13.1 + i * 0.19) * 0.09 * detail;
-    const micro = (((i * 23 + 7) % 17) / 17) * 0.07 * detail;
-    const raw = envelope * body * scale + micro * scale;
-    return Math.min(0.94, Math.max(0.05, raw));
-  });
-}
-
-const HEIGHTS_BEFORE = buildWaveformHeights("before");
-const HEIGHTS_AFTER = buildWaveformHeights("after");
 
 function formatTime(seconds: number): string {
   const s = Math.max(0, Math.floor(seconds));
@@ -50,7 +35,7 @@ export function EditorialWaveformPlayer() {
   const startRef = useRef<number | null>(null);
   const progressRef = useRef(0);
 
-  const heights = mode === "after" ? HEIGHTS_AFTER : HEIGHTS_BEFORE;
+  const heights = mode === "after" ? WAVEFORM_HEIGHTS_AFTER : WAVEFORM_HEIGHTS_BEFORE;
 
   const currentSec = progress * DEMO_DURATION_SEC;
 
@@ -118,7 +103,7 @@ export function EditorialWaveformPlayer() {
     [stopPlayback],
   );
 
-  const progressPercent = useMemo(() => `${progress * 100}%`, [progress]);
+  const progressPercent = useMemo(() => `${Math.round(progress * 10000) / 100}%`, [progress]);
 
   return (
     <div className="min-w-0 space-y-0">
@@ -127,7 +112,6 @@ export function EditorialWaveformPlayer() {
       </p>
 
       <div className="overflow-hidden rounded-xl border border-black/[0.07] bg-[#fafafa] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
-        {/* Waveform canvas */}
         <div
           className="relative px-4 pb-3 pt-5 sm:px-5 sm:pt-6"
           role="img"
@@ -153,9 +137,10 @@ export function EditorialWaveformPlayer() {
               aria-hidden
             >
               {heights.map((h, i) => {
-                const barProgress = (i + 0.5) / BAR_COUNT;
+                const barProgress = (i + 0.5) / WAVEFORM_BAR_COUNT;
                 const played = barProgress <= progress;
                 const phase = (i % 11) * 0.09;
+                const heightPct = waveformBarHeightPercent(h);
                 return (
                   <span
                     key={`${mode}-${i}`}
@@ -163,9 +148,9 @@ export function EditorialWaveformPlayer() {
                       isPlaying ? "editorial-waveform-bar--live" : ""
                     } ${played ? "bg-black/[0.5]" : "bg-black/[0.18]"}`}
                     style={{
-                      height: `${h * 100}%`,
+                      height: `${heightPct}%`,
                       animationDelay: isPlaying ? `${phase}s` : undefined,
-                      ["--bar-pulse" as string]: `${1 + (h * 0.1).toFixed(3)}`,
+                      ["--bar-pulse" as string]: waveformBarPulseScale(h),
                     }}
                   />
                 );
@@ -180,7 +165,6 @@ export function EditorialWaveformPlayer() {
           </div>
         </div>
 
-        {/* Controls — aligned to waveform grid */}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-black/[0.06] bg-white/80 px-4 py-3.5 sm:px-5 sm:py-4">
           <div
             className="inline-flex rounded-full border border-black/[0.08] bg-neutral-50/80 p-0.5"
