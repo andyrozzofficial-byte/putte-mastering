@@ -1,12 +1,46 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
+import {
+  BETA_ACCESS_COOKIE,
+  getSiteBetaPassword,
+  isSiteBetaExemptPath,
+} from "@/lib/site-beta-gate";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
+
+function applyBetaGate(request: NextRequest, response: NextResponse): NextResponse | null {
+  const betaPassword = getSiteBetaPassword();
+  if (!betaPassword) return null;
+
+  const path = request.nextUrl.pathname;
+  if (isSiteBetaExemptPath(path) || path.startsWith("/api")) return null;
+
+  const hasAccess = request.cookies.get(BETA_ACCESS_COOKIE)?.value === "1";
+  if (hasAccess) return null;
+
+  // Homepage renders the password gate in layout; avoid redirect loops.
+  if (path === "/") return null;
+
+  const gateUrl = request.nextUrl.clone();
+  gateUrl.pathname = "/";
+  gateUrl.search = "";
+  const redirectResponse = NextResponse.redirect(gateUrl);
+  response.cookies.getAll().forEach((c) => {
+    redirectResponse.cookies.set(c.name, c.value);
+  });
+  response.headers.forEach((value, key) => {
+    redirectResponse.headers.set(key, value);
+  });
+  return redirectResponse;
+}
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next({
     request,
   });
+
+  const betaRedirect = applyBetaGate(request, response);
+  if (betaRedirect) return betaRedirect;
 
   const supabase = createServerClient(getSupabaseUrl(), getSupabaseAnonKey(), {
     cookies: {
@@ -61,5 +95,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/studio/:path*", "/login"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp3|wav)$).*)",
+  ],
 };
