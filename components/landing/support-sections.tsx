@@ -241,7 +241,7 @@ export function FaqSection() {
   return (
     <section
       id="faq"
-      className="bg-white py-8 sm:py-9 md:py-10"
+      className="bg-white pt-8 pb-10 sm:pt-9 sm:pb-11 md:pt-10 md:pb-14"
       aria-labelledby="faq-heading"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
@@ -274,57 +274,59 @@ export function FaqSection() {
 }
 
 export function ContactSection() {
+  const footerNav = [
+    { href: "/#top", label: "Home" },
+    { href: "/#how", label: "How it works" },
+    { href: "/#pricing", label: "Pricing" },
+    { href: "/#faq", label: "FAQ" },
+    { href: "/#contact", label: "Contact" },
+    { href: "/#upload", label: "Upload" },
+  ] as const;
+
   return (
     <footer
       id="contact"
-      className="border-t border-black/[0.06] bg-[#fafafa] py-14 sm:py-16 md:py-20"
+      className="border-t border-black/[0.06] bg-white pt-16 pb-11 sm:pt-20 sm:pb-12 md:pt-24 md:pb-14"
     >
       <div className="mx-auto max-w-5xl px-5 sm:px-8 lg:px-10">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-black/38 sm:text-[11px] sm:tracking-[0.44em]">
-            Studio
+        <div className="mx-auto max-w-4xl">
+          <p className="text-[11px] font-medium uppercase tracking-[0.34em] text-black/74 sm:text-xs sm:tracking-[0.38em]">
+            First Listen Mastering
           </p>
-          <h2 className="mt-4 text-[1.4rem] font-normal leading-[1.2] tracking-[-0.025em] text-black/[0.92] sm:text-2xl md:text-[1.8rem]">
-            Get in touch
-          </h2>
-          <p className="mx-auto mt-5 max-w-md text-[13px] leading-[1.7] text-black/44 sm:text-sm sm:leading-[1.75]">
-            Questions before you upload, custom quotes for EPs and albums, or
-            revision notes — write directly to the studio. You will hear back from
-            the engineer.
+          <p className="mt-2.5 text-[13px] leading-[1.7] text-black/44 sm:mt-3 sm:text-sm">
+            Manual analog mastering studio
           </p>
 
-          <div className="mt-10 sm:mt-11">
+          <div className="mt-8 sm:mt-9">
             <a
               href={STUDIO_CONTACT_MAILTO}
-              className="inline-block font-mono text-[13px] tracking-[0.02em] text-black/72 transition-colors hover:text-black sm:text-sm"
+              className="inline-block font-mono text-[13px] tracking-[0.02em] text-black/76 transition-colors hover:text-black sm:text-sm"
             >
               {STUDIO_CONTACT_EMAIL}
             </a>
           </div>
 
-          <div
-            className="mx-auto mt-10 h-px w-14 bg-gradient-to-r from-transparent via-black/12 to-transparent sm:mt-11"
-            aria-hidden
-          />
+          <div className="mt-10 border-t border-black/[0.06] pt-8 sm:mt-12 sm:pt-9">
+            <p className="text-[10px] font-medium uppercase tracking-[0.26em] text-black/62 sm:text-[11px]">
+              Navigation
+            </p>
+            <nav className="mt-4" aria-label="Footer">
+              <ul className="grid grid-cols-2 gap-x-8 gap-y-2.5 text-[13px] leading-[1.75] text-black/46 sm:flex sm:flex-wrap sm:gap-x-9 sm:gap-y-2 sm:text-sm">
+                {footerNav.map(({ href, label }) => (
+                  <li key={label}>
+                    <a className="transition-colors hover:text-black/72" href={href}>
+                      {label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
         </div>
 
-        <div className="mx-auto mt-12 max-w-2xl space-y-3 text-center sm:mt-14">
-          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-black/32 sm:text-[11px]">
-            First Listen Mastering
-          </p>
-          <p className="text-[11px] leading-relaxed text-black/34 sm:text-xs">
-            © {new Date().getFullYear()} First Listen Mastering. Manual mastering.
-          </p>
+        <div className="mx-auto mt-10 max-w-4xl border-t border-black/[0.06] pt-5 sm:mt-11 sm:pt-6">
           <p className="text-[10px] leading-relaxed text-black/28 sm:text-[11px]">
-            Site by{" "}
-            <a
-              href="https://lunov.dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-black/40 underline decoration-black/15 underline-offset-[3px] transition-colors hover:text-black/60 hover:decoration-black/30"
-            >
-              Lunov
-            </a>
+            © 2026 First Listen Mastering
           </p>
         </div>
       </div>
