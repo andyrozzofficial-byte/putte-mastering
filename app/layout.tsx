@@ -18,10 +18,14 @@ export const metadata: Metadata = {
   title: "Putte Mastering — Studio",
   description: "Handgjord mastering för din musik.",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
     shortcut: "/favicon.ico",
-    apple: "/favicon.ico",
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
