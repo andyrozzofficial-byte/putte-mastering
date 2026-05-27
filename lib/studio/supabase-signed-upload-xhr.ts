@@ -1,3 +1,5 @@
+import { mapStorageUploadError } from "@/lib/upload-limits";
+
 /**
  * Browser-only: PUT multipart body matching @supabase/storage-js uploadToSignedUrl,
  * with upload progress (not available on the stock Storage client).
@@ -58,12 +60,12 @@ export function uploadFileToSupabaseSignedUrlWithProgress(options: {
           if (raw.length < 400) msg = raw;
         }
       }
-      reject(new Error(msg));
+      reject(new Error(mapStorageUploadError(msg)));
     };
 
     xhr.onerror = () => {
       if (signal) signal.removeEventListener("abort", onAbort);
-      reject(new Error("Network error during upload."));
+      reject(new Error(mapStorageUploadError("Network error during upload.")));
     };
 
     xhr.onabort = () => {

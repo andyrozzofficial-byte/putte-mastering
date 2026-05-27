@@ -1,6 +1,11 @@
 "use client";
 
 import { parseApiJsonBody } from "@/lib/api/client-parse";
+import {
+  getUploadSizeValidationError,
+  mapStorageUploadError,
+  MAX_UPLOAD_LABEL,
+} from "@/lib/upload-limits";
 import { uploadFileToSupabaseSignedUrlWithProgress } from "@/lib/studio/supabase-signed-upload-xhr";
 import { useCallback, useMemo, useRef, useState } from "react";
 
@@ -26,6 +31,17 @@ export function DeliveryMasterUpload({ orderId }: Props) {
   const onPick = useCallback((f: File | null) => {
     setError(null);
     setDeliveryUrl(null);
+    if (!f) {
+      setFile(null);
+      return;
+    }
+    const sizeError = getUploadSizeValidationError(f);
+    if (sizeError) {
+      setError(sizeError);
+      setFile(null);
+      if (inputRef.current) inputRef.current.value = "";
+      return;
+    }
     setFile(f);
   }, []);
 
@@ -43,6 +59,12 @@ export function DeliveryMasterUpload({ orderId }: Props) {
       return;
     }
 
+    const sizeError = getUploadSizeValidationError(file);
+    if (sizeError) {
+      setError(sizeError);
+      return;
+    }
+
     const ac = new AbortController();
     abortRef.current = ac;
 
@@ -57,7 +79,7 @@ export function DeliveryMasterUpload({ orderId }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "same-origin",
-        body: JSON.stringify({ fileName: file.name }),
+        body: JSON.stringify({ fileName: file.name, fileSizeBytes: file.size }),
         signal: ac.signal,
       });
       const signRaw = await signRes.text();
@@ -121,7 +143,8 @@ export function DeliveryMasterUpload({ orderId }: Props) {
       setUploadPercent(100);
       if (inputRef.current) inputRef.current.value = "";
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Upload failed.";
+      const msg =
+        e instanceof Error ? mapStorageUploadError(e.message) : "Upload failed.";
       setError(msg);
     } finally {
       abortRef.current = null;
@@ -199,6 +222,9 @@ export function DeliveryMasterUpload({ orderId }: Props) {
         </p>
         <p className="mt-1.5 text-[13px] text-gray-500 sm:text-sm">
           {file ? fileLabel : "or click to choose a file"}
+        </p>
+        <p className="mt-4 text-[11px] text-gray-400 sm:text-xs">
+          WAV or MP3 up to {MAX_UPLOAD_LABEL}
         </p>
       </div>
 

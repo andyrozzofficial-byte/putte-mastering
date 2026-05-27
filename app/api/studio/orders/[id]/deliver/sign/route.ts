@@ -1,5 +1,6 @@
 import { apiJsonError, apiJsonSuccess } from "@/lib/api/json-response";
 import { generateDeliveryAccessToken } from "@/lib/delivery/access-token";
+import { assertUploadSizeBytes, MAX_UPLOAD_LABEL } from "@/lib/upload-limits";
 import {
   assertAllowedDeliverFileName,
   buildDeliverObjectPath,
@@ -38,14 +39,32 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
         ? (body as { fileName: string }).fileName
         : null;
 
+    const fileSizeBytes =
+      typeof body === "object" &&
+      body !== null &&
+      "fileSizeBytes" in body &&
+      typeof (body as { fileSizeBytes: unknown }).fileSizeBytes === "number"
+        ? (body as { fileSizeBytes: number }).fileSizeBytes
+        : null;
+
     if (!fileName?.trim()) {
       return apiJsonError("Missing fileName", 400);
+    }
+
+    if (fileSizeBytes == null || !Number.isFinite(fileSizeBytes)) {
+      return apiJsonError("Missing fileSizeBytes", 400);
     }
 
     try {
       assertAllowedDeliverFileName(fileName);
     } catch {
       return apiJsonError("Only WAV or MP3 files are allowed.", 400);
+    }
+
+    try {
+      assertUploadSizeBytes(fileSizeBytes);
+    } catch {
+      return apiJsonError(`File exceeds the ${MAX_UPLOAD_LABEL} upload limit.`, 400);
     }
 
     const clientResult = getServiceRoleClientOrApiError("[deliver-sign]", {
@@ -118,9 +137,15 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
         pathPrefix: objectPath.slice(0, 96),
         hint: "Confirm Supabase bucket name matches DELIVER_MASTER_BUCKET and policies allow signed uploads (service role).",
       });
+      const signMessage = signErr?.message?.trim() || "";
+      const sizeLimited =
+        signMessage.toLowerCase().includes("maximum allowed size") ||
+        signMessage.toLowerCase().includes("entity too large");
       return apiJsonError(
-        signErr?.message?.trim() || "Could not create upload URL",
-        500,
+        sizeLimited
+          ? `File exceeds the ${MAX_UPLOAD_LABEL} upload limit. Check Storage bucket limits in Supabase.`
+          : signMessage || "Could not create upload URL",
+        sizeLimited ? 413 : 500,
       );
     }
 

@@ -1,3 +1,7 @@
+import {
+  getUploadSizeValidationError,
+  mapStorageUploadError,
+} from "@/lib/upload-limits";
 import { createSupabaseClient } from "@/lib/supabase";
 
 export const CUSTOMER_UPLOAD_BUCKET = "uploads";
@@ -34,7 +38,7 @@ export async function uploadCustomerTrack(
     });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapStorageUploadError(error.message));
   }
 
   return {

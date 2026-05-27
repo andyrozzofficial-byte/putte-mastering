@@ -1,6 +1,10 @@
 "use client";
 
 import { saveOrderUploadDraft } from "@/lib/order-flow-session";
+import {
+  getUploadSizeValidationError,
+  mapStorageUploadError,
+} from "@/lib/upload-limits";
 import { uploadCustomerTrack } from "@/lib/upload-customer-track";
 import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
@@ -25,6 +29,11 @@ export function UploadDropzone({
   const handleFile = useCallback(
     async (file: File) => {
       setUploadError(null);
+      const sizeError = getUploadSizeValidationError(file);
+      if (sizeError) {
+        setUploadError(sizeError);
+        return;
+      }
       setBusy(true);
       try {
         const { storageRef } = await uploadCustomerTrack(file);
@@ -36,7 +45,7 @@ export function UploadDropzone({
       } catch (e) {
         const msg =
           e instanceof Error
-            ? e.message
+            ? mapStorageUploadError(e.message)
             : "Upload failed. Please try again.";
         setUploadError(msg);
       } finally {
