@@ -44,4 +44,32 @@ body {
   html {
     scroll-behavior: auto;
   }
+
+  .editorial-waveform-bar--live {
+    animation: none !important;
+  }
+}
+
+/* Before/after demo player — subtle live motion while playing */
+@keyframes editorial-waveform-live {
+  0%,
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleY(var(--bar-pulse, 1.06));
+    opacity: 0.88;
+  }
+}
+
+.editorial-waveform-bar {
+  transform-origin: bottom center;
+  transition:
+    background-color 140ms ease,
+    height 320ms ease;
+}
+
+.editorial-waveform-bar--live {
+  animation: editorial-waveform-live 1.35s ease-in-out infinite;
 }

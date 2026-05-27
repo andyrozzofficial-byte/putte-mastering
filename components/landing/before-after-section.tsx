@@ -1,14 +1,8 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { EditorialWaveformPlayer } from "@/components/landing/editorial-waveform-player";
 
 export function BeforeAfterSection() {
-  const [mode, setMode] = useState<"before" | "after">("after");
-
-  const toggle = useCallback((next: "before" | "after") => {
-    setMode(next);
-  }, []);
-
   return (
     <section
       id="before-after"
@@ -34,105 +28,10 @@ export function BeforeAfterSection() {
               </p>
             </div>
 
-            <div className="min-w-0 space-y-5">
-              <p className="text-[13px] font-medium text-black sm:text-sm">
-                Artist name — Track title
-              </p>
-
-              <div
-                className="flex h-20 items-end gap-0.5 rounded-lg border border-neutral-200/95 bg-white px-3 py-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] sm:h-24 sm:px-4"
-                aria-hidden
-              >
-                {Array.from({ length: 48 }).map((_, i) => {
-                  const h =
-                    mode === "after"
-                      ? 18 + ((i * 7 + 13) % 38)
-                      : 10 + ((i * 5 + 9) % 22);
-                  return (
-                    <span
-                      key={i}
-                      className="w-1 rounded-sm bg-gray-900/80"
-                      style={{ height: `${h}%` }}
-                    />
-                  );
-                })}
-              </div>
-
-              <div className="flex flex-wrap items-center gap-4">
-                <div
-                  className="inline-flex rounded-full border border-neutral-200 bg-white p-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
-                  role="group"
-                  aria-label="Compare before and after"
-                >
-                  <button
-                    type="button"
-                    onClick={() => toggle("before")}
-                    className={`rounded-full px-3.5 py-1.5 text-[11px] font-medium transition-colors sm:text-xs ${
-                      mode === "before"
-                        ? "bg-black text-white"
-                        : "text-gray-600 hover:text-black"
-                    }`}
-                  >
-                    Before
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => toggle("after")}
-                    className={`rounded-full px-3.5 py-1.5 text-[11px] font-medium transition-colors sm:text-xs ${
-                      mode === "after"
-                        ? "bg-black text-white"
-                        : "text-gray-600 hover:text-black"
-                    }`}
-                  >
-                    After
-                  </button>
-                </div>
-
-                <div className="flex flex-1 flex-wrap items-center gap-3 text-gray-500">
-                  <button
-                    type="button"
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-black transition-colors hover:border-gray-300 hover:bg-neutral-50"
-                    aria-label="Play preview (demo)"
-                  >
-                    <PlayIcon />
-                  </button>
-                  <span className="font-mono text-[11px] tabular-nums sm:text-xs">
-                    0:00 / 0:30
-                  </span>
-                  <span className="ml-auto hidden text-gray-400 sm:inline" aria-hidden>
-                    <VolumeIcon />
-                  </span>
-                </div>
-              </div>
-            </div>
+            <EditorialWaveformPlayer />
           </div>
         </div>
       </div>
     </section>
-  );
-}
-
-function PlayIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  );
-}
-
-function VolumeIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    >
-      <path d="M11 5 6 9H2v6h4l5 4V5Z" />
-      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-    </svg>
   );
 }
