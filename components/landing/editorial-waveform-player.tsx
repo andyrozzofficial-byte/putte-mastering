@@ -9,15 +9,11 @@ import {
   waveformBarHeightPercent,
 } from "@/lib/landing/waveform-heights";
 
-const AUDIO_BEFORE_PATH = "/audio/before.wav";
-const AUDIO_AFTER_PATH = "/audio/after.wav";
+const AUDIO_BEFORE_PATH = "/audio/before.mp3";
+const AUDIO_AFTER_PATH = "/audio/after.mp3";
 
 const CROSSFADE_MS = 180;
 const LEVEL_SMOOTHING = 0.18;
-
-const PREVIEW_START_SEC = 26;
-const PREVIEW_END_SEC = 54;
-const PREVIEW_DURATION_SEC = PREVIEW_END_SEC - PREVIEW_START_SEC;
 
 function formatTime(seconds: number): string {
   const s = Math.max(0, Math.floor(seconds));
@@ -100,16 +96,18 @@ export function EditorialWaveformPlayer() {
   const analyserRef = useRef<AnalyserNode | null>(null);
 
   const startTimeRef = useRef(0); // audioCtx.currentTime when started
-  const segmentPosRef = useRef(0); // seconds into the preview range at startTime
-  const durationRef = useRef(PREVIEW_DURATION_SEC); // preview duration (seconds)
+  const offsetRef = useRef(0); // seconds offset into buffer at startTime
+  const durationRef = useRef(0); // seconds
   const modeRef = useRef<Mode>("after");
   const liveLevelRef = useRef(0);
 
   const heights = mode === "after" ? WAVEFORM_HEIGHTS_AFTER : WAVEFORM_HEIGHTS_BEFORE;
 
-  const currentSegmentSec = useMemo(() => progress * PREVIEW_DURATION_SEC, [progress]);
-  const currentAbsoluteSec = PREVIEW_START_SEC + currentSegmentSec;
-  const totalAbsoluteSec = PREVIEW_END_SEC;
+  const totalSec = durationSec ?? 0;
+  const currentSec = useMemo(() => {
+    if (!durationSec) return 0;
+    return progress * durationSec;
+  }, [durationSec, progress]);
 
   const getAudioCtx = useCallback(() => {
     if (audioCtxRef.current) return audioCtxRef.current;
@@ -151,7 +149,7 @@ export function EditorialWaveformPlayer() {
 
       if (!opts?.keepProgress) {
         setProgress(0);
-        segmentPosRef.current = 0;
+        offsetRef.current = 0;
       }
       setIsPlaying(false);
       setLiveLevel(0);
@@ -163,9 +161,9 @@ export function EditorialWaveformPlayer() {
   const getCurrentPositionSec = useCallback(() => {
     if (!durationRef.current) return 0;
     const ctx = audioCtxRef.current;
-    if (!ctx || !isPlaying) return segmentPosRef.current;
+    if (!ctx || !isPlaying) return offsetRef.current;
     const elapsed = Math.max(0, ctx.currentTime - startTimeRef.current);
-    return Math.min(durationRef.current, segmentPosRef.current + elapsed);
+    return Math.min(durationRef.current, offsetRef.current + elapsed);
   }, [isPlaying]);
 
   const startSource = useCallback(
@@ -176,9 +174,9 @@ export function EditorialWaveformPlayer() {
       if (!buffers) throw new Error("Audio not loaded");
 
       const buffer = nextMode === "after" ? buffers.after : buffers.before;
-      // Always use the same preview duration for before/after to keep A/B fair & synced.
-      durationRef.current = PREVIEW_DURATION_SEC;
-      setDurationSec(PREVIEW_DURATION_SEC);
+      const duration = buffer.duration;
+      durationRef.current = duration;
+      setDurationSec(duration);
 
       const analyser = analyserRef.current ?? ctx.createAnalyser();
       analyserRef.current = analyser;
@@ -196,15 +194,10 @@ export function EditorialWaveformPlayer() {
       gain.connect(analyser);
       analyser.connect(ctx.destination);
 
-      const safeSegmentPos = Math.max(0, Math.min(PREVIEW_DURATION_SEC, offsetSec));
-      const safeAbsoluteOffset = Math.max(
-        0,
-        Math.min(buffer.duration, PREVIEW_START_SEC + safeSegmentPos),
-      );
-      const remaining = Math.max(0, PREVIEW_DURATION_SEC - safeSegmentPos);
+      const safeOffset = Math.max(0, Math.min(duration, offsetSec));
 
       startTimeRef.current = ctx.currentTime;
-      segmentPosRef.current = safeSegmentPos;
+      offsetRef.current = safeOffset;
       modeRef.current = nextMode;
       setMode(nextMode);
 
@@ -233,8 +226,9 @@ export function EditorialWaveformPlayer() {
         if (currentSourceRef.current === src) stopPlayback();
       };
 
-      // Start at the preview window offset and auto-stop at PREVIEW_END_SEC.
-      src.start(0, safeAbsoluteOffset, remaining);
+      // The MP3 assets are already trimmed to the preview range.
+      // Start at the current offset and let playback end naturally.
+      src.start(0, safeOffset);
       setIsPlaying(true);
     },
     [getAudioCtx, stopPlayback],
@@ -274,7 +268,7 @@ export function EditorialWaveformPlayer() {
 
   const play = useCallback(async () => {
     if (!buffersRef.current) return;
-    const duration = PREVIEW_DURATION_SEC;
+    const duration = durationRef.current || buffersRef.current.after.duration;
     const pos = getCurrentPositionSec();
     const nextPos = pos >= duration ? 0 : pos;
     await startSource(modeRef.current, nextPos);
@@ -286,8 +280,9 @@ export function EditorialWaveformPlayer() {
   const pause = useCallback(() => {
     const pos = getCurrentPositionSec();
     stopPlayback({ keepProgress: true });
-    segmentPosRef.current = pos;
-    setProgress(clamp01(pos / PREVIEW_DURATION_SEC));
+    offsetRef.current = pos;
+    const duration = durationRef.current;
+    if (duration) setProgress(clamp01(pos / duration));
   }, [getCurrentPositionSec, stopPlayback]);
 
   const togglePlay = useCallback(() => {
@@ -327,8 +322,8 @@ export function EditorialWaveformPlayer() {
         const gainAfter = rmsAfter > 0 ? Math.min(1, target / rmsAfter) : 1;
 
         buffersRef.current = { before, after, gains: { before: gainBefore, after: gainAfter } };
-        durationRef.current = PREVIEW_DURATION_SEC;
-        setDurationSec(PREVIEW_DURATION_SEC);
+        durationRef.current = after.duration;
+        setDurationSec(after.duration);
         setIsLoading(false);
       } catch (e) {
         if (cancelled) return;
@@ -367,10 +362,11 @@ export function EditorialWaveformPlayer() {
       if (!isPlaying) {
         setMode(next);
         modeRef.current = next;
-        segmentPosRef.current = pos;
-        durationRef.current = PREVIEW_DURATION_SEC;
-        setDurationSec(PREVIEW_DURATION_SEC);
-        setProgress(clamp01(pos / PREVIEW_DURATION_SEC));
+        offsetRef.current = pos;
+        const nextDuration = next === "after" ? buffers.after.duration : buffers.before.duration;
+        durationRef.current = nextDuration;
+        setDurationSec(nextDuration);
+        setProgress(clamp01(pos / nextDuration));
         return;
       }
 
@@ -402,13 +398,14 @@ export function EditorialWaveformPlayer() {
       if (!el || !buffers) return;
       const rect = el.getBoundingClientRect();
       const ratio = clamp01((clientX - rect.left) / Math.max(1, rect.width));
-      const nextPos = ratio * PREVIEW_DURATION_SEC;
+      const buffer = modeRef.current === "after" ? buffers.after : buffers.before;
+      const nextPos = ratio * buffer.duration;
 
       if (!isPlaying) {
-        segmentPosRef.current = nextPos;
-        durationRef.current = PREVIEW_DURATION_SEC;
-        setDurationSec(PREVIEW_DURATION_SEC);
-        setProgress(clamp01(nextPos / PREVIEW_DURATION_SEC));
+        offsetRef.current = nextPos;
+        durationRef.current = buffer.duration;
+        setDurationSec(buffer.duration);
+        setProgress(clamp01(nextPos / buffer.duration));
         return;
       }
 
@@ -444,7 +441,7 @@ export function EditorialWaveformPlayer() {
           role="img"
           aria-label={
             isPlaying
-              ? `Waveform preview playing, ${formatTime(currentAbsoluteSec)} of ${formatTime(totalAbsoluteSec)}`
+              ? `Waveform preview playing, ${formatTime(currentSec)} of ${formatTime(totalSec)}`
               : `Waveform preview, ${mode === "after" ? "after" : "before"} mastering`
           }
         >
@@ -541,9 +538,9 @@ export function EditorialWaveformPlayer() {
               {isPlaying ? <PauseIcon /> : <PlayIcon />}
             </button>
             <span className="font-mono text-[11px] tabular-nums tracking-[0.02em] text-black/42 sm:text-xs">
-              {formatTime(currentAbsoluteSec)}
+              {formatTime(currentSec)}
               <span className="text-black/25"> / </span>
-              {formatTime(totalAbsoluteSec)}
+              {formatTime(totalSec)}
             </span>
             {isLoading ? (
               <span className="ml-1 text-[11px] text-black/35 sm:text-xs">Loading audio…</span>

@@ -156,6 +156,45 @@ export function StudioEditorialSection() {
           <p className="mt-7 text-center text-[10px] font-medium uppercase tracking-[0.34em] text-black/34 sm:mt-8 sm:text-[11px] sm:tracking-[0.36em]">
             {GEAR_LINE}
           </p>
+
+          <div className="mt-9 border-t border-black/[0.06] pt-7 sm:mt-10 sm:pt-8">
+            <div className="mx-auto max-w-4xl">
+              <div className="grid gap-8 md:grid-cols-2 md:gap-x-12 md:gap-y-10">
+                <div className="md:col-span-2">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-black/38 sm:text-[11px] sm:tracking-[0.44em]">
+                    Studio / Gear
+                  </p>
+                  <p className="mt-4 text-[13px] leading-[1.7] text-black/44 sm:text-sm">
+                    Analog processing and monitoring chain used during mastering.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-[11px] font-medium uppercase tracking-[0.32em] text-black/70">
+                    Monitoring
+                  </h3>
+                  <ul className="space-y-2 text-[13px] leading-[1.6] text-black/52 sm:text-sm">
+                    <li className="border-b border-black/[0.06] pb-2">ATC SCM45A Pro</li>
+                    <li className="border-b border-black/[0.06] pb-2">Dual ATC SCS70 Sub</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-[11px] font-medium uppercase tracking-[0.32em] text-black/70">
+                    Conversion &amp; processing
+                  </h3>
+                  <ul className="space-y-2 text-[13px] leading-[1.6] text-black/52 sm:text-sm">
+                    <li className="border-b border-black/[0.06] pb-2">Mytek Manhattan II</li>
+                    <li className="border-b border-black/[0.06] pb-2">Neve Portico II MBP</li>
+                    <li className="border-b border-black/[0.06] pb-2">DW Fearn VT-7</li>
+                    <li className="border-b border-black/[0.06] pb-2">DW Fearn VT-5</li>
+                    <li className="border-b border-black/[0.06] pb-2">LAAL Analog Limiter</li>
+                    <li className="border-b border-black/[0.06] pb-2">Lavry Gold</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
