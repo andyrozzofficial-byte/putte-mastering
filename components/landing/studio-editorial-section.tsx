@@ -31,8 +31,10 @@ function ColorFrame({
 }: ColorFrameProps) {
   return (
     <div
-      className={`studio-editorial-photo group relative overflow-hidden bg-neutral-950 transition-shadow duration-500 ease-out hover:shadow-[0_12px_40px_-16px_rgba(0,0,0,0.55)] ${
-        variant === "hero" ? "studio-editorial-photo--hero" : ""
+      className={`studio-editorial-photo group relative overflow-hidden bg-neutral-900 transition-shadow duration-500 ease-out ${
+        variant === "hero"
+          ? "studio-editorial-photo--hero"
+          : "hover:shadow-[0_10px_36px_-14px_rgba(0,0,0,0.5)]"
       } ${className}`}
     >
       <Image
@@ -44,11 +46,13 @@ function ColorFrame({
         sizes={sizes}
       />
       <div
-        className="pointer-events-none absolute inset-0 bg-black/25 mix-blend-multiply"
+        className="pointer-events-none absolute inset-0 bg-black/20 mix-blend-multiply"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_42%,rgba(0,0,0,0.38)_100%)]"
+        className={`pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,rgba(0,0,0,0.32)_100%)] ${
+          variant === "hero" ? "opacity-80" : "opacity-100"
+        }`}
         aria-hidden
       />
       <div
@@ -61,6 +65,16 @@ function ColorFrame({
         aria-hidden
       />
     </div>
+  );
+}
+
+function DetailCaption({ children, className = "" }: { children: string; className?: string }) {
+  return (
+    <figcaption
+      className={`mt-2.5 text-[10px] font-medium uppercase tracking-[0.26em] text-white/45 ${className}`}
+    >
+      {children}
+    </figcaption>
   );
 }
 
@@ -90,55 +104,52 @@ export function StudioEditorialSection() {
         </div>
 
         <div className="mt-8 sm:mt-9 md:mt-10">
-          <div className="overflow-hidden rounded-xl bg-neutral-950 shadow-[0_18px_48px_-26px_rgba(0,0,0,0.42)] ring-1 ring-black/[0.08] transition-shadow duration-500 hover:shadow-[0_22px_56px_-24px_rgba(0,0,0,0.48)]">
+          <div className="overflow-hidden rounded-xl bg-neutral-950 shadow-[0_20px_52px_-28px_rgba(0,0,0,0.45)] ring-1 ring-black/[0.08] transition-shadow duration-500 hover:shadow-[0_24px_60px_-26px_rgba(0,0,0,0.5)]">
+            {/* Dominant hero — full width, no dead padding */}
             <figure className="relative">
               <ColorFrame
                 variant="hero"
                 src={STUDIO_WIDE}
                 alt="Wide view of the mastering studio with monitors and outboard gear"
                 sizes="(max-width: 1152px) 100vw, 72rem"
-                className="aspect-[2.55/1] max-h-[13.5rem] sm:max-h-[15rem] md:max-h-[16.5rem] w-full"
-                imageClassName="object-[center_52%]"
+                priority
+                className="aspect-[2.1/1] w-full sm:aspect-[2.2/1] md:aspect-[2.25/1]"
+                imageClassName="object-[center_50%]"
+                grainOpacity={0.04}
               />
               <div
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-neutral-950/85 from-0% via-neutral-950/20 via-38% to-transparent"
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-[38%] bg-gradient-to-t from-neutral-950/75 to-transparent"
                 aria-hidden
               />
-              <figcaption className="absolute bottom-3 left-5 text-[10px] font-medium uppercase tracking-[0.28em] text-white/48 sm:bottom-3.5 sm:left-6">
+              <figcaption className="absolute bottom-3 left-4 text-[10px] font-medium uppercase tracking-[0.28em] text-white/50 sm:bottom-3.5 sm:left-5">
                 Listening environment
               </figcaption>
             </figure>
 
-            <div className="border-t border-white/[0.07] px-4 py-5 sm:px-6 sm:py-6 md:px-7 md:py-6">
-              <div className="grid grid-cols-1 gap-6 sm:gap-7 md:grid-cols-[1.12fr_0.88fr] md:items-center md:gap-8">
-                <figure className="min-w-0">
-                  <ColorFrame
-                    src={STUDIO_RACK}
-                    alt="Close-up of analog mastering hardware in the equipment rack"
-                    sizes="(max-width: 768px) 100vw, 22rem"
-                    className="aspect-[16/10] w-full"
-                    imageClassName="object-[center_46%]"
-                  />
-                  <figcaption className="mt-2.5 text-[10px] font-medium uppercase tracking-[0.24em] text-white/40">
-                    Outboard rack
-                  </figcaption>
-                </figure>
+            {/* Gear pair — equal columns, flush grid, intentional scale */}
+            <div className="grid grid-cols-1 gap-[3px] border-t border-white/[0.08] sm:grid-cols-2">
+              <figure className="min-w-0 bg-neutral-950 p-[3px] sm:pr-[1.5px]">
+                <ColorFrame
+                  src={STUDIO_RACK}
+                  alt="Close-up of analog mastering hardware in the equipment rack"
+                  sizes="(max-width: 640px) 100vw, 28rem"
+                  className="aspect-[4/3] w-full sm:aspect-[3/2]"
+                  imageClassName="object-[center_44%]"
+                />
+                <DetailCaption className="px-0.5">Outboard rack</DetailCaption>
+              </figure>
 
-                <figure className="flex min-w-0 flex-col items-stretch sm:items-center md:items-end">
-                  <div className="w-full max-w-[17rem] sm:max-w-[18rem] md:max-w-[12.75rem] lg:max-w-[13.5rem]">
-                    <ColorFrame
-                      src={STUDIO_ANALOG_RED}
-                      alt="Vacuum tube analog equalizer and compressor in the mastering chain"
-                      sizes="(max-width: 768px) 85vw, 13.5rem"
-                      className="aspect-[16/10] w-full"
-                      imageClassName="object-[center_50%]"
-                    />
-                  </div>
-                  <figcaption className="mt-2.5 text-center text-[10px] font-medium uppercase tracking-[0.24em] text-white/40 md:text-right">
-                    Analog chain
-                  </figcaption>
-                </figure>
-              </div>
+              <figure className="min-w-0 bg-neutral-950 p-[3px] sm:pl-[1.5px]">
+                <ColorFrame
+                  src={STUDIO_ANALOG_RED}
+                  alt="Vacuum tube analog equalizer and compressor in the mastering chain"
+                  sizes="(max-width: 640px) 100vw, 28rem"
+                  className="aspect-[4/3] w-full sm:aspect-[3/2]"
+                  imageClassName="object-[center_46%]"
+                  grainOpacity={0.04}
+                />
+                <DetailCaption className="px-0.5 sm:text-right">Analog chain</DetailCaption>
+              </figure>
             </div>
           </div>
 
