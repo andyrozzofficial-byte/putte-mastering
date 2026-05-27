@@ -60,12 +60,12 @@ export function uploadFileToSupabaseSignedUrlWithProgress(options: {
           if (raw.length < 400) msg = raw;
         }
       }
-      reject(new Error(mapStorageUploadError(msg)));
+      reject(new Error(mapStorageUploadError(msg, file.size)));
     };
 
     xhr.onerror = () => {
       if (signal) signal.removeEventListener("abort", onAbort);
-      reject(new Error(mapStorageUploadError("Network error during upload.")));
+      reject(new Error(mapStorageUploadError("Network error during upload.", file.size)));
     };
 
     xhr.onabort = () => {

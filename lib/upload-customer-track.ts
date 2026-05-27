@@ -27,7 +27,7 @@ export type UploadCustomerTrackResult = {
 export async function uploadCustomerTrack(
   file: File,
 ): Promise<UploadCustomerTrackResult> {
-  const sizeError = getUploadSizeValidationError(file);
+  const sizeError = getUploadSizeValidationError(file, "customer-upload");
   if (sizeError) {
     throw new Error(sizeError);
   }
@@ -46,7 +46,7 @@ export async function uploadCustomerTrack(
     });
 
   if (error) {
-    throw new Error(mapStorageUploadError(error.message));
+    throw new Error(mapStorageUploadError(error.message, file.size));
   }
 
   return {

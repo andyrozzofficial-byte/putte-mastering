@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "verify:order-insert": "node --env-file=.env.local scripts/verify-order-insert.mjs",
+    "verify:upload-limits": "node scripts/verify-upload-size-limits.mjs",
     "db:push": "node --env-file=.env.local scripts/supabase-remote.mjs push",
     "db:types": "node --env-file=.env.local scripts/supabase-remote.mjs types",
     "db:sync": "node --env-file=.env.local scripts/supabase-remote.mjs all",

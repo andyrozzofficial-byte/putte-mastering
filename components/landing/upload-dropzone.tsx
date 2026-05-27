@@ -4,6 +4,7 @@ import { saveOrderUploadDraft } from "@/lib/order-flow-session";
 import {
   getUploadSizeValidationError,
   mapStorageUploadError,
+  MAX_UPLOAD_LABEL,
 } from "@/lib/upload-limits";
 import { uploadCustomerTrack } from "@/lib/upload-customer-track";
 import { useRouter } from "next/navigation";
@@ -29,7 +30,7 @@ export function UploadDropzone({
   const handleFile = useCallback(
     async (file: File) => {
       setUploadError(null);
-      const sizeError = getUploadSizeValidationError(file);
+      const sizeError = getUploadSizeValidationError(file, "upload-dropzone");
       if (sizeError) {
         setUploadError(sizeError);
         return;
@@ -45,7 +46,7 @@ export function UploadDropzone({
       } catch (e) {
         const msg =
           e instanceof Error
-            ? mapStorageUploadError(e.message)
+            ? mapStorageUploadError(e.message, file.size)
             : "Upload failed. Please try again.";
         setUploadError(msg);
       } finally {
@@ -147,7 +148,7 @@ export function UploadDropzone({
             embedded ? "text-[10px] sm:text-[11px]" : "text-[11px] sm:text-xs"
           }`}
         >
-          WAV, AIFF, FLAC, MP3 up to 500MB
+          WAV, AIFF, FLAC, MP3 up to {MAX_UPLOAD_LABEL}
         </p>
         {busy ? (
           <p className="mt-4 text-[13px] text-gray-500">Uploading…</p>

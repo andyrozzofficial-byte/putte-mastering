@@ -1,7 +1,11 @@
 import { apiJsonError, apiJsonSuccess } from "@/lib/api/json-response";
 import { generateDeliveryAccessToken } from "@/lib/delivery/access-token";
 import { ensureUploadBucketLimit } from "@/lib/storage/ensure-upload-bucket-limit";
-import { assertUploadSizeBytes, MAX_UPLOAD_LABEL } from "@/lib/upload-limits";
+import {
+  assertUploadSizeBytes,
+  formatUploadSize,
+  MAX_UPLOAD_LABEL,
+} from "@/lib/upload-limits";
 import {
   assertAllowedDeliverFileName,
   buildDeliverObjectPath,
@@ -63,9 +67,12 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     }
 
     try {
-      assertUploadSizeBytes(fileSizeBytes);
+      assertUploadSizeBytes(fileSizeBytes, "studio-deliver-sign");
     } catch {
-      return apiJsonError(`File exceeds the ${MAX_UPLOAD_LABEL} upload limit.`, 400);
+      return apiJsonError(
+        `File is ${formatUploadSize(fileSizeBytes)} (${fileSizeBytes.toLocaleString()} bytes), which exceeds the ${MAX_UPLOAD_LABEL} upload limit.`,
+        400,
+      );
     }
 
     const clientResult = getServiceRoleClientOrApiError("[deliver-sign]", {

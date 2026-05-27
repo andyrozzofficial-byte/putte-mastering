@@ -36,7 +36,7 @@ export function DeliveryMasterUpload({ orderId }: Props) {
       setFile(null);
       return;
     }
-    const sizeError = getUploadSizeValidationError(f);
+    const sizeError = getUploadSizeValidationError(f, "studio-deliver-upload");
     if (sizeError) {
       setError(sizeError);
       setFile(null);
@@ -60,7 +60,7 @@ export function DeliveryMasterUpload({ orderId }: Props) {
       return;
     }
 
-    const sizeError = getUploadSizeValidationError(file);
+    const sizeError = getUploadSizeValidationError(file, "studio-deliver-upload");
     if (sizeError) {
       setError(sizeError);
       return;
@@ -147,7 +147,9 @@ export function DeliveryMasterUpload({ orderId }: Props) {
       if (inputRef.current) inputRef.current.value = "";
     } catch (e) {
       const msg =
-        e instanceof Error ? mapStorageUploadError(e.message) : "Upload failed.";
+        e instanceof Error
+          ? mapStorageUploadError(e.message, file.size)
+          : "Upload failed.";
       setError(msg);
     } finally {
       abortRef.current = null;
