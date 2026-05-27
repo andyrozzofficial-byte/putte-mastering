@@ -14,6 +14,8 @@ function applyBetaGate(request: NextRequest, response: NextResponse): NextRespon
 
   const path = request.nextUrl.pathname;
   if (isSiteBetaExemptPath(path) || path.startsWith("/api")) return null;
+  // Storage limit sync uses service role; must stay reachable before uploads.
+  if (path === "/api/storage/sync-limits") return null;
 
   const hasAccess = request.cookies.get(BETA_ACCESS_COOKIE)?.value === "1";
   if (hasAccess) return null;

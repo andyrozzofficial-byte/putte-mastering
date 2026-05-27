@@ -286,48 +286,57 @@ export function ContactSection() {
   return (
     <footer
       id="contact"
-      className="border-t border-black/[0.06] bg-white pt-16 pb-11 sm:pt-20 sm:pb-12 md:pt-24 md:pb-14"
+      className="border-t border-black/[0.08] bg-white pt-12 pb-8 sm:pt-14 sm:pb-9 md:pt-16 md:pb-10"
     >
-      <div className="mx-auto max-w-5xl px-5 sm:px-8 lg:px-10">
-        <div className="mx-auto max-w-4xl">
-          <p className="text-[11px] font-medium uppercase tracking-[0.34em] text-black/74 sm:text-xs sm:tracking-[0.38em]">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-10">
+        <div className="mx-auto max-w-xl text-center">
+          <p className="text-[11px] font-medium uppercase tracking-[0.36em] text-black/78 sm:text-xs sm:tracking-[0.4em]">
             First Listen Mastering
           </p>
-          <p className="mt-2.5 text-[13px] leading-[1.7] text-black/44 sm:mt-3 sm:text-sm">
+          <p className="mt-2 text-[13px] leading-[1.65] text-black/44 sm:text-sm">
             Manual analog mastering studio
           </p>
 
-          <div className="mt-8 sm:mt-9">
-            <a
-              href={STUDIO_CONTACT_MAILTO}
-              className="inline-block font-mono text-[13px] tracking-[0.02em] text-black/76 transition-colors hover:text-black sm:text-sm"
-            >
-              {STUDIO_CONTACT_EMAIL}
-            </a>
-          </div>
+          <a
+            href={STUDIO_CONTACT_MAILTO}
+            className="mt-6 inline-block font-mono text-[13px] tracking-[0.02em] text-black/72 transition-colors hover:text-black sm:mt-7 sm:text-sm"
+          >
+            {STUDIO_CONTACT_EMAIL}
+          </a>
 
-          <div className="mt-10 border-t border-black/[0.06] pt-8 sm:mt-12 sm:pt-9">
-            <p className="text-[10px] font-medium uppercase tracking-[0.26em] text-black/62 sm:text-[11px]">
+          <nav className="mt-8 sm:mt-9" aria-label="Footer">
+            <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-black/50 sm:text-[11px]">
               Navigation
             </p>
-            <nav className="mt-4" aria-label="Footer">
-              <ul className="grid grid-cols-2 gap-x-8 gap-y-2.5 text-[13px] leading-[1.75] text-black/46 sm:flex sm:flex-wrap sm:gap-x-9 sm:gap-y-2 sm:text-sm">
-                {footerNav.map(({ href, label }) => (
-                  <li key={label}>
-                    <a className="transition-colors hover:text-black/72" href={href}>
-                      {label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-        </div>
+            <ul className="mt-3.5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[13px] text-black/48 sm:gap-x-7 sm:text-sm">
+              {footerNav.map(({ href, label }) => (
+                <li key={label}>
+                  <a
+                    className="transition-colors hover:text-black/75"
+                    href={href}
+                  >
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        <div className="mx-auto mt-10 max-w-4xl border-t border-black/[0.06] pt-5 sm:mt-11 sm:pt-6">
-          <p className="text-[10px] leading-relaxed text-black/28 sm:text-[11px]">
-            © 2026 First Listen Mastering
-          </p>
+          <div className="mt-8 border-t border-black/[0.06] pt-6 sm:mt-9 sm:pt-7">
+            <p className="text-[10px] leading-relaxed tracking-[0.02em] text-black/30 sm:text-[11px]">
+              © 2026 First Listen Mastering
+            </p>
+            <p className="mt-4">
+              <a
+                href="https://lunov.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] uppercase tracking-[0.22em] text-black/32 transition-colors hover:text-black/52 sm:text-[11px] sm:tracking-[0.26em]"
+              >
+                Built by Lunov
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>

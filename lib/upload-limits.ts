@@ -51,7 +51,7 @@ export function mapStorageUploadError(raw: string): string {
     lower.includes("file too large") ||
     lower.includes("413")
   ) {
-    return `This file exceeds the ${MAX_UPLOAD_LABEL} upload limit. Try a shorter export, or compress the file before uploading.`;
+    return `This file exceeds the ${MAX_UPLOAD_LABEL} upload limit. If this keeps happening, the storage bucket may still be capped in Supabase — run the storage limit SQL in the Supabase dashboard, or try a shorter export.`;
   }
 
   if (lower.includes("bucket not found")) {

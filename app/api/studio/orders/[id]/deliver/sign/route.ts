@@ -1,5 +1,6 @@
 import { apiJsonError, apiJsonSuccess } from "@/lib/api/json-response";
 import { generateDeliveryAccessToken } from "@/lib/delivery/access-token";
+import { ensureUploadBucketLimit } from "@/lib/storage/ensure-upload-bucket-limit";
 import { assertUploadSizeBytes, MAX_UPLOAD_LABEL } from "@/lib/upload-limits";
 import {
   assertAllowedDeliverFileName,
@@ -113,6 +114,8 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
         return apiJsonError("Could not prepare delivery link", 500);
       }
     }
+
+    await ensureUploadBucketLimit();
 
     const objectPath = buildDeliverObjectPath(orderId, fileName);
 

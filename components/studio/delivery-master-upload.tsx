@@ -6,6 +6,7 @@ import {
   mapStorageUploadError,
   MAX_UPLOAD_LABEL,
 } from "@/lib/upload-limits";
+import { ensureStorageLimitsSynced } from "@/lib/storage/sync-limits-client";
 import { uploadFileToSupabaseSignedUrlWithProgress } from "@/lib/studio/supabase-signed-upload-xhr";
 import { useCallback, useMemo, useRef, useState } from "react";
 
@@ -75,6 +76,8 @@ export function DeliveryMasterUpload({ orderId }: Props) {
     setPhase("signing");
 
     try {
+      await ensureStorageLimitsSynced();
+
       const signRes = await fetch(`/api/studio/orders/${orderId}/deliver/sign`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
