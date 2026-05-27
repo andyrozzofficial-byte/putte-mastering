@@ -113,8 +113,8 @@ export function StudioEditorialSection() {
                 alt="Wide view of the mastering studio with monitors and outboard gear"
                 sizes="(max-width: 1152px) 100vw, 72rem"
                 priority
-                className="aspect-[2.1/1] w-full sm:aspect-[2.2/1] md:aspect-[2.25/1]"
-                imageClassName="object-[center_50%]"
+                className="aspect-[2.1/1] w-full sm:aspect-[2.2/1] md:aspect-[2.55/1] lg:aspect-[2.6/1]"
+                imageClassName="object-[center_48%] md:object-[center_46%]"
                 grainOpacity={0.04}
               />
               <div
@@ -133,8 +133,8 @@ export function StudioEditorialSection() {
                   src={STUDIO_RACK}
                   alt="Close-up of analog mastering hardware in the equipment rack"
                   sizes="(max-width: 640px) 100vw, 28rem"
-                  className="aspect-[4/3] w-full sm:aspect-[3/2]"
-                  imageClassName="object-[center_44%]"
+                  className="aspect-[4/3] w-full sm:aspect-[3/2] md:aspect-[5/3]"
+                  imageClassName="object-[center_44%] md:object-[center_42%]"
                 />
                 <DetailCaption className="px-0.5">Outboard rack</DetailCaption>
               </figure>
@@ -144,8 +144,8 @@ export function StudioEditorialSection() {
                   src={STUDIO_ANALOG_RED}
                   alt="Vacuum tube analog equalizer and compressor in the mastering chain"
                   sizes="(max-width: 640px) 100vw, 28rem"
-                  className="aspect-[4/3] w-full sm:aspect-[3/2]"
-                  imageClassName="object-[center_46%]"
+                  className="aspect-[4/3] w-full sm:aspect-[3/2] md:aspect-[5/3]"
+                  imageClassName="object-[center_46%] md:object-[center_44%]"
                   grainOpacity={0.04}
                 />
                 <DetailCaption className="px-0.5 sm:text-right">Analog chain</DetailCaption>
@@ -169,27 +169,27 @@ export function StudioEditorialSection() {
                   </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                   <h3 className="text-[11px] font-medium uppercase tracking-[0.32em] text-black/70">
                     Monitoring
                   </h3>
-                  <ul className="space-y-2 text-[13px] leading-[1.6] text-black/52 sm:text-sm">
-                    <li className="border-b border-black/[0.06] pb-2">ATC SCM45A Pro</li>
-                    <li className="border-b border-black/[0.06] pb-2">Dual ATC SCS70 Sub</li>
+                  <ul className="space-y-3 text-[13px] leading-[1.65] text-black/56 sm:space-y-3.5 sm:text-sm">
+                    <li className="border-b border-black/[0.06] pb-3">ATC SCM45A Pro</li>
+                    <li className="border-b border-black/[0.06] pb-3">Dual ATC SCS70 Sub</li>
                   </ul>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                   <h3 className="text-[11px] font-medium uppercase tracking-[0.32em] text-black/70">
                     Conversion &amp; processing
                   </h3>
-                  <ul className="space-y-2 text-[13px] leading-[1.6] text-black/52 sm:text-sm">
-                    <li className="border-b border-black/[0.06] pb-2">Mytek Manhattan II</li>
-                    <li className="border-b border-black/[0.06] pb-2">Neve Portico II MBP</li>
-                    <li className="border-b border-black/[0.06] pb-2">DW Fearn VT-7</li>
-                    <li className="border-b border-black/[0.06] pb-2">DW Fearn VT-5</li>
-                    <li className="border-b border-black/[0.06] pb-2">LAAL Analog Limiter</li>
-                    <li className="border-b border-black/[0.06] pb-2">Lavry Gold</li>
+                  <ul className="space-y-3 text-[13px] leading-[1.65] text-black/56 sm:space-y-3.5 sm:text-sm">
+                    <li className="border-b border-black/[0.06] pb-3">Mytek Manhattan II</li>
+                    <li className="border-b border-black/[0.06] pb-3">Neve Portico II MBP</li>
+                    <li className="border-b border-black/[0.06] pb-3">DW Fearn VT-7</li>
+                    <li className="border-b border-black/[0.06] pb-3">DW Fearn VT-5</li>
+                    <li className="border-b border-black/[0.06] pb-3">LAAL Analog Limiter</li>
+                    <li className="border-b border-black/[0.06] pb-3">Lavry Gold</li>
                   </ul>
                 </div>
               </div>

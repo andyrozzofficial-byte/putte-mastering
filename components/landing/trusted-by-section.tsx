@@ -7,32 +7,32 @@ const primaryCredits: readonly {
     id: "bts",
     lines: ["BTS"],
     className:
-      "text-[clamp(1.85rem,5.2vw,2.95rem)] font-semibold tracking-[-0.13em] text-black/[0.82]",
+      "text-[clamp(1.85rem,5.2vw,2.95rem)] font-semibold tracking-[-0.13em] text-black/[0.88]",
   },
   {
     id: "nct",
     lines: ["NCT"],
     className:
-      "text-[clamp(1.6rem,4.6vw,2.5rem)] font-medium tracking-[0.16em] text-black/[0.66]",
+      "text-[clamp(1.6rem,4.6vw,2.5rem)] font-medium tracking-[0.16em] text-black/[0.74]",
   },
   {
     id: "txt",
     lines: ["TXT"],
     className:
-      "text-[clamp(1.72rem,4.9vw,2.7rem)] font-light tracking-[0.44em] text-black/[0.72]",
+      "text-[clamp(1.72rem,4.9vw,2.7rem)] font-light tracking-[0.44em] text-black/[0.78]",
   },
   {
     id: "itzy",
     lines: ["ITZY"],
     className:
-      "text-[clamp(1.75rem,5vw,2.8rem)] font-bold tracking-[0.05em] text-black/[0.76]",
+      "text-[clamp(1.75rem,5vw,2.8rem)] font-bold tracking-[0.05em] text-black/[0.82]",
   },
 ] as const;
 
 const warnerMark = {
   lines: ["WARNER", "CHAPPELL"] as const,
   className:
-    "text-[0.74rem] font-medium uppercase leading-[1.42] tracking-[0.36em] text-black/[0.56] sm:text-[0.82rem] sm:tracking-[0.4em] md:text-[0.86rem]",
+    "text-[0.74rem] font-medium uppercase leading-[1.42] tracking-[0.36em] text-black/[0.64] sm:text-[0.82rem] sm:tracking-[0.4em] md:text-[0.86rem]",
 };
 
 function CreditMark({
