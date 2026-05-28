@@ -10,7 +10,6 @@ import { TrustedBySection } from "@/components/landing/trusted-by-section";
 import { FeatureGrid } from "@/components/landing/feature-grid";
 import { HeroFeatureStrip } from "@/components/landing/hero-feature-strip";
 import { HeroSection } from "@/components/landing/hero-section";
-import { HeroTrustSection } from "@/components/landing/hero-trust-section";
 import { LandingNavbar } from "@/components/landing/navbar";
 import type { Metadata } from "next";
 
@@ -26,7 +25,6 @@ export default function HomePage() {
       <LandingNavbar />
       <main>
         <HeroSection />
-        <HeroTrustSection />
         <HeroFeatureStrip />
         <HowItWorksSection />
         <BeforeAfterSection />

@@ -42,6 +42,32 @@ export function HeroSection() {
               </div>
             </div>
 
+            <aside
+              className="max-w-md space-y-2.5 sm:space-y-3"
+              aria-labelledby="hero-trust-quote"
+            >
+              <blockquote className="not-italic">
+                <p
+                  id="hero-trust-quote"
+                  className="text-[16px] font-semibold leading-[1.5] tracking-[-0.02em] text-black sm:text-[17px] sm:leading-snug"
+                >
+                  A good master won&apos;t fix a bad song — but it can make a
+                  great one impossible to ignore.
+                </p>
+              </blockquote>
+              <p className="max-w-[34ch] text-[13px] leading-[1.7] text-gray-600 sm:text-[14px] sm:leading-relaxed">
+                Pontus &apos;Oneye&apos; Kalm is a multifaceted producer and
+                songwriter with over 3.5 billion streams across records he has
+                produced and written. Known for his work with globally renowned
+                artists such as BTS, NCT Dream, and NCT Wish, Pontus has
+                established himself as a standout creative force in the global
+                music industry.
+              </p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+                3.5B+ streams • BTS • NCT Dream • NCT Wish • Manual mastering
+              </p>
+            </aside>
+
             <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:gap-4">
               <Link
                 href="#upload"
