@@ -115,12 +115,12 @@ export function UploadDropzone({
           aria-disabled={!legalConsentAccepted}
           className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed text-center transition-colors ${
             embedded
-              ? `px-6 py-10 sm:px-7 sm:py-11 ${
+              ? `px-6 py-7 sm:px-7 sm:py-8 ${
                   active
                     ? "border-neutral-400/60 bg-neutral-50/90"
                     : "border-neutral-300/45 bg-white/75 hover:border-neutral-400/80"
                 }`
-              : `px-5 py-11 sm:px-8 sm:py-14 ${
+              : `px-5 py-8 sm:px-8 sm:py-10 ${
                   active
                     ? "border-neutral-400/70 bg-neutral-50/80"
                     : "border-neutral-300/55 bg-white/80 hover:border-neutral-400/80"
@@ -145,7 +145,7 @@ export function UploadDropzone({
               e.target.value = "";
             }}
           />
-          <UploadCloudIcon className="mb-3 text-gray-400" embedded={embedded} />
+          <UploadCloudIcon className="mb-2 text-gray-400" embedded={embedded} />
           <p
             className={`font-semibold tracking-tight text-black ${
               embedded ? "text-[15px] sm:text-base" : "text-base sm:text-[17px]"
@@ -161,7 +161,7 @@ export function UploadDropzone({
             or click to choose a file
           </p>
           <p
-            className={`mt-5 text-gray-400 ${
+            className={`mt-4 text-gray-400 ${
               embedded ? "text-[10px] sm:text-[11px]" : "text-[11px] sm:text-xs"
             }`}
           >
@@ -215,6 +215,8 @@ export function UploadDropzone({
           </p>
         ) : null}
       </div>
+
+      <div className="h-6" aria-hidden />
     </div>
   );
 }
