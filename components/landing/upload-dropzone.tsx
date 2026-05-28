@@ -179,41 +179,43 @@ export function UploadDropzone({
         ) : null}
         </div>
 
-        <div className={`${embedded ? "px-1.5" : "px-1.5"} pt-1.5`}>
-          <div className="mx-auto w-full max-w-[480px]">
-            <label className="flex items-start gap-3 text-left">
-            <input
-              type="checkbox"
-              checked={legalConsentAccepted}
-              onChange={(e) => {
-                const next = e.target.checked;
-                setLegalConsentAccepted(next);
-                if (next) setLegalConsentError(false);
-              }}
-              className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-black accent-black"
-            />
-            <span className="text-xs leading-[1.6] text-black/60">
-              I confirm that I own or have permission to upload this material and
-              agree to the{" "}
-              <Link
-                href="/terms"
-                className="underline underline-offset-4 transition-colors hover:text-black/80"
-              >
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link
-                href="/privacy"
-                className="underline underline-offset-4 transition-colors hover:text-black/80"
-              >
-                Privacy Policy
-              </Link>
-              .
-            </span>
+        <div className={`${embedded ? "px-1.5" : "px-1.5"} -mt-6 pt-0`}>
+          <div className="mx-auto w-full max-w-[460px] text-left">
+            <label className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                checked={legalConsentAccepted}
+                onChange={(e) => {
+                  const next = e.target.checked;
+                  setLegalConsentAccepted(next);
+                  if (next) setLegalConsentError(false);
+                }}
+                className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-black accent-black"
+              />
+              <div className="min-w-0">
+                <span className="block text-xs leading-[1.6] text-black/60">
+                  I confirm that I own or have permission to upload this material
+                  and agree to the{" "}
+                  <Link
+                    href="/terms"
+                    className="underline underline-offset-4 transition-colors hover:text-black/80"
+                  >
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    href="/privacy"
+                    className="underline underline-offset-4 transition-colors hover:text-black/80"
+                  >
+                    Privacy Policy
+                  </Link>
+                  .
+                </span>
+                <p className="mt-2 text-[11px] leading-relaxed text-black/32">
+                  Uploaded files remain your property and responsibility.
+                </p>
+              </div>
             </label>
-            <p className="mt-1 text-[11px] leading-relaxed text-black/36">
-              Uploaded files remain your property and responsibility.
-            </p>
             {legalConsentError ? (
               <p
                 className="mt-2 text-[11px] leading-relaxed text-red-700"
