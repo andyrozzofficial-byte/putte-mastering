@@ -179,8 +179,9 @@ export function UploadDropzone({
           </div>
         </div>
 
-        <div className={`mt-4 w-full text-left ${consentPadding}`}>
-          <label className="flex items-start gap-3">
+        <div className={`mt-6 w-full text-left ${consentPadding}`}>
+          <div className="max-w-[520px]">
+            <label className="flex items-start gap-3 pt-1">
             <input
               type="checkbox"
               checked={legalConsentAccepted}
@@ -192,13 +193,13 @@ export function UploadDropzone({
               className="mt-0.5 h-3.5 w-3.5 rounded border-neutral-300 text-black accent-black"
             />
             <div className="min-w-0">
-              <span className="block text-sm leading-relaxed text-black/65">
+              <span className="block text-xs leading-relaxed text-black/65">
                 I confirm I own or have permission to upload this material.
               </span>
             </div>
-          </label>
+            </label>
 
-          <p className="mt-1.5 pl-[26px] text-xs leading-relaxed text-black/60">
+            <p className="mt-1.5 pl-[26px] text-xs leading-relaxed text-black/60">
             By uploading files, I agree to the{" "}
             <Link
               href="/terms"
@@ -216,11 +217,15 @@ export function UploadDropzone({
             . Uploaded files remain my property and responsibility.
           </p>
 
-          {legalConsentError ? (
-            <p className="mt-2 pl-[26px] text-[11px] leading-relaxed text-red-700" role="alert">
-              Please confirm ownership and accept the terms before uploading.
-            </p>
-          ) : null}
+            {legalConsentError ? (
+              <p
+                className="mt-2 pl-[26px] text-[11px] leading-relaxed text-red-700"
+                role="alert"
+              >
+                Please confirm ownership and accept the terms before uploading.
+              </p>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>
