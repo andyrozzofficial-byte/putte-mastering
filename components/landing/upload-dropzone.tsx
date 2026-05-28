@@ -192,8 +192,8 @@ export function UploadDropzone({
               className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-black accent-black"
             />
             <span className="text-[11px] leading-[1.6] text-black/60 sm:text-xs">
-              I confirm that I own, control, or have permission to upload and
-              process this material. By uploading files, I agree to the{" "}
+              I confirm that I own or have permission to upload this material and
+              agree to the{" "}
               <Link
                 href="/terms"
                 className="underline underline-offset-4 transition-colors hover:text-black/80"
@@ -207,10 +207,12 @@ export function UploadDropzone({
               >
                 Privacy Policy
               </Link>
-              . I understand that uploaded files remain my responsibility and
-              that I retain ownership of all submitted content.
+              .
             </span>
           </label>
+          <p className="mt-1.5 text-[11px] leading-relaxed text-black/45 sm:text-xs">
+            Uploaded files remain your property and responsibility.
+          </p>
           {legalConsentError ? (
             <p className="mt-2 text-[11px] leading-relaxed text-red-700" role="alert">
               Please confirm ownership and accept the terms before uploading.
