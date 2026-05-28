@@ -130,15 +130,25 @@ export async function POST(req: Request) {
   }
 
   const portal = deliveryPortalAbsoluteUrl(delivery_access_token);
-  void sendResendEmail({
-    to: customer_email,
-    subject: "We received your mastering order",
-    html: `<p>Hi ${escapeHtml(customer_name || "there")},</p>
+  console.info("[stripe-webhook] delivery url", { portal });
+  try {
+    const result = await sendResendEmail({
+      to: customer_email,
+      subject: "We received your mastering order",
+      html: `<p>Hi ${escapeHtml(customer_name || "there")},</p>
 <p>Thanks for your order. We’ve received your payment and files.</p>
 <p>Track status and download your master when it’s ready:</p>
 <p><a href="${escapeHtml(portal)}">${escapeHtml(portal)}</a></p>
 <p>— First Listen Mastering</p>`,
-  });
+    });
+    console.info("[EMAIL SENT] stripe-webhook customer", {
+      ok: result.ok,
+      reason: result.ok ? undefined : result.reason,
+      to: `${customer_email.slice(0, 2)}…`,
+    });
+  } catch (err) {
+    console.error("[EMAIL FAILED] stripe-webhook customer", err);
+  }
 
   return NextResponse.json({ received: true });
 }

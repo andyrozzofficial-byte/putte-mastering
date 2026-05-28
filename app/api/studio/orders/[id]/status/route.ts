@@ -60,14 +60,24 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       const track = (row.track_name as string | null)?.trim() || "your project";
       if (email && tok) {
         const portal = deliveryPortalAbsoluteUrl(tok);
-        void sendResendEmail({
-          to: email,
-          subject: "We’re working on your master",
-          html: `<p>Hi,</p>
+        console.info("[studio-status] delivery url", { id, portal });
+        try {
+          const result = await sendResendEmail({
+            to: email,
+            subject: "We’re working on your master",
+            html: `<p>Hi,</p>
 <p>We’ve started work on <strong>${escapeHtml(track)}</strong>.</p>
 <p>You can follow progress here: <a href="${escapeHtml(portal)}">${escapeHtml(portal)}</a></p>
 <p>— First Listen Mastering</p>`,
-        });
+          });
+          console.info("[EMAIL SENT] studio-status customer", {
+            ok: result.ok,
+            reason: result.ok ? undefined : result.reason,
+            to: `${email.slice(0, 2)}…`,
+          });
+        } catch (err) {
+          console.error("[EMAIL FAILED] studio-status customer", err);
+        }
       }
     }
 

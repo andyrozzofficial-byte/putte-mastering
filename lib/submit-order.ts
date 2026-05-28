@@ -132,13 +132,23 @@ export async function submitOrderToSupabase(row: OrderInsert): Promise<void> {
   console.info("[submit-order] Insert finished without error.");
 
   const deliveryUrl = deliveryPortalAbsoluteUrl(payload.delivery_access_token);
-  void sendResendEmail({
-    to: payload.customer_email,
-    subject: "We received your mastering order",
-    html: `<p>Hi ${escapeHtml(row.customer_name.trim())},</p>
+  console.info("[submit-order] delivery url", { deliveryUrl });
+  try {
+    const result = await sendResendEmail({
+      to: payload.customer_email,
+      subject: "We received your mastering order",
+      html: `<p>Hi ${escapeHtml(row.customer_name.trim())},</p>
 <p>Thanks for your order. We’ve received your files and will begin work soon.</p>
 <p>You can track status and download your master here when it’s ready:</p>
 <p><a href="${escapeHtml(deliveryUrl)}">${escapeHtml(deliveryUrl)}</a></p>
 <p>— First Listen Mastering</p>`,
-  });
+    });
+    console.info("[EMAIL SENT] submit-order customer", {
+      ok: result.ok,
+      reason: result.ok ? undefined : result.reason,
+      to: `${payload.customer_email.slice(0, 2)}…`,
+    });
+  } catch (err) {
+    console.error("[EMAIL FAILED] submit-order customer", err);
+  }
 }

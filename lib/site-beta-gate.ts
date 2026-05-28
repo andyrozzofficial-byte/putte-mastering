@@ -18,7 +18,14 @@ export function isSiteBetaGateEnabled(): boolean {
 
 /** Paths that skip the beta gate (studio admin remains reachable). */
 export function isSiteBetaExemptPath(pathname: string): boolean {
-  return pathname === "/login" || pathname.startsWith("/studio");
+  return (
+    pathname === "/login" ||
+    pathname.startsWith("/studio") ||
+    pathname.startsWith("/delivery") ||
+    pathname.startsWith("/terms") ||
+    pathname.startsWith("/privacy") ||
+    pathname.startsWith("/revisions")
+  );
 }
 
 export function grantSiteBetaAccess(): void {

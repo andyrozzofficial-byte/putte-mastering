@@ -120,6 +120,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       orderId,
       version: result.version,
       pathPrefix: objectPath.slice(0, 64),
+      deliveryUrl: result.deliveryUrl,
     });
 
     return apiJsonSuccess({

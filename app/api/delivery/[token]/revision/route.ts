@@ -78,24 +78,43 @@ export async function POST(
     const portalUrl = deliveryPortalAbsoluteUrl(t);
 
     if (customerEmail) {
-      void sendResendEmail({
-        to: customerEmail,
-        subject: "We received your revision request",
-        html: `<p>Hi,</p>
+      console.info("[delivery-revision] delivery url", { orderId: order.id, portalUrl });
+      try {
+        const result = await sendResendEmail({
+          to: customerEmail,
+          subject: "We received your revision request",
+          html: `<p>Hi,</p>
 <p>Thanks — we’ve received your notes for <strong>${escapeHtml(trackLabel)}</strong> and will follow up soon.</p>
 <p><a href="${escapeHtml(portalUrl)}">View delivery page</a></p>`,
-      });
+        });
+        console.info("[EMAIL SENT] delivery-revision customer", {
+          ok: result.ok,
+          reason: result.ok ? undefined : result.reason,
+          to: `${customerEmail.slice(0, 2)}…`,
+        });
+      } catch (err) {
+        console.error("[EMAIL FAILED] delivery-revision customer", err);
+      }
     }
 
     const notify = getStudioNotifyEmail();
     if (notify) {
-      void sendResendEmail({
-        to: notify,
-        subject: `Revision request — ${trackLabel}`,
-        html: `<p>New revision notes for order <code>${escapeHtml(order.id as string)}</code> (${escapeHtml(trackLabel)}).</p>
+      try {
+        const result = await sendResendEmail({
+          to: notify,
+          subject: `Revision request — ${trackLabel}`,
+          html: `<p>New revision notes for order <code>${escapeHtml(order.id as string)}</code> (${escapeHtml(trackLabel)}).</p>
 <pre style="white-space:pre-wrap;font-family:system-ui,sans-serif">${escapeHtml(message)}</pre>
 <p><a href="${escapeHtml(portalUrl)}">Customer portal</a></p>`,
-      });
+        });
+        console.info("[EMAIL SENT] delivery-revision notify", {
+          ok: result.ok,
+          reason: result.ok ? undefined : result.reason,
+          to: `${notify.slice(0, 2)}…`,
+        });
+      } catch (err) {
+        console.error("[EMAIL FAILED] delivery-revision notify", err);
+      }
     }
 
     return apiJsonSuccess({});

@@ -333,6 +333,7 @@ export async function finalizeDeliverMasterUpload(options: {
   console.info("[finalize] sending notifications", {
     orderId,
     hasCustomerEmail: !!customerEmail,
+    deliveryUrl,
     deliveryUrlHost: (() => {
       try {
         return new URL(deliveryUrl).host;
@@ -343,24 +344,42 @@ export async function finalizeDeliverMasterUpload(options: {
   });
 
   if (customerEmail) {
-    void sendResendEmail({
-      to: customerEmail,
-      subject: "Your master is ready",
-      html: `<p>Hi,</p>
+    try {
+      const result = await sendResendEmail({
+        to: customerEmail,
+        subject: "Your master is ready",
+        html: `<p>Hi,</p>
 <p>Your master for <strong>${escapeHtml(trackLabel)}</strong> is ready to download.</p>
 <p><a href="${escapeHtml(deliveryUrl)}">Open delivery page</a></p>
 <p>— First Listen Mastering</p>`,
-    });
+      });
+      console.info("[EMAIL SENT] deliver-finalize customer", {
+        ok: result.ok,
+        reason: result.ok ? undefined : result.reason,
+        to: `${customerEmail.slice(0, 2)}…`,
+      });
+    } catch (err) {
+      console.error("[EMAIL FAILED] deliver-finalize customer", err);
+    }
   }
 
   const notify = getStudioNotifyEmail();
   if (notify) {
-    void sendResendEmail({
-      to: notify,
-      subject: `Master uploaded — ${trackLabel}`,
-      html: `<p>A new master was uploaded for order <code>${escapeHtml(orderId)}</code> (version ${nextVersion}).</p>
+    try {
+      const result = await sendResendEmail({
+        to: notify,
+        subject: `Master uploaded — ${trackLabel}`,
+        html: `<p>A new master was uploaded for order <code>${escapeHtml(orderId)}</code> (version ${nextVersion}).</p>
 <p>Customer link: <a href="${escapeHtml(deliveryUrl)}">${escapeHtml(deliveryUrl)}</a></p>`,
-    });
+      });
+      console.info("[EMAIL SENT] deliver-finalize notify", {
+        ok: result.ok,
+        reason: result.ok ? undefined : result.reason,
+        to: `${notify.slice(0, 2)}…`,
+      });
+    } catch (err) {
+      console.error("[EMAIL FAILED] deliver-finalize notify", err);
+    }
   }
 
   console.info("[finalize] done", { orderId, version: nextVersion });
