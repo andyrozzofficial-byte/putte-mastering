@@ -283,6 +283,12 @@ export function ContactSection() {
     { href: "/#upload", label: "Upload" },
   ] as const;
 
+  const legalNav = [
+    { href: "/terms", label: "Terms" },
+    { href: "/privacy", label: "Privacy" },
+    { href: "/revisions", label: "Revisions" },
+  ] as const;
+
   return (
     <footer
       id="contact"
@@ -315,6 +321,21 @@ export function ContactSection() {
                     className="transition-colors hover:text-black/75"
                     href={href}
                   >
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <nav className="mt-7 sm:mt-8" aria-label="Legal">
+            <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-black/40 sm:text-[11px]">
+              Legal
+            </p>
+            <ul className="mt-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[13px] text-black/44 sm:gap-x-7 sm:text-sm">
+              {legalNav.map(({ href, label }) => (
+                <li key={label}>
+                  <a className="transition-colors hover:text-black/75" href={href}>
                     {label}
                   </a>
                 </li>
