@@ -70,153 +70,159 @@ export function UploadDropzone({
 
   const embedded = variant === "embedded";
 
+  const consentPadding = embedded ? "px-6 sm:px-7" : "px-5 sm:px-8";
+
   return (
     <div id="upload" aria-busy={busy}>
-      <div
-        className={`rounded-2xl transition-colors ${
-          embedded
-            ? `bg-neutral-50/55 p-0.5 shadow-[0_10px_40px_-22px_rgba(0,0,0,0.22)] ring-1 ring-black/[0.04] ${
-                active ? "ring-1 ring-neutral-300/40" : ""
-              }`
-            : `border border-neutral-200/50 bg-gradient-to-b from-white to-neutral-50/40 p-1 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.05)] sm:p-1.5 ${
-                active ? "ring-1 ring-neutral-300/50" : ""
-              }`
-        } ${busy ? "pointer-events-none opacity-70" : ""}`}
-      >
+      <div className="w-full">
         <div
-          role="button"
-          tabIndex={0}
-          onClick={onPick}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              onPick();
-            }
-          }}
-          onDragEnter={(e) => {
-            e.preventDefault();
-            setActive(true);
-          }}
-          onDragOver={(e) => {
-            e.preventDefault();
-            setActive(true);
-          }}
-          onDragLeave={() => setActive(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            setActive(false);
-            if (!legalConsentAccepted) {
-              setLegalConsentError(true);
-              return;
-            }
-            const file = e.dataTransfer.files?.[0];
-            if (file) void handleFile(file);
-          }}
-          aria-disabled={!legalConsentAccepted}
-          className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed text-center transition-colors ${
+          className={`rounded-2xl transition-colors ${
             embedded
-              ? `px-6 py-7 sm:px-7 sm:py-8 ${
-                  active
-                    ? "border-neutral-400/60 bg-neutral-50/90"
-                    : "border-neutral-300/45 bg-white/75 hover:border-neutral-400/80"
+              ? `bg-neutral-50/55 p-0.5 shadow-[0_10px_40px_-22px_rgba(0,0,0,0.22)] ring-1 ring-black/[0.04] ${
+                  active ? "ring-1 ring-neutral-300/40" : ""
                 }`
-              : `px-5 py-8 sm:px-8 sm:py-10 ${
-                  active
-                    ? "border-neutral-400/70 bg-neutral-50/80"
-                    : "border-neutral-300/55 bg-white/80 hover:border-neutral-400/80"
+              : `border border-neutral-200/50 bg-gradient-to-b from-white to-neutral-50/40 p-1 shadow-[0_1px_3px_-1px_rgba(0,0,0,0.05)] sm:p-1.5 ${
+                  active ? "ring-1 ring-neutral-300/50" : ""
                 }`
-          }`}
-          aria-label="Upload audio file"
+          } ${busy ? "pointer-events-none opacity-70" : ""}`}
         >
-          <input
-            ref={inputRef}
-            type="file"
-            className="sr-only"
-            accept=".wav,.aiff,.flac,.mp3,audio/wav,audio/aiff,audio/flac,audio/mpeg"
-            multiple={false}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file && !legalConsentAccepted) {
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={onPick}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onPick();
+              }
+            }}
+            onDragEnter={(e) => {
+              e.preventDefault();
+              setActive(true);
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setActive(true);
+            }}
+            onDragLeave={() => setActive(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setActive(false);
+              if (!legalConsentAccepted) {
                 setLegalConsentError(true);
-                e.target.value = "";
                 return;
               }
+              const file = e.dataTransfer.files?.[0];
               if (file) void handleFile(file);
-              e.target.value = "";
             }}
-          />
-          <UploadCloudIcon className="mb-2 text-gray-400" embedded={embedded} />
-          <p
-            className={`font-semibold tracking-tight text-black ${
-              embedded ? "text-[15px] sm:text-base" : "text-base sm:text-[17px]"
+            aria-disabled={!legalConsentAccepted}
+            className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed text-center transition-colors ${
+              embedded
+                ? `px-6 py-7 sm:px-7 sm:py-8 ${
+                    active
+                      ? "border-neutral-400/60 bg-neutral-50/90"
+                      : "border-neutral-300/45 bg-white/75 hover:border-neutral-400/80"
+                  }`
+                : `px-5 py-8 sm:px-8 sm:py-10 ${
+                    active
+                      ? "border-neutral-400/70 bg-neutral-50/80"
+                      : "border-neutral-300/55 bg-white/80 hover:border-neutral-400/80"
+                  }`
             }`}
+            aria-label="Upload audio file"
           >
-            Drag &amp; drop your file here
+            <input
+              ref={inputRef}
+              type="file"
+              className="sr-only"
+              accept=".wav,.aiff,.flac,.mp3,audio/wav,audio/aiff,audio/flac,audio/mpeg"
+              multiple={false}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file && !legalConsentAccepted) {
+                  setLegalConsentError(true);
+                  e.target.value = "";
+                  return;
+                }
+                if (file) void handleFile(file);
+                e.target.value = "";
+              }}
+            />
+            <UploadCloudIcon className="mb-2 text-gray-400" embedded={embedded} />
+            <p
+              className={`font-semibold tracking-tight text-black ${
+                embedded ? "text-[15px] sm:text-base" : "text-base sm:text-[17px]"
+              }`}
+            >
+              Drag &amp; drop your file here
+            </p>
+            <p
+              className={`mt-1.5 text-gray-500 ${
+                embedded ? "text-[12px] sm:text-[13px]" : "text-[13px] sm:text-sm"
+              }`}
+            >
+              or click to choose a file
+            </p>
+            <p
+              className={`mt-4 text-gray-400 ${
+                embedded ? "text-[10px] sm:text-[11px]" : "text-[11px] sm:text-xs"
+              }`}
+            >
+              WAV, AIFF, FLAC, MP3 up to {MAX_UPLOAD_LABEL}
+            </p>
+            {busy ? <p className="mt-4 text-[13px] text-gray-500">Uploading…</p> : null}
+            {uploadError ? (
+              <p className="mt-4 text-center text-[13px] text-red-700" role="alert">
+                {uploadError}
+              </p>
+            ) : null}
+          </div>
+        </div>
+
+        <div className={`mt-4 w-full text-left ${consentPadding}`}>
+          <label className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              checked={legalConsentAccepted}
+              onChange={(e) => {
+                const next = e.target.checked;
+                setLegalConsentAccepted(next);
+                if (next) setLegalConsentError(false);
+              }}
+              className="mt-0.5 h-3.5 w-3.5 rounded border-neutral-300 text-black accent-black"
+            />
+            <div className="min-w-0">
+              <span className="block text-sm leading-relaxed text-black/65">
+                I confirm I own or have permission to upload this material.
+              </span>
+            </div>
+          </label>
+
+          <p className="mt-1.5 pl-[26px] text-xs leading-relaxed text-black/60">
+            By uploading files, I agree to the{" "}
+            <Link
+              href="/terms"
+              className="underline underline-offset-4 transition-colors hover:text-black/75"
+            >
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link
+              href="/privacy"
+              className="underline underline-offset-4 transition-colors hover:text-black/75"
+            >
+              Privacy Policy
+            </Link>
+            . Uploaded files remain my property and responsibility.
           </p>
-          <p
-            className={`mt-1.5 text-gray-500 ${
-              embedded ? "text-[12px] sm:text-[13px]" : "text-[13px] sm:text-sm"
-            }`}
-          >
-            or click to choose a file
-          </p>
-          <p
-            className={`mt-4 text-gray-400 ${
-              embedded ? "text-[10px] sm:text-[11px]" : "text-[11px] sm:text-xs"
-            }`}
-          >
-            WAV, AIFF, FLAC, MP3 up to {MAX_UPLOAD_LABEL}
-          </p>
-          {busy ? <p className="mt-4 text-[13px] text-gray-500">Uploading…</p> : null}
-          {uploadError ? (
-            <p className="mt-4 text-center text-[13px] text-red-700" role="alert">
-              {uploadError}
+
+          {legalConsentError ? (
+            <p className="mt-2 pl-[26px] text-[11px] leading-relaxed text-red-700" role="alert">
+              Please confirm ownership and accept the terms before uploading.
             </p>
           ) : null}
         </div>
       </div>
-
-      <div className="-mt-4 mx-auto mb-7 w-full max-w-[440px] px-4 pt-0.5">
-        <label className="flex items-start gap-3 text-left">
-          <input
-            type="checkbox"
-            checked={legalConsentAccepted}
-            onChange={(e) => {
-              const next = e.target.checked;
-              setLegalConsentAccepted(next);
-              if (next) setLegalConsentError(false);
-            }}
-            className="mt-0.5 h-3.5 w-3.5 rounded border-neutral-300 text-black accent-black"
-          />
-          <span className="min-w-0 text-sm leading-relaxed text-black/65">
-            I confirm I own or have permission to upload this material.
-          </span>
-        </label>
-        <p className="mt-1.5 text-xs leading-relaxed text-black/60">
-          By uploading files, I agree to the{" "}
-          <Link
-            href="/terms"
-            className="underline underline-offset-4 transition-colors hover:text-black/75"
-          >
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link
-            href="/privacy"
-            className="underline underline-offset-4 transition-colors hover:text-black/75"
-          >
-            Privacy Policy
-          </Link>
-          . Uploaded files remain my property and responsibility.
-        </p>
-        {legalConsentError ? (
-          <p className="mt-2 text-[11px] leading-relaxed text-red-700" role="alert">
-            Please confirm ownership and accept the terms before uploading.
-          </p>
-        ) : null}
-      </div>
-
-      <div className="h-6" aria-hidden />
     </div>
   );
 }
