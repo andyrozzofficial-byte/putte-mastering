@@ -1,11 +1,16 @@
 type SendEmailResult = { ok: true } | { ok: false; reason: string };
 
-function formatFromEmail(raw: string | undefined | null): string {
+function extractEmail(raw: string | undefined | null): string {
   const trimmed = (raw ?? "").trim();
-  if (!trimmed) return "First Listen Mastering <onboarding@resend.dev>";
-  // If already formatted like `Name <email@domain>`
-  if (trimmed.includes("<") && trimmed.includes(">")) return trimmed;
-  return `First Listen Mastering <${trimmed}>`;
+  if (!trimmed) return "studio@firstlistenmastering.com";
+  const m = trimmed.match(/<([^>]+)>/);
+  if (m?.[1]) return m[1].trim();
+  return trimmed;
+}
+
+function formatFromEmail(raw: string | undefined | null): string {
+  const email = extractEmail(raw);
+  return `First Listen Mastering <${email}>`;
 }
 
 export async function sendResendEmail(args: {
@@ -22,6 +27,7 @@ export async function sendResendEmail(args: {
   }
 
   try {
+    console.info("[EMAIL FROM]", from);
     console.info("[resend] sending", {
       to: `${args.to.slice(0, 2)}…`,
       subject: args.subject,

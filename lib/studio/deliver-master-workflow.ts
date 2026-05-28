@@ -348,7 +348,7 @@ export async function finalizeDeliverMasterUpload(options: {
     try {
       const result = await sendResendEmail({
         to: customerEmail,
-        subject: "Your master is ready",
+        subject: "Your master is ready – First Listen Mastering",
         html: renderBrandedEmail({
           title: "Your master is ready",
           intro: `Your master for ${trackLabel} is ready to download.`,
