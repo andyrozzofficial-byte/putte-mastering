@@ -7,6 +7,7 @@ import {
   MAX_UPLOAD_LABEL,
 } from "@/lib/upload-limits";
 import { uploadCustomerTrack } from "@/lib/upload-customer-track";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 
@@ -26,6 +27,8 @@ export function UploadDropzone({
   const [active, setActive] = useState(false);
   const [busy, setBusy] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [legalConsentAccepted, setLegalConsentAccepted] = useState(false);
+  const [legalConsentError, setLegalConsentError] = useState(false);
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -41,6 +44,7 @@ export function UploadDropzone({
         saveOrderUploadDraft({
           storageRef,
           trackName: file.name,
+          legalConsentAccepted: true,
         });
         router.push(nextStepHref);
       } catch (e) {
@@ -57,8 +61,12 @@ export function UploadDropzone({
   );
 
   const onPick = useCallback(() => {
+    if (!legalConsentAccepted) {
+      setLegalConsentError(true);
+      return;
+    }
     inputRef.current?.click();
-  }, []);
+  }, [legalConsentAccepted]);
 
   const embedded = variant === "embedded";
 
@@ -76,46 +84,52 @@ export function UploadDropzone({
       } ${busy ? "pointer-events-none opacity-70" : ""}`}
       aria-busy={busy}
     >
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={onPick}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
+      <div>
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={onPick}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onPick();
+            }
+          }}
+          onDragEnter={(e) => {
             e.preventDefault();
-            onPick();
-          }
-        }}
-        onDragEnter={(e) => {
-          e.preventDefault();
-          setActive(true);
-        }}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setActive(true);
-        }}
-        onDragLeave={() => setActive(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setActive(false);
-          const file = e.dataTransfer.files?.[0];
-          if (file) void handleFile(file);
-        }}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed text-center transition-colors ${
-          embedded
-            ? `px-6 py-10 sm:px-7 sm:py-11 ${
-                active
-                  ? "border-neutral-400/60 bg-neutral-50/90"
-                  : "border-neutral-300/45 bg-white/75 hover:border-neutral-400/80"
-              }`
-            : `px-5 py-11 sm:px-8 sm:py-14 ${
-                active
-                  ? "border-neutral-400/70 bg-neutral-50/80"
-                  : "border-neutral-300/55 bg-white/80 hover:border-neutral-400/80"
-              }`
-        }`}
-        aria-label="Upload audio file"
-      >
+            setActive(true);
+          }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setActive(true);
+          }}
+          onDragLeave={() => setActive(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setActive(false);
+            if (!legalConsentAccepted) {
+              setLegalConsentError(true);
+              return;
+            }
+            const file = e.dataTransfer.files?.[0];
+            if (file) void handleFile(file);
+          }}
+          aria-disabled={!legalConsentAccepted}
+          className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed text-center transition-colors ${
+            embedded
+              ? `px-6 py-10 sm:px-7 sm:py-11 ${
+                  active
+                    ? "border-neutral-400/60 bg-neutral-50/90"
+                    : "border-neutral-300/45 bg-white/75 hover:border-neutral-400/80"
+                }`
+              : `px-5 py-11 sm:px-8 sm:py-14 ${
+                  active
+                    ? "border-neutral-400/70 bg-neutral-50/80"
+                    : "border-neutral-300/55 bg-white/80 hover:border-neutral-400/80"
+                }`
+          }`}
+          aria-label="Upload audio file"
+        >
         <input
           ref={inputRef}
           type="file"
@@ -124,6 +138,11 @@ export function UploadDropzone({
           multiple={false}
           onChange={(e) => {
             const file = e.target.files?.[0];
+            if (file && !legalConsentAccepted) {
+              setLegalConsentError(true);
+              e.target.value = "";
+              return;
+            }
             if (file) void handleFile(file);
             e.target.value = "";
           }}
@@ -158,6 +177,46 @@ export function UploadDropzone({
             {uploadError}
           </p>
         ) : null}
+        </div>
+
+        <div className={`${embedded ? "px-1.5" : "px-1.5"} pt-3`}>
+          <label className="flex items-start gap-3 text-left">
+            <input
+              type="checkbox"
+              checked={legalConsentAccepted}
+              onChange={(e) => {
+                const next = e.target.checked;
+                setLegalConsentAccepted(next);
+                if (next) setLegalConsentError(false);
+              }}
+              className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-black accent-black"
+            />
+            <span className="text-[11px] leading-[1.6] text-black/60 sm:text-xs">
+              I confirm that I own, control, or have permission to upload and
+              process this material. By uploading files, I agree to the{" "}
+              <Link
+                href="/terms"
+                className="underline underline-offset-4 transition-colors hover:text-black/80"
+              >
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link
+                href="/privacy"
+                className="underline underline-offset-4 transition-colors hover:text-black/80"
+              >
+                Privacy Policy
+              </Link>
+              . I understand that uploaded files remain my responsibility and
+              that I retain ownership of all submitted content.
+            </span>
+          </label>
+          {legalConsentError ? (
+            <p className="mt-2 text-[11px] leading-relaxed text-red-700" role="alert">
+              Please confirm ownership and accept the terms before uploading.
+            </p>
+          ) : null}
+        </div>
       </div>
     </div>
   );

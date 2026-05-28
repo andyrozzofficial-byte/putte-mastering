@@ -5,6 +5,8 @@ export type OrderUploadDraft = {
   storageRef: string;
   /** Original file name for display / track_name. */
   trackName: string;
+  /** Customer confirmed ownership/permission + accepted legal terms at upload time. */
+  legalConsentAccepted?: boolean;
   customer_name?: string;
   customer_email?: string;
   customer_message?: string;
@@ -57,11 +59,11 @@ export function clearOrderUploadDraft(): void {
 
 function readOptionalCustomerFields(parsed: Record<string, unknown>): Pick<
   OrderUploadDraft,
-  "customer_name" | "customer_email" | "customer_message"
+  "customer_name" | "customer_email" | "customer_message" | "legalConsentAccepted"
 > {
   const out: Pick<
     OrderUploadDraft,
-    "customer_name" | "customer_email" | "customer_message"
+    "customer_name" | "customer_email" | "customer_message" | "legalConsentAccepted"
   > = {};
   if (typeof parsed.customer_name === "string")
     out.customer_name = parsed.customer_name;
@@ -69,6 +71,8 @@ function readOptionalCustomerFields(parsed: Record<string, unknown>): Pick<
     out.customer_email = parsed.customer_email;
   if (typeof parsed.customer_message === "string")
     out.customer_message = parsed.customer_message;
+  if (typeof parsed.legalConsentAccepted === "boolean")
+    out.legalConsentAccepted = parsed.legalConsentAccepted;
   return out;
 }
 
