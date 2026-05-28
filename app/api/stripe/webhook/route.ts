@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
 import { escapeHtml } from "@/lib/email/escape-html";
 import { sendResendEmail } from "@/lib/email/resend";
+import { renderBrandedEmail } from "@/lib/email/templates";
 
 function getStripeWebhookSecret(): string {
   const secret = process.env.STRIPE_WEBHOOK_SECRET?.trim();
@@ -135,11 +136,18 @@ export async function POST(req: Request) {
     const result = await sendResendEmail({
       to: customer_email,
       subject: "We received your mastering order",
-      html: `<p>Hi ${escapeHtml(customer_name || "there")},</p>
-<p>Thanks for your order. We’ve received your payment and files.</p>
-<p>Track status and download your master when it’s ready:</p>
-<p><a href="${escapeHtml(portal)}">${escapeHtml(portal)}</a></p>
-<p>— First Listen Mastering</p>`,
+      html: renderBrandedEmail({
+        title: "Order received",
+        intro: `We’ve received your payment and files for ${track_name}.`,
+        ctaLabel: "Open delivery page",
+        ctaUrl: portal,
+        meta: [
+          { label: "Service", value: service },
+          { label: "Status", value: "New" },
+          { label: "Date", value: new Date().toISOString().slice(0, 10) },
+        ],
+        footerEmail: "studio@firstlistenmastering.com",
+      }),
     });
     console.info("[EMAIL SENT] stripe-webhook customer", {
       ok: result.ok,

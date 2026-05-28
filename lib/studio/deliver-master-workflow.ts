@@ -2,6 +2,7 @@ import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
 import { generateDeliveryAccessToken } from "@/lib/delivery/access-token";
 import { escapeHtml } from "@/lib/email/escape-html";
 import { getStudioNotifyEmail, sendResendEmail } from "@/lib/email/resend";
+import { renderBrandedEmail } from "@/lib/email/templates";
 import { logPostgrestError } from "@/lib/studio/postgrest-log";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
@@ -348,10 +349,17 @@ export async function finalizeDeliverMasterUpload(options: {
       const result = await sendResendEmail({
         to: customerEmail,
         subject: "Your master is ready",
-        html: `<p>Hi,</p>
-<p>Your master for <strong>${escapeHtml(trackLabel)}</strong> is ready to download.</p>
-<p><a href="${escapeHtml(deliveryUrl)}">Open delivery page</a></p>
-<p>— First Listen Mastering</p>`,
+        html: renderBrandedEmail({
+          title: "Your master is ready",
+          intro: `Your master for ${trackLabel} is ready to download.`,
+          ctaLabel: "Download master",
+          ctaUrl: deliveryUrl,
+          meta: [
+            { label: "Status", value: "Completed" },
+            { label: "Track", value: trackLabel },
+          ],
+          footerEmail: "studio@firstlistenmastering.com",
+        }),
       });
       console.info("[EMAIL SENT] deliver-finalize customer", {
         ok: result.ok,
@@ -369,8 +377,17 @@ export async function finalizeDeliverMasterUpload(options: {
       const result = await sendResendEmail({
         to: notify,
         subject: `Master uploaded — ${trackLabel}`,
-        html: `<p>A new master was uploaded for order <code>${escapeHtml(orderId)}</code> (version ${nextVersion}).</p>
-<p>Customer link: <a href="${escapeHtml(deliveryUrl)}">${escapeHtml(deliveryUrl)}</a></p>`,
+        html: renderBrandedEmail({
+          title: `Master uploaded — ${trackLabel}`,
+          intro: `A new master was uploaded for order ${orderId} (version ${nextVersion}).`,
+          ctaLabel: "Open delivery page",
+          ctaUrl: deliveryUrl,
+          meta: [
+            { label: "Order", value: orderId.slice(0, 8) },
+            { label: "Version", value: String(nextVersion) },
+          ],
+          footerEmail: "studio@firstlistenmastering.com",
+        }),
       });
       console.info("[EMAIL SENT] deliver-finalize notify", {
         ok: result.ok,

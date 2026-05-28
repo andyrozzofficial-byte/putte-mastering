@@ -2,6 +2,7 @@ import { apiJsonError, apiJsonSuccess } from "@/lib/api/json-response";
 import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
 import { escapeHtml } from "@/lib/email/escape-html";
 import { sendResendEmail } from "@/lib/email/resend";
+import { renderBrandedEmail } from "@/lib/email/templates";
 import { requireStudioSessionUser } from "@/lib/supabase/studio-api-auth";
 
 type Body = {
@@ -65,10 +66,17 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
           const result = await sendResendEmail({
             to: email,
             subject: "We’re working on your master",
-            html: `<p>Hi,</p>
-<p>We’ve started work on <strong>${escapeHtml(track)}</strong>.</p>
-<p>You can follow progress here: <a href="${escapeHtml(portal)}">${escapeHtml(portal)}</a></p>
-<p>— First Listen Mastering</p>`,
+            html: renderBrandedEmail({
+              title: "We’re working on your master",
+              intro: `We’ve started work on ${track}.`,
+              ctaLabel: "Open delivery page",
+              ctaUrl: portal,
+              meta: [
+                { label: "Status", value: "In progress" },
+                { label: "Track", value: track },
+              ],
+              footerEmail: "studio@firstlistenmastering.com",
+            }),
           });
           console.info("[EMAIL SENT] studio-status customer", {
             ok: result.ok,

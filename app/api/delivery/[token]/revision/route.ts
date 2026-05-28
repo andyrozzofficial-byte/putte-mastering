@@ -2,6 +2,7 @@ import { apiJsonError, apiJsonSuccess } from "@/lib/api/json-response";
 import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
 import { escapeHtml } from "@/lib/email/escape-html";
 import { getStudioNotifyEmail, sendResendEmail } from "@/lib/email/resend";
+import { renderBrandedEmail } from "@/lib/email/templates";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
 export const dynamic = "force-dynamic";
@@ -83,9 +84,17 @@ export async function POST(
         const result = await sendResendEmail({
           to: customerEmail,
           subject: "We received your revision request",
-          html: `<p>Hi,</p>
-<p>Thanks — we’ve received your notes for <strong>${escapeHtml(trackLabel)}</strong> and will follow up soon.</p>
-<p><a href="${escapeHtml(portalUrl)}">View delivery page</a></p>`,
+          html: renderBrandedEmail({
+            title: "Revision request received",
+            intro: `We’ve received your notes for ${trackLabel} and will follow up soon.`,
+            ctaLabel: "Open delivery page",
+            ctaUrl: portalUrl,
+            meta: [
+              { label: "Status", value: "Waiting revision" },
+              { label: "Track", value: trackLabel },
+            ],
+            footerEmail: "studio@firstlistenmastering.com",
+          }),
         });
         console.info("[EMAIL SENT] delivery-revision customer", {
           ok: result.ok,
@@ -103,9 +112,17 @@ export async function POST(
         const result = await sendResendEmail({
           to: notify,
           subject: `Revision request — ${trackLabel}`,
-          html: `<p>New revision notes for order <code>${escapeHtml(order.id as string)}</code> (${escapeHtml(trackLabel)}).</p>
-<pre style="white-space:pre-wrap;font-family:system-ui,sans-serif">${escapeHtml(message)}</pre>
-<p><a href="${escapeHtml(portalUrl)}">Customer portal</a></p>`,
+          html: renderBrandedEmail({
+            title: `Revision request — ${trackLabel}`,
+            intro: `New revision notes for order ${String(order.id)}.`,
+            ctaLabel: "Open customer portal",
+            ctaUrl: portalUrl,
+            meta: [
+              { label: "Order", value: String(order.id).slice(0, 8) },
+              { label: "Track", value: trackLabel },
+            ],
+            footerEmail: "studio@firstlistenmastering.com",
+          }),
         });
         console.info("[EMAIL SENT] delivery-revision notify", {
           ok: result.ok,

@@ -225,11 +225,10 @@ export default async function DeliveryPage({ params }: PageProps) {
       ? order.mastered_file.trim()
       : null;
 
-  const downloadHref = latestVersion
+  const hasDeliverable = versions.length > 0 || Boolean(mastered);
+  const downloadHref = hasDeliverable
     ? `/api/delivery/${encodeURIComponent(token)}/download`
-    : mastered
-      ? `/api/delivery/${encodeURIComponent(token)}/download`
-      : null;
+    : null;
 
   const deliveryDateLabel = latestVersion?.created_at
     ? safeFormatDate(latestVersion.created_at)
@@ -269,9 +268,9 @@ export default async function DeliveryPage({ params }: PageProps) {
         </div>
 
         <div className="mt-8">
-          {downloadHref ? (
+          {hasDeliverable ? (
             <a
-              href={downloadHref}
+              href={downloadHref ?? undefined}
               className="inline-flex w-full items-center justify-center rounded-lg bg-black px-4 py-2.5 text-[13px] font-medium text-white shadow-sm transition-colors hover:bg-black/90 sm:w-auto sm:text-sm"
             >
               Download latest master

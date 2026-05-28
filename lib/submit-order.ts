@@ -11,6 +11,7 @@ import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
 import { escapeHtml } from "@/lib/email/escape-html";
 import { sendResendEmail } from "@/lib/email/resend";
+import { renderBrandedEmail } from "@/lib/email/templates";
 
 function logEnvFingerprint(): void {
   const url = getSupabaseUrl();
@@ -137,11 +138,18 @@ export async function submitOrderToSupabase(row: OrderInsert): Promise<void> {
     const result = await sendResendEmail({
       to: payload.customer_email,
       subject: "We received your mastering order",
-      html: `<p>Hi ${escapeHtml(row.customer_name.trim())},</p>
-<p>Thanks for your order. We’ve received your files and will begin work soon.</p>
-<p>You can track status and download your master here when it’s ready:</p>
-<p><a href="${escapeHtml(deliveryUrl)}">${escapeHtml(deliveryUrl)}</a></p>
-<p>— First Listen Mastering</p>`,
+      html: renderBrandedEmail({
+        title: "Order received",
+        intro: `We’ve received your mastering order for ${row.track_name.trim()}.`,
+        ctaLabel: "Open delivery page",
+        ctaUrl: deliveryUrl,
+        meta: [
+          { label: "Service", value: row.service.trim() },
+          { label: "Status", value: "New" },
+          { label: "Date", value: new Date().toISOString().slice(0, 10) },
+        ],
+        footerEmail: "studio@firstlistenmastering.com",
+      }),
     });
     console.info("[EMAIL SENT] submit-order customer", {
       ok: result.ok,
