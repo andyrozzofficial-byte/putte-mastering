@@ -176,7 +176,7 @@ export function UploadDropzone({
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-[500px] px-1.5 pt-1">
+      <div className="-mt-4 mx-auto mb-7 w-full max-w-[440px] px-4 pt-0.5">
         <label className="flex items-start gap-3 text-left">
           <input
             type="checkbox"
@@ -186,13 +186,13 @@ export function UploadDropzone({
               setLegalConsentAccepted(next);
               if (next) setLegalConsentError(false);
             }}
-            className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-black accent-black"
+            className="mt-0.5 h-3.5 w-3.5 rounded border-neutral-300 text-black accent-black"
           />
-          <span className="min-w-0 text-xs leading-relaxed text-black/65">
+          <span className="min-w-0 text-sm leading-relaxed text-black/65">
             I confirm I own or have permission to upload this material.
           </span>
         </label>
-        <p className="mt-1.5 text-[11px] leading-relaxed text-black/45">
+        <p className="mt-1.5 text-xs leading-relaxed text-black/60">
           By uploading files, I agree to the{" "}
           <Link
             href="/terms"
