@@ -42,23 +42,6 @@ export function HeroSection() {
               </div>
             </div>
 
-            <aside
-              className="max-w-md space-y-2.5 sm:space-y-3"
-              aria-label="Mastering by Pontus Kalm"
-            >
-              <p className="text-[15px] font-medium leading-[1.55] tracking-[-0.02em] text-black sm:text-[16px] sm:leading-snug">
-                A good master won&apos;t fix a bad song — but it can make a great
-                one impossible to ignore.
-              </p>
-              <p className="text-[13px] leading-relaxed text-gray-600 sm:text-[14px] sm:leading-relaxed">
-                Mastering by Pontus &apos;Oneye&apos; Kalm — producer &amp;
-                songwriter with 3.5B+ streams across global releases.
-              </p>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
-                3.5B+ streams • Global credits • Manual mastering
-              </p>
-            </aside>
-
             <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:gap-4">
               <Link
                 href="#upload"
