@@ -16,9 +16,15 @@ export function isSiteBetaGateEnabled(): boolean {
   return Boolean(getSiteBetaPassword());
 }
 
+/** API routes (webhooks, delivery downloads, storage sync) must never hit page middleware. */
+export function isApiPath(pathname: string): boolean {
+  return pathname === "/api" || pathname.startsWith("/api/");
+}
+
 /** Paths that skip the beta gate (studio admin remains reachable). */
 export function isSiteBetaExemptPath(pathname: string): boolean {
   return (
+    isApiPath(pathname) ||
     pathname === "/login" ||
     pathname.startsWith("/studio") ||
     pathname.startsWith("/delivery") ||

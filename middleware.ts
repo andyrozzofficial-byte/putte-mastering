@@ -4,6 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import {
   BETA_ACCESS_COOKIE,
   getSiteBetaPassword,
+  isApiPath,
   isSiteBetaExemptPath,
 } from "@/lib/site-beta-gate";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
@@ -13,9 +14,7 @@ function applyBetaGate(request: NextRequest, response: NextResponse): NextRespon
   if (!betaPassword) return null;
 
   const path = request.nextUrl.pathname;
-  if (isSiteBetaExemptPath(path) || path.startsWith("/api")) return null;
-  // Storage limit sync uses service role; must stay reachable before uploads.
-  if (path === "/api/storage/sync-limits") return null;
+  if (isSiteBetaExemptPath(path)) return null;
 
   const hasAccess = request.cookies.get(BETA_ACCESS_COOKIE)?.value === "1";
   if (hasAccess) return null;
@@ -37,6 +36,13 @@ function applyBetaGate(request: NextRequest, response: NextResponse): NextRespon
 }
 
 export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+
+  // Never run auth/beta logic on API routes (Stripe webhooks, delivery, etc.).
+  if (isApiPath(path)) {
+    return NextResponse.next();
+  }
+
   const response = NextResponse.next({
     request,
   });
@@ -44,7 +50,6 @@ export async function middleware(request: NextRequest) {
   const betaRedirect = applyBetaGate(request, response);
   if (betaRedirect) return betaRedirect;
 
-  const path = request.nextUrl.pathname;
   const needsAuth = path === "/login" || path.startsWith("/studio");
   if (!needsAuth) {
     return response;
@@ -102,6 +107,10 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp3|wav)$).*)",
+    /*
+     * Exclude /api/* entirely so webhooks (e.g. POST /api/stripe/webhook) never
+     * pass through middleware — beta gate uses 307 redirects that break Stripe.
+     */
+    "/((?!api(?:/|$)|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp3|wav)$).*)",
   ],
 };
