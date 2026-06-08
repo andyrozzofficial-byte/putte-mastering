@@ -5,10 +5,8 @@ import { DeliveryRevisionForm } from "@/components/delivery/revision-request-for
 import { OrderStatusBadge } from "@/components/dashboard/order-status-badge";
 import type { OrderStatus } from "@/components/dashboard/order-status-badge";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
-import {
-  formatOrderCreatedAt,
-  mapDbStatusToBadge,
-} from "@/lib/studio/orders-data";
+import { formatStockholmDateTime, parseDateInput } from "@/lib/datetime";
+import { mapDbStatusToBadge } from "@/lib/studio/orders-data";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +39,7 @@ function basenameFromRef(ref: string): string {
 
 function safeFormatDate(iso: string | null | undefined): string {
   if (typeof iso !== "string" || !iso.trim()) return "—";
-  return formatOrderCreatedAt(iso);
+  return formatStockholmDateTime(iso);
 }
 
 function safeOrderStatus(raw: string | null | undefined): OrderStatus {
@@ -83,8 +81,8 @@ function normalizeRevisionRows(rows: unknown[] | null | undefined): RevisionRow[
     out.push({ id, message, created_at });
   }
   out.sort((a, b) => {
-    const ta = new Date(a.created_at).getTime();
-    const tb = new Date(b.created_at).getTime();
+    const ta = parseDateInput(a.created_at)?.getTime() ?? 0;
+    const tb = parseDateInput(b.created_at)?.getTime() ?? 0;
     if (Number.isNaN(ta) || Number.isNaN(tb)) return 0;
     return tb - ta;
   });

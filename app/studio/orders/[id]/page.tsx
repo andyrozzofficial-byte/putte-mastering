@@ -3,12 +3,12 @@ import { CustomerSourceFile } from "@/components/studio/customer-source-file";
 import { DeliveryMasterUpload } from "@/components/studio/delivery-master-upload";
 import { OrderStatusActions } from "@/components/studio/order-status-actions";
 import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
+import { formatStockholmDateTime } from "@/lib/datetime";
 import {
   dbRowToStudioDetail,
   fetchOrderMasterVersions,
   fetchOrderRevisionRequests,
   fetchStudioOrderById,
-  formatOrderCreatedAt,
 } from "@/lib/studio/orders-data";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -97,12 +97,8 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
             <div className="flex flex-col gap-1 sm:flex-row sm:gap-8">
               <dt className="w-28 shrink-0 text-gray-500">Date</dt>
               <dd className="text-black">
-                {order.orderedAt.length > 0 ? (
-                  new Date(`${order.orderedAt}T12:00:00`).toLocaleDateString("en-US", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })
+                {order.orderedAt !== "—" ? (
+                  order.orderedAt
                 ) : (
                   <span className="text-gray-400">—</span>
                 )}
@@ -165,7 +161,7 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
                 <dt className="w-36 shrink-0 text-gray-500">Master ready at</dt>
                 <dd className="font-medium text-black">
                   {row.delivery_completed_at
-                    ? formatOrderCreatedAt(row.delivery_completed_at)
+                    ? formatStockholmDateTime(row.delivery_completed_at)
                     : "—"}
                 </dd>
               </div>
@@ -179,7 +175,7 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
                 <dt className="w-36 shrink-0 text-gray-500">Last download</dt>
                 <dd className="font-medium text-black">
                   {row.delivery_last_downloaded_at
-                    ? formatOrderCreatedAt(row.delivery_last_downloaded_at)
+                    ? formatStockholmDateTime(row.delivery_last_downloaded_at)
                     : "—"}
                 </dd>
               </div>
@@ -218,7 +214,7 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
                     className="rounded-lg border border-gray-100 bg-neutral-50/40 px-3 py-2.5"
                   >
                     <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">
-                      {formatOrderCreatedAt(r.created_at)}
+                      {formatStockholmDateTime(r.created_at)}
                     </p>
                     <p className="mt-1 whitespace-pre-wrap leading-relaxed">
                       {r.message}
@@ -249,7 +245,7 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
                       ) : null}
                     </span>
                     <span className="text-gray-500">
-                      {formatOrderCreatedAt(v.created_at)}
+                      {formatStockholmDateTime(v.created_at)}
                     </span>
                   </li>
                 ))}

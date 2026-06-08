@@ -7,6 +7,7 @@ import {
   type OrderInsert,
 } from "@/lib/supabase";
 import { generateDeliveryAccessToken } from "@/lib/delivery/access-token";
+import { formatStockholmDate } from "@/lib/datetime";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
 import { escapeHtml } from "@/lib/email/escape-html";
@@ -146,7 +147,7 @@ export async function submitOrderToSupabase(row: OrderInsert): Promise<void> {
         meta: [
           { label: "Service", value: row.service.trim() },
           { label: "Status", value: "New" },
-          { label: "Date", value: new Date().toISOString().slice(0, 10) },
+          { label: "Date", value: formatStockholmDate(new Date()) },
         ],
         footerEmail: "studio@firstlistenmastering.com",
       }),

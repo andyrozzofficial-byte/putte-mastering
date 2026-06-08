@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
+import { dateFromUnixSeconds, formatStockholmDate } from "@/lib/datetime";
 import { escapeHtml } from "@/lib/email/escape-html";
 import { sendResendEmail } from "@/lib/email/resend";
 import { renderBrandedEmail } from "@/lib/email/templates";
@@ -131,6 +132,8 @@ export async function POST(req: Request) {
   }
 
   const portal = deliveryPortalAbsoluteUrl(delivery_access_token);
+  const orderPlacedAt =
+    dateFromUnixSeconds(session.created as number) ?? new Date();
   console.info("[stripe-webhook] delivery url", { portal });
   try {
     const result = await sendResendEmail({
@@ -144,7 +147,7 @@ export async function POST(req: Request) {
         meta: [
           { label: "Service", value: service },
           { label: "Status", value: "New" },
-          { label: "Date", value: new Date().toISOString().slice(0, 10) },
+          { label: "Date", value: formatStockholmDate(orderPlacedAt) },
         ],
         footerEmail: "studio@firstlistenmastering.com",
       }),

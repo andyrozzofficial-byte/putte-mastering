@@ -1,6 +1,10 @@
 import type { OrderStatus } from "@/components/dashboard/order-status-badge";
 import type { OrderRow } from "@/components/dashboard/orders-table";
 import { formatPrice } from "@/lib/currency";
+import {
+  formatStockholmDateLong,
+  formatStockholmDateTime,
+} from "@/lib/datetime";
 
 import { createStudioServerClient } from "@/lib/supabase/studio-server";
 
@@ -140,18 +144,6 @@ function basenameFromStorageRef(ref: string | null): string {
   return i >= 0 ? ref.slice(i + 1) : ref;
 }
 
-export function formatOrderCreatedAt(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleString("sv-SE", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
 export function computeDashboardStats(rows: OrdersDbRow[]): DashboardOrderStats {
   let newOrders = 0;
   let completed = 0;
@@ -180,7 +172,7 @@ export function dbRowToOrderRow(row: OrdersDbRow): OrderRow {
     service: (row.service ?? "").trim() || "—",
     status: mapDbStatusToBadge(row.status),
     price: displayPriceFromDb(row.price),
-    date: formatOrderCreatedAt(row.created_at),
+    date: formatStockholmDateTime(row.created_at),
   };
 }
 
@@ -193,11 +185,6 @@ export function dbRowToStudioDetail(row: OrdersDbRow): StudioOrderDetail {
     track ||
     "Uppladdad fil";
 
-  const orderedDate = new Date(row.created_at);
-  const orderedAt = Number.isNaN(orderedDate.getTime())
-    ? ""
-    : orderedDate.toISOString().slice(0, 10);
-
   return {
     id: row.id,
     label,
@@ -205,8 +192,8 @@ export function dbRowToStudioDetail(row: OrdersDbRow): StudioOrderDetail {
     customerShort: customerShort(row.customer_name),
     customerName: displayCustomerName(row.customer_name),
     customerEmail: (row.customer_email ?? "").trim(),
-    orderedAt,
-    dateRelative: formatOrderCreatedAt(row.created_at),
+    orderedAt: formatStockholmDateLong(row.created_at),
+    dateRelative: formatStockholmDateTime(row.created_at),
     service: (row.service ?? "").trim() || "—",
     price: displayPriceFromDb(row.price),
     customerNote: (() => {
