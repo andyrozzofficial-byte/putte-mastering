@@ -109,8 +109,9 @@ export const config = {
   matcher: [
     /*
      * Exclude /api/* entirely so webhooks (e.g. POST /api/stripe/webhook) never
-     * pass through middleware — beta gate uses 307 redirects that break Stripe.
+     * pass through middleware — beta gate uses 307 redirects that break Stripe
+     * and static assets like site.webmanifest.
      */
-    "/((?!api(?:/|$)|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp3|wav)$).*)",
+    "/((?!api(?:/|$)|_next/static|_next/image|favicon.ico|site\\.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp3|wav|webmanifest)$).*)",
   ],
 };

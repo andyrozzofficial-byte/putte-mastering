@@ -21,10 +21,18 @@ export function isApiPath(pathname: string): boolean {
   return pathname === "/api" || pathname.startsWith("/api/");
 }
 
+/** Static files from /public that must stay reachable (PWA manifest, etc.). */
+export function isStaticPublicAssetPath(pathname: string): boolean {
+  return (
+    pathname === "/site.webmanifest" || pathname.endsWith(".webmanifest")
+  );
+}
+
 /** Paths that skip the beta gate (studio admin remains reachable). */
 export function isSiteBetaExemptPath(pathname: string): boolean {
   return (
     isApiPath(pathname) ||
+    isStaticPublicAssetPath(pathname) ||
     pathname === "/login" ||
     pathname.startsWith("/studio") ||
     pathname.startsWith("/delivery") ||
