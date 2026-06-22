@@ -2,8 +2,18 @@ import { CUSTOMER_UPLOAD_BUCKET } from "@/lib/upload-customer-track";
 import { bytesToMebibytes, MAX_UPLOAD_BYTES, MAX_UPLOAD_LABEL } from "@/lib/upload-limits";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
-/** Matches `supabase/config.toml` and Storage API string parsing. */
-const BUCKET_FILE_SIZE_LIMIT = "500MiB";
+/** Supabase Storage API expects `fileSizeLimit` in bytes (see storage-js docs). */
+const BUCKET_FILE_SIZE_LIMIT_BYTES = MAX_UPLOAD_BYTES;
+
+function fileSizeLimitToMebibytes(limit: unknown): number | null {
+  if (typeof limit === "number" && Number.isFinite(limit)) {
+    return Number(bytesToMebibytes(limit).toFixed(3));
+  }
+  if (typeof limit === "string" && /^\d+$/.test(limit.trim())) {
+    return Number(bytesToMebibytes(Number(limit)).toFixed(3));
+  }
+  return null;
+}
 
 /**
  * Ensures the `uploads` bucket accepts files up to MAX_UPLOAD_BYTES.
@@ -22,16 +32,13 @@ export async function ensureUploadBucketLimit(): Promise<{ ok: boolean; message?
     } else {
       console.info("[storage] uploads bucket before limit sync", {
         file_size_limit: before?.file_size_limit ?? null,
-        file_size_limit_mib:
-          before?.file_size_limit != null
-            ? Number(bytesToMebibytes(before.file_size_limit).toFixed(3))
-            : null,
+        file_size_limit_mib: fileSizeLimitToMebibytes(before?.file_size_limit),
       });
     }
 
     const { error } = await supabase.storage.updateBucket(CUSTOMER_UPLOAD_BUCKET, {
       public: false,
-      fileSizeLimit: BUCKET_FILE_SIZE_LIMIT,
+      fileSizeLimit: BUCKET_FILE_SIZE_LIMIT_BYTES,
     });
     if (error) {
       const lower = error.message.toLowerCase();
@@ -41,7 +48,7 @@ export async function ensureUploadBucketLimit(): Promise<{ ok: boolean; message?
         lower.includes("global");
       console.warn("[storage] updateBucket fileSizeLimit failed", {
         bucket: CUSTOMER_UPLOAD_BUCKET,
-        requested: BUCKET_FILE_SIZE_LIMIT,
+        requestedBytes: BUCKET_FILE_SIZE_LIMIT_BYTES,
         maxBytes: MAX_UPLOAD_BYTES,
         message: error.message,
         hint: globalCap
@@ -53,12 +60,9 @@ export async function ensureUploadBucketLimit(): Promise<{ ok: boolean; message?
 
     const { data: after } = await supabase.storage.getBucket(CUSTOMER_UPLOAD_BUCKET);
     console.info("[storage] uploads bucket limit synced", {
-      requested: BUCKET_FILE_SIZE_LIMIT,
+      requestedBytes: BUCKET_FILE_SIZE_LIMIT_BYTES,
       file_size_limit: after?.file_size_limit ?? null,
-      file_size_limit_mib:
-        after?.file_size_limit != null
-          ? Number(bytesToMebibytes(after.file_size_limit).toFixed(3))
-          : null,
+      file_size_limit_mib: fileSizeLimitToMebibytes(after?.file_size_limit),
       label: MAX_UPLOAD_LABEL,
     });
 
