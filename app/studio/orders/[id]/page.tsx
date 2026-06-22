@@ -111,12 +111,7 @@ export default async function StudioOrderDetailPage({ params }: PageProps) {
         </section>
 
         <div className="mt-6 space-y-6 md:space-y-7">
-          <CustomerSourceFile
-            fileName={order.sourceFile.name}
-            formatLabel={order.sourceFile.formatLabel}
-            durationLabel={order.sourceFile.durationLabel}
-            sizeLabel={order.sourceFile.sizeLabel}
-          />
+          <CustomerSourceFile orderId={order.id} fileName={order.sourceFile.name} />
 
           <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-6">
             <h2 className="text-xs font-medium uppercase tracking-[0.12em] text-gray-400">
