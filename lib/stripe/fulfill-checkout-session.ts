@@ -45,10 +45,30 @@ export function parseCheckoutSessionMetadata(session: SessionLike): CheckoutSess
   };
 }
 
+type ExistingOrder = { id: string; delivery_access_token: string };
+
+function formatSupabaseError(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (err && typeof err === "object" && "message" in err) {
+    return String((err as { message: unknown }).message);
+  }
+  return String(err);
+}
+
+function toExistingOrder(
+  data: { id: string; delivery_access_token: string | null } | null,
+): ExistingOrder | null {
+  const token = data?.delivery_access_token;
+  if (!data?.id || typeof token !== "string" || !token.trim()) {
+    return null;
+  }
+  return { id: data.id, delivery_access_token: token };
+}
+
 async function findOrderByCheckoutSessionId(
   supabase: SupabaseClient<Database>,
   sessionId: string,
-): Promise<{ id: string; delivery_access_token: string } | null> {
+): Promise<ExistingOrder | null> {
   const { data, error } = await supabase
     .from("orders")
     .select("id, delivery_access_token")
@@ -59,12 +79,67 @@ async function findOrderByCheckoutSessionId(
     throw error;
   }
 
-  const token = data?.delivery_access_token;
-  if (!data?.id || typeof token !== "string" || !token.trim()) {
+  return toExistingOrder(data);
+}
+
+async function findOrderByCheckoutMetadata(
+  supabase: SupabaseClient<Database>,
+  fields: CheckoutSessionMetadata,
+): Promise<ExistingOrder | null> {
+  if (!fields.customer_email || !fields.track_name || !fields.uploaded_file) {
     return null;
   }
 
-  return { id: data.id, delivery_access_token: token };
+  const { data, error } = await supabase
+    .from("orders")
+    .select("id, delivery_access_token")
+    .eq("customer_email", fields.customer_email)
+    .eq("track_name", fields.track_name)
+    .eq("uploaded_file", fields.uploaded_file)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return toExistingOrder(data);
+}
+
+async function findExistingOrderForSession(
+  supabase: SupabaseClient<Database>,
+  sessionId: string,
+  fields: CheckoutSessionMetadata,
+  logTag: string,
+): Promise<ExistingOrder | null> {
+  try {
+    const bySession = await findOrderByCheckoutSessionId(supabase, sessionId);
+    if (bySession) return bySession;
+  } catch (err) {
+    console.warn(`${logTag} session id lookup unavailable`, {
+      sessionId,
+      message: formatSupabaseError(err),
+    });
+  }
+
+  try {
+    const byMetadata = await findOrderByCheckoutMetadata(supabase, fields);
+    if (byMetadata) {
+      console.info(`${logTag} order matched by checkout metadata`, {
+        sessionId,
+        orderId: byMetadata.id,
+      });
+      return byMetadata;
+    }
+  } catch (err) {
+    console.error(`${logTag} metadata order lookup failed`, {
+      sessionId,
+      message: formatSupabaseError(err),
+    });
+  }
+
+  return null;
 }
 
 async function sendOrderReceivedEmail(options: {
@@ -123,29 +198,26 @@ export async function fulfillCheckoutSession(options: {
     return { ok: false, reason: "Payment not completed", status: 400 };
   }
 
-  try {
-    const existing = await findOrderByCheckoutSessionId(supabase, sessionId);
-    if (existing) {
-      console.info(`${logTag} order already exists`, {
-        sessionId,
-        orderId: existing.id,
-      });
-      return {
-        ok: true,
-        alreadyExisted: true,
-        deliveryAccessToken: existing.delivery_access_token,
-        orderId: existing.id,
-      };
-    }
-  } catch (err) {
-    console.error(`${logTag} existing order lookup failed`, {
-      sessionId,
-      message: err instanceof Error ? err.message : String(err),
-    });
-    return { ok: false, reason: "Database lookup failed", status: 500 };
-  }
-
   const fields = parseCheckoutSessionMetadata(session);
+
+  const existing = await findExistingOrderForSession(
+    supabase,
+    sessionId,
+    fields,
+    logTag,
+  );
+  if (existing) {
+    console.info(`${logTag} order already exists`, {
+      sessionId,
+      orderId: existing.id,
+    });
+    return {
+      ok: true,
+      alreadyExisted: true,
+      deliveryAccessToken: existing.delivery_access_token,
+      orderId: existing.id,
+    };
+  }
   if (!fields.customer_email || !fields.track_name || !fields.service || !fields.uploaded_file) {
     console.error(`${logTag} missing required metadata`, {
       sessionId,
@@ -180,22 +252,23 @@ export async function fulfillCheckoutSession(options: {
 
   if (error) {
     if (error.code === "23505") {
-      try {
-        const existing = await findOrderByCheckoutSessionId(supabase, sessionId);
-        if (existing) {
-          console.info(`${logTag} order created concurrently`, {
-            sessionId,
-            orderId: existing.id,
-          });
-          return {
-            ok: true,
-            alreadyExisted: true,
-            deliveryAccessToken: existing.delivery_access_token,
-            orderId: existing.id,
-          };
-        }
-      } catch {
-        /* fall through */
+      const concurrent = await findExistingOrderForSession(
+        supabase,
+        sessionId,
+        fields,
+        logTag,
+      );
+      if (concurrent) {
+        console.info(`${logTag} order created concurrently`, {
+          sessionId,
+          orderId: concurrent.id,
+        });
+        return {
+          ok: true,
+          alreadyExisted: true,
+          deliveryAccessToken: concurrent.delivery_access_token,
+          orderId: concurrent.id,
+        };
       }
     }
 
