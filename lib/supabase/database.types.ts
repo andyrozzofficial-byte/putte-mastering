@@ -34,6 +34,7 @@ export interface Database {
           delivery_completed_at: string | null;
           delivery_download_count: number;
           delivery_last_downloaded_at: string | null;
+          stripe_checkout_session_id: string | null;
         };
         Insert: {
           id?: string;
@@ -51,6 +52,7 @@ export interface Database {
           delivery_completed_at?: string | null;
           delivery_download_count?: number;
           delivery_last_downloaded_at?: string | null;
+          stripe_checkout_session_id?: string | null;
         };
         Update: {
           id?: string;
@@ -68,6 +70,7 @@ export interface Database {
           delivery_completed_at?: string | null;
           delivery_download_count?: number;
           delivery_last_downloaded_at?: string | null;
+          stripe_checkout_session_id?: string | null;
         };
         Relationships: [];
       };

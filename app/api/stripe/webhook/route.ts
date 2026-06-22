@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
-import { dateFromUnixSeconds, formatStockholmDate } from "@/lib/datetime";
-import { escapeHtml } from "@/lib/email/escape-html";
-import { sendResendEmail } from "@/lib/email/resend";
-import { renderBrandedEmail } from "@/lib/email/templates";
+import { fulfillCheckoutSession } from "@/lib/stripe/fulfill-checkout-session";
+import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
 function getStripeWebhookSecret(): string {
   const secret = process.env.STRIPE_WEBHOOK_SECRET?.trim();
@@ -15,32 +12,27 @@ function getStripeWebhookSecret(): string {
 }
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function POST(req: Request) {
+  console.info("[stripe-webhook] POST received");
+
   if (process.env.NEXT_PUBLIC_TEST_MODE === "true") {
-    return NextResponse.json({ received: true });
+    console.warn(
+      "[stripe-webhook] skipped — NEXT_PUBLIC_TEST_MODE=true (no order insert)",
+    );
+    return NextResponse.json({ received: true, skipped: "test_mode" });
   }
 
   if (!process.env.STRIPE_SECRET_KEY) {
+    console.error("[stripe-webhook] missing STRIPE_SECRET_KEY");
     return NextResponse.json(
       { error: "Missing STRIPE_SECRET_KEY" },
       { status: 500 },
     );
   }
 
-  const [
-    { createClient },
-    { getSupabaseServiceRoleKey, getSupabaseUrl },
-    { parseOrderPriceLabelToUsd },
-    { default: Stripe },
-    { generateDeliveryAccessToken },
-  ] = await Promise.all([
-    import("@supabase/supabase-js"),
-    import("@/lib/supabase/env"),
-    import("@/lib/supabase"),
-    import("stripe"),
-    import("@/lib/delivery/access-token"),
-  ]);
+  const [{ default: Stripe }] = await Promise.all([import("stripe")]);
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: "2026-04-22.dahlia",
@@ -48,6 +40,7 @@ export async function POST(req: Request) {
   });
   const signature = req.headers.get("stripe-signature");
   if (!signature) {
+    console.warn("[stripe-webhook] missing stripe-signature header");
     return NextResponse.json(
       { error: "Missing Stripe signature" },
       { status: 400 },
@@ -56,11 +49,7 @@ export async function POST(req: Request) {
 
   const rawBody = await req.text();
 
-  let event: InstanceType<typeof Stripe>["webhooks"] extends {
-    constructEvent: (...a: any) => infer R;
-  }
-    ? R
-    : never;
+  let event: Awaited<ReturnType<typeof stripe.webhooks.constructEvent>>;
   try {
     event = stripe.webhooks.constructEvent(
       rawBody,
@@ -69,98 +58,41 @@ export async function POST(req: Request) {
     );
   } catch (err) {
     const message = err instanceof Error ? err.message : "Invalid signature";
+    console.error("[stripe-webhook] signature verification failed", { message });
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
+  console.info("[stripe-webhook] event", { type: event.type, id: event.id });
+
   if (event.type !== "checkout.session.completed") {
-    return NextResponse.json({ received: true });
+    return NextResponse.json({ received: true, ignored: event.type });
   }
 
-  const session = event.data.object as any;
-  const meta = session.metadata ?? {};
+  const session = event.data.object;
 
-  const customer_name = (meta.customer_name ?? "").trim();
-  const customer_email = (meta.customer_email ?? "").trim();
-  const customer_message = (meta.customer_message ?? "").trim();
-  const track_name = (meta.track_name ?? "").trim();
-  const uploaded_file = (meta.uploaded_file ?? "").trim();
-  const service = (meta.service ?? "").trim();
-  const price_label = (meta.price_label ?? "").trim();
-
-  if (!customer_email || !track_name || !service || !uploaded_file) {
-    console.error("[stripe-webhook] Missing required metadata", {
-      customer_email,
-      track_name,
-      service,
-      uploaded_file,
-    });
-    return NextResponse.json(
-      { error: "Missing required metadata" },
-      { status: 400 },
-    );
-  }
-
-  const supabase = createClient(getSupabaseUrl(), getSupabaseServiceRoleKey(), {
-    auth: { persistSession: false },
-  });
-
-  const price = parseOrderPriceLabelToUsd(price_label);
-
-  const delivery_access_token = generateDeliveryAccessToken();
-
-  const { error } = await supabase.from("orders").insert({
-    customer_name: customer_name || null,
-    customer_email,
-    track_name,
-    service,
-    status: "new",
-    notes: customer_message || null,
-    uploaded_file,
-    mastered_file: null,
-    price,
-    delivery_access_token,
-  });
-
-  if (error) {
-    console.error("[stripe-webhook] Supabase insert failed", {
-      code: error.code,
-      message: error.message,
-      details: error.details,
-      hint: error.hint,
-    });
-    return NextResponse.json({ error: "Insert failed" }, { status: 500 });
-  }
-
-  const portal = deliveryPortalAbsoluteUrl(delivery_access_token);
-  const orderPlacedAt =
-    dateFromUnixSeconds(session.created as number) ?? new Date();
-  console.info("[stripe-webhook] delivery url", { portal });
+  let supabase;
   try {
-    const result = await sendResendEmail({
-      to: customer_email,
-      subject: "We received your mastering order",
-      html: renderBrandedEmail({
-        title: "Order received",
-        intro: `We’ve received your payment and files for ${track_name}.`,
-        ctaLabel: "Open delivery page",
-        ctaUrl: portal,
-        meta: [
-          { label: "Service", value: service },
-          { label: "Status", value: "New" },
-          { label: "Date", value: formatStockholmDate(orderPlacedAt) },
-        ],
-        footerEmail: "studio@firstlistenmastering.com",
-      }),
-    });
-    console.info("[EMAIL SENT] stripe-webhook customer", {
-      ok: result.ok,
-      reason: result.ok ? undefined : result.reason,
-      to: `${customer_email.slice(0, 2)}…`,
-    });
-  } catch (err) {
-    console.error("[EMAIL FAILED] stripe-webhook customer", err);
+    supabase = createServiceRoleSupabaseClient();
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Supabase init failed";
+    console.error("[stripe-webhook] service client failed", { message: msg });
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 
-  return NextResponse.json({ received: true });
-}
+  const result = await fulfillCheckoutSession({
+    session,
+    supabase,
+    logTag: "[stripe-webhook]",
+    sendCustomerEmail: true,
+  });
 
+  if (!result.ok) {
+    return NextResponse.json({ error: result.reason }, { status: result.status });
+  }
+
+  return NextResponse.json({
+    received: true,
+    orderId: result.orderId,
+    alreadyExisted: result.alreadyExisted,
+  });
+}

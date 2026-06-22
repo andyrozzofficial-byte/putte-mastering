@@ -1,0 +1,285 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type Stripe from "stripe";
+
+import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
+import { generateDeliveryAccessToken } from "@/lib/delivery/access-token";
+import { dateFromUnixSeconds, formatStockholmDate } from "@/lib/datetime";
+import { sendResendEmail } from "@/lib/email/resend";
+import { renderBrandedEmail } from "@/lib/email/templates";
+import { parseOrderPriceLabelToUsd } from "@/lib/supabase";
+import type { Database } from "@/lib/supabase/database.types";
+import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
+import { getSupabaseServiceRoleKey, getSupabaseUrl } from "@/lib/supabase/env";
+
+export type CheckoutSessionMetadata = {
+  customer_name: string;
+  customer_email: string;
+  customer_message: string;
+  track_name: string;
+  uploaded_file: string;
+  service: string;
+  price_label: string;
+};
+
+export type FulfillCheckoutResult =
+  | {
+      ok: true;
+      alreadyExisted: boolean;
+      deliveryAccessToken: string;
+      orderId: string;
+    }
+  | { ok: false; reason: string; status: number };
+
+type SessionLike = Pick<Stripe.Checkout.Session, "id" | "payment_status" | "created" | "metadata">;
+
+export function parseCheckoutSessionMetadata(session: SessionLike): CheckoutSessionMetadata {
+  const meta = session.metadata ?? {};
+  return {
+    customer_name: (meta.customer_name ?? "").trim(),
+    customer_email: (meta.customer_email ?? "").trim(),
+    customer_message: (meta.customer_message ?? "").trim(),
+    track_name: (meta.track_name ?? "").trim(),
+    uploaded_file: (meta.uploaded_file ?? "").trim(),
+    service: (meta.service ?? "").trim(),
+    price_label: (meta.price_label ?? "").trim(),
+  };
+}
+
+async function findOrderByCheckoutSessionId(
+  supabase: SupabaseClient<Database>,
+  sessionId: string,
+): Promise<{ id: string; delivery_access_token: string } | null> {
+  const { data, error } = await supabase
+    .from("orders")
+    .select("id, delivery_access_token")
+    .eq("stripe_checkout_session_id", sessionId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  const token = data?.delivery_access_token;
+  if (!data?.id || typeof token !== "string" || !token.trim()) {
+    return null;
+  }
+
+  return { id: data.id, delivery_access_token: token };
+}
+
+async function sendOrderReceivedEmail(options: {
+  customerEmail: string;
+  trackName: string;
+  service: string;
+  deliveryAccessToken: string;
+  orderPlacedAt: Date;
+  logTag: string;
+}): Promise<void> {
+  const portal = deliveryPortalAbsoluteUrl(options.deliveryAccessToken);
+  try {
+    const result = await sendResendEmail({
+      to: options.customerEmail,
+      subject: "We received your mastering order",
+      html: renderBrandedEmail({
+        title: "Order received",
+        intro: `We’ve received your payment and files for ${options.trackName}.`,
+        ctaLabel: "Open delivery page",
+        ctaUrl: portal,
+        meta: [
+          { label: "Service", value: options.service },
+          { label: "Status", value: "New" },
+          { label: "Date", value: formatStockholmDate(options.orderPlacedAt) },
+        ],
+        footerEmail: "studio@firstlistenmastering.com",
+      }),
+    });
+    console.info(`[EMAIL SENT] ${options.logTag}`, {
+      ok: result.ok,
+      reason: result.ok ? undefined : result.reason,
+      to: `${options.customerEmail.slice(0, 2)}…`,
+    });
+  } catch (err) {
+    console.error(`[EMAIL FAILED] ${options.logTag}`, err);
+  }
+}
+
+export async function fulfillCheckoutSession(options: {
+  session: SessionLike;
+  supabase: SupabaseClient<Database>;
+  logTag: string;
+  sendCustomerEmail?: boolean;
+}): Promise<FulfillCheckoutResult> {
+  const { session, supabase, logTag, sendCustomerEmail = true } = options;
+  const sessionId = session.id?.trim();
+  if (!sessionId) {
+    return { ok: false, reason: "Missing session id", status: 400 };
+  }
+
+  if (session.payment_status !== "paid") {
+    console.warn(`${logTag} session not paid`, {
+      sessionId,
+      payment_status: session.payment_status,
+    });
+    return { ok: false, reason: "Payment not completed", status: 400 };
+  }
+
+  try {
+    const existing = await findOrderByCheckoutSessionId(supabase, sessionId);
+    if (existing) {
+      console.info(`${logTag} order already exists`, {
+        sessionId,
+        orderId: existing.id,
+      });
+      return {
+        ok: true,
+        alreadyExisted: true,
+        deliveryAccessToken: existing.delivery_access_token,
+        orderId: existing.id,
+      };
+    }
+  } catch (err) {
+    console.error(`${logTag} existing order lookup failed`, {
+      sessionId,
+      message: err instanceof Error ? err.message : String(err),
+    });
+    return { ok: false, reason: "Database lookup failed", status: 500 };
+  }
+
+  const fields = parseCheckoutSessionMetadata(session);
+  if (!fields.customer_email || !fields.track_name || !fields.service || !fields.uploaded_file) {
+    console.error(`${logTag} missing required metadata`, {
+      sessionId,
+      has_customer_email: Boolean(fields.customer_email),
+      has_track_name: Boolean(fields.track_name),
+      has_service: Boolean(fields.service),
+      has_uploaded_file: Boolean(fields.uploaded_file),
+    });
+    return { ok: false, reason: "Missing checkout metadata", status: 400 };
+  }
+
+  const delivery_access_token = generateDeliveryAccessToken();
+  const price = parseOrderPriceLabelToUsd(fields.price_label);
+
+  const { data: inserted, error } = await supabase
+    .from("orders")
+    .insert({
+      stripe_checkout_session_id: sessionId,
+      customer_name: fields.customer_name || null,
+      customer_email: fields.customer_email,
+      track_name: fields.track_name,
+      service: fields.service,
+      status: "new",
+      notes: fields.customer_message || null,
+      uploaded_file: fields.uploaded_file,
+      mastered_file: null,
+      price,
+      delivery_access_token,
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    if (error.code === "23505") {
+      try {
+        const existing = await findOrderByCheckoutSessionId(supabase, sessionId);
+        if (existing) {
+          console.info(`${logTag} order created concurrently`, {
+            sessionId,
+            orderId: existing.id,
+          });
+          return {
+            ok: true,
+            alreadyExisted: true,
+            deliveryAccessToken: existing.delivery_access_token,
+            orderId: existing.id,
+          };
+        }
+      } catch {
+        /* fall through */
+      }
+    }
+
+    console.error(`${logTag} Supabase insert failed`, {
+      sessionId,
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    });
+    return { ok: false, reason: "Insert failed", status: 500 };
+  }
+
+  const orderId = inserted?.id;
+  if (!orderId) {
+    return { ok: false, reason: "Insert returned no order id", status: 500 };
+  }
+
+  const portal = deliveryPortalAbsoluteUrl(delivery_access_token);
+  const orderPlacedAt = dateFromUnixSeconds(session.created ?? 0) ?? new Date();
+  console.info(`${logTag} order created`, { sessionId, orderId, portal });
+
+  if (sendCustomerEmail) {
+    await sendOrderReceivedEmail({
+      customerEmail: fields.customer_email,
+      trackName: fields.track_name,
+      service: fields.service,
+      deliveryAccessToken: delivery_access_token,
+      orderPlacedAt,
+      logTag,
+    });
+  }
+
+  return {
+    ok: true,
+    alreadyExisted: false,
+    deliveryAccessToken: delivery_access_token,
+    orderId,
+  };
+}
+
+export async function fulfillCheckoutSessionById(
+  sessionId: string,
+  options?: { logTag?: string; sendCustomerEmail?: boolean },
+): Promise<FulfillCheckoutResult> {
+  const logTag = options?.logTag ?? "[stripe-fulfill]";
+  const trimmed = sessionId.trim();
+  if (!trimmed) {
+    return { ok: false, reason: "Missing session_id", status: 400 };
+  }
+
+  if (!process.env.STRIPE_SECRET_KEY?.trim()) {
+    return { ok: false, reason: "Missing STRIPE_SECRET_KEY", status: 500 };
+  }
+
+  try {
+    getSupabaseUrl();
+    getSupabaseServiceRoleKey();
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Missing Supabase server env";
+    console.error(`${logTag} env error`, { message: msg });
+    return { ok: false, reason: msg, status: 500 };
+  }
+
+  const { default: Stripe } = await import("stripe");
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: "2026-04-22.dahlia",
+    typescript: true,
+  });
+
+  let session: Stripe.Checkout.Session;
+  try {
+    session = await stripe.checkout.sessions.retrieve(trimmed);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Could not load checkout session";
+    console.error(`${logTag} sessions.retrieve failed`, { sessionId: trimmed, message: msg });
+    return { ok: false, reason: msg, status: 400 };
+  }
+
+  const supabase = createServiceRoleSupabaseClient();
+  return fulfillCheckoutSession({
+    session,
+    supabase,
+    logTag,
+    sendCustomerEmail: options?.sendCustomerEmail,
+  });
+}

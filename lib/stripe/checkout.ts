@@ -35,7 +35,7 @@ export async function createStripeCheckoutSession(args: {
   const priceCents = parseUsdLabelToCents(plan.price);
   if (priceCents <= 0) return { error: "Invalid price", status: 400 };
 
-  const successUrl = `${origin}/?order=success&session_id={CHECKOUT_SESSION_ID}`;
+  const successUrl = `${origin}/order/success?session_id={CHECKOUT_SESSION_ID}`;
   const cancelUrl = `${origin}/?order=cancelled`;
 
   console.info("[stripe-checkout] Create session", {
