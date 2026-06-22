@@ -1,7 +1,9 @@
-const primaryCredits: readonly {
+const collaborationCredits: readonly {
   id: string;
   lines: readonly string[];
   className: string;
+  href?: string;
+  ariaLabel?: string;
 }[] = [
   {
     id: "bts",
@@ -27,22 +29,34 @@ const primaryCredits: readonly {
     className:
       "text-[clamp(1.75rem,5vw,2.8rem)] font-bold tracking-[0.05em] text-black/[0.82]",
   },
+  {
+    id: "champagne-therapy",
+    lines: ["Champagne", "Therapy"],
+    href: "https://www.instagram.com/champagnetherapymusic/",
+    ariaLabel: "Champagne Therapy on Instagram",
+    className:
+      "text-[clamp(1.02rem,2.9vw,1.5rem)] font-medium leading-[1.32] tracking-[0.05em] text-black/[0.76] sm:leading-[1.28]",
+  },
+  {
+    id: "warner-chappell",
+    lines: ["WARNER", "CHAPPELL"],
+    className:
+      "text-[0.74rem] font-medium uppercase leading-[1.42] tracking-[0.36em] text-black/[0.64] sm:text-[0.82rem] sm:tracking-[0.4em] md:text-[0.86rem]",
+  },
 ] as const;
-
-const warnerMark = {
-  lines: ["WARNER", "CHAPPELL"] as const,
-  className:
-    "text-[0.74rem] font-medium uppercase leading-[1.42] tracking-[0.36em] text-black/[0.64] sm:text-[0.82rem] sm:tracking-[0.4em] md:text-[0.86rem]",
-};
 
 function CreditMark({
   lines,
   className,
+  href,
+  ariaLabel,
 }: {
   lines: readonly string[];
   className: string;
+  href?: string;
+  ariaLabel?: string;
 }) {
-  return (
+  const content = (
     <div
       className={`flex w-full flex-col items-center justify-center text-center ${className}`}
     >
@@ -53,6 +67,22 @@ function CreditMark({
       ))}
     </div>
   );
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={ariaLabel ?? lines.join(" ")}
+        className="flex w-full items-center justify-center transition-opacity hover:opacity-75"
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return content;
 }
 
 export function TrustedBySection() {
@@ -80,25 +110,24 @@ export function TrustedBySection() {
         </header>
 
         <div
-          className="mx-auto mt-14 grid max-w-4xl grid-cols-2 justify-items-center gap-x-6 gap-y-12 sm:mt-16 sm:gap-x-10 sm:gap-y-14 md:mt-[4.85rem] md:grid-cols-5 md:gap-x-5 md:gap-y-0 lg:gap-x-7"
+          className="mx-auto mt-14 grid max-w-4xl grid-cols-2 justify-items-center gap-x-6 gap-y-12 sm:mt-16 sm:grid-cols-3 sm:gap-x-10 sm:gap-y-14 md:mt-[4.85rem] lg:grid-cols-6 lg:gap-x-5 lg:gap-y-0 xl:gap-x-7"
           role="list"
           aria-label="Past credits and collaborations"
         >
-          {primaryCredits.map((item) => (
+          {collaborationCredits.map((item) => (
             <div
               key={item.id}
               role="listitem"
               className="flex w-full max-w-[11rem] items-center justify-center sm:max-w-none"
             >
-              <CreditMark lines={item.lines} className={item.className} />
+              <CreditMark
+                lines={item.lines}
+                className={item.className}
+                href={item.href}
+                ariaLabel={item.ariaLabel}
+              />
             </div>
           ))}
-          <div
-            role="listitem"
-            className="col-span-2 flex w-full max-w-[14rem] items-center justify-center border-t border-black/[0.06] pt-11 sm:max-w-none md:col-span-1 md:max-w-[10.5rem] md:border-l md:border-t-0 md:pt-0 md:pl-9 lg:pl-11"
-          >
-            <CreditMark lines={warnerMark.lines} className={warnerMark.className} />
-          </div>
         </div>
 
         <p className="mt-16 text-center sm:mt-[4.25rem]">
