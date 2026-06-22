@@ -71,6 +71,100 @@ function serializeSupabaseError(err: unknown): {
   return { message: String(err) };
 }
 
+function isMissingStripeSessionColumnError(error: {
+  code?: string;
+  message?: string;
+}): boolean {
+  const message = error.message ?? "";
+  return (
+    error.code === "PGRST204" ||
+    error.code === "42703" ||
+    message.includes("stripe_checkout_session_id")
+  );
+}
+
+function buildOrderInsertRow(options: {
+  sessionId: string;
+  fields: CheckoutSessionMetadata;
+  delivery_access_token: string;
+  price: number;
+  includeStripeSessionId: boolean;
+}): Database["public"]["Tables"]["orders"]["Insert"] {
+  const row: Database["public"]["Tables"]["orders"]["Insert"] = {
+    customer_name: options.fields.customer_name || null,
+    customer_email: options.fields.customer_email,
+    track_name: options.fields.track_name,
+    service: options.fields.service,
+    status: "new",
+    notes: options.fields.customer_message || null,
+    uploaded_file: options.fields.uploaded_file,
+    mastered_file: null,
+    price: options.price,
+    delivery_access_token: options.delivery_access_token,
+  };
+
+  if (options.includeStripeSessionId) {
+    row.stripe_checkout_session_id = options.sessionId;
+  }
+
+  return row;
+}
+
+async function insertCheckoutOrder(
+  supabase: SupabaseClient<Database>,
+  options: {
+    sessionId: string;
+    fields: CheckoutSessionMetadata;
+    delivery_access_token: string;
+    price: number;
+    logTag: string;
+  },
+): Promise<
+  | { ok: true; orderId: string }
+  | { ok: false; error: { code?: string; message: string; details?: string; hint?: string } }
+> {
+  const { sessionId, fields, delivery_access_token, price, logTag } = options;
+
+  const attempt = async (includeStripeSessionId: boolean) =>
+    supabase
+      .from("orders")
+      .insert(
+        buildOrderInsertRow({
+          sessionId,
+          fields,
+          delivery_access_token,
+          price,
+          includeStripeSessionId,
+        }),
+      )
+      .select("id")
+      .single();
+
+  let { data: inserted, error } = await attempt(true);
+
+  if (error && isMissingStripeSessionColumnError(error)) {
+    console.warn(`${logTag} stripe_checkout_session_id column unavailable; retrying insert without it`, {
+      sessionId,
+      ...serializeSupabaseError(error),
+    });
+    ({ data: inserted, error } = await attempt(false));
+  }
+
+  if (error) {
+    return { ok: false, error };
+  }
+
+  const orderId = inserted?.id;
+  if (!orderId) {
+    return {
+      ok: false,
+      error: { message: "Insert returned no order id" },
+    };
+  }
+
+  return { ok: true, orderId };
+}
+
 function toExistingOrder(
   data: { id: string; delivery_access_token: string | null } | null,
 ): ExistingOrder | null {
@@ -248,25 +342,16 @@ export async function fulfillCheckoutSession(options: {
   const delivery_access_token = generateDeliveryAccessToken();
   const price = parseOrderPriceLabelToUsd(fields.price_label);
 
-  const { data: inserted, error } = await supabase
-    .from("orders")
-    .insert({
-      stripe_checkout_session_id: sessionId,
-      customer_name: fields.customer_name || null,
-      customer_email: fields.customer_email,
-      track_name: fields.track_name,
-      service: fields.service,
-      status: "new",
-      notes: fields.customer_message || null,
-      uploaded_file: fields.uploaded_file,
-      mastered_file: null,
-      price,
-      delivery_access_token,
-    })
-    .select("id")
-    .single();
+  const insertResult = await insertCheckoutOrder(supabase, {
+    sessionId,
+    fields,
+    delivery_access_token,
+    price,
+    logTag,
+  });
 
-  if (error) {
+  if (!insertResult.ok) {
+    const error = insertResult.error;
     if (error.code === "23505") {
       const concurrent = await findExistingOrderForSession(
         supabase,
@@ -298,10 +383,7 @@ export async function fulfillCheckoutSession(options: {
     return { ok: false, reason: "Insert failed", status: 500 };
   }
 
-  const orderId = inserted?.id;
-  if (!orderId) {
-    return { ok: false, reason: "Insert returned no order id", status: 500 };
-  }
+  const orderId = insertResult.orderId;
 
   const portal = deliveryPortalAbsoluteUrl(delivery_access_token);
   const orderPlacedAt = dateFromUnixSeconds(session.created ?? 0) ?? new Date();
