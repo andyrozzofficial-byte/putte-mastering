@@ -47,12 +47,28 @@ export function parseCheckoutSessionMetadata(session: SessionLike): CheckoutSess
 
 type ExistingOrder = { id: string; delivery_access_token: string };
 
-function formatSupabaseError(err: unknown): string {
-  if (err instanceof Error) return err.message;
-  if (err && typeof err === "object" && "message" in err) {
-    return String((err as { message: unknown }).message);
+function serializeSupabaseError(err: unknown): {
+  message: string;
+  code?: string;
+  details?: string;
+  hint?: string;
+} {
+  if (err && typeof err === "object") {
+    const e = err as {
+      code?: string;
+      message?: string;
+      details?: string;
+      hint?: string;
+    };
+    return {
+      message: e.message ?? JSON.stringify(err),
+      code: e.code,
+      details: e.details,
+      hint: e.hint,
+    };
   }
-  return String(err);
+  if (err instanceof Error) return { message: err.message };
+  return { message: String(err) };
 }
 
 function toExistingOrder(
@@ -119,7 +135,7 @@ async function findExistingOrderForSession(
   } catch (err) {
     console.warn(`${logTag} session id lookup unavailable`, {
       sessionId,
-      message: formatSupabaseError(err),
+      ...serializeSupabaseError(err),
     });
   }
 
@@ -135,7 +151,7 @@ async function findExistingOrderForSession(
   } catch (err) {
     console.error(`${logTag} metadata order lookup failed`, {
       sessionId,
-      message: formatSupabaseError(err),
+      ...serializeSupabaseError(err),
     });
   }
 
