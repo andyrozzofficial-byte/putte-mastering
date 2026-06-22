@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type Stripe from "stripe";
 
+import { buildOrderConfirmationSummary } from "@/lib/order/confirmation-summary";
 import { deliveryPortalAbsoluteUrl } from "@/lib/delivery/app-url";
 import { generateDeliveryAccessToken } from "@/lib/delivery/access-token";
 import { dateFromUnixSeconds, formatStockholmDate } from "@/lib/datetime";
@@ -10,6 +11,8 @@ import { parseOrderPriceLabelToUsd } from "@/lib/supabase";
 import type { Database } from "@/lib/supabase/database.types";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 import { getSupabaseServiceRoleKey, getSupabaseUrl } from "@/lib/supabase/env";
+
+import type { OrderConfirmationSummary } from "@/lib/order/confirmation-summary";
 
 export type CheckoutSessionMetadata = {
   customer_name: string;
@@ -27,8 +30,24 @@ export type FulfillCheckoutResult =
       alreadyExisted: boolean;
       deliveryAccessToken: string;
       orderId: string;
+      confirmation: OrderConfirmationSummary;
     }
   | { ok: false; reason: string; status: number };
+
+function buildSuccessResult(
+  session: SessionLike,
+  orderId: string,
+  deliveryAccessToken: string,
+  alreadyExisted: boolean,
+): Extract<FulfillCheckoutResult, { ok: true }> {
+  return {
+    ok: true,
+    alreadyExisted,
+    orderId,
+    deliveryAccessToken,
+    confirmation: buildOrderConfirmationSummary(parseCheckoutSessionMetadata(session)),
+  };
+}
 
 type SessionLike = Pick<Stripe.Checkout.Session, "id" | "payment_status" | "created" | "metadata">;
 
@@ -321,12 +340,7 @@ export async function fulfillCheckoutSession(options: {
       sessionId,
       orderId: existing.id,
     });
-    return {
-      ok: true,
-      alreadyExisted: true,
-      deliveryAccessToken: existing.delivery_access_token,
-      orderId: existing.id,
-    };
+    return buildSuccessResult(session, existing.id, existing.delivery_access_token, true);
   }
   if (!fields.customer_email || !fields.track_name || !fields.service || !fields.uploaded_file) {
     console.error(`${logTag} missing required metadata`, {
@@ -364,12 +378,7 @@ export async function fulfillCheckoutSession(options: {
           sessionId,
           orderId: concurrent.id,
         });
-        return {
-          ok: true,
-          alreadyExisted: true,
-          deliveryAccessToken: concurrent.delivery_access_token,
-          orderId: concurrent.id,
-        };
+        return buildSuccessResult(session, concurrent.id, concurrent.delivery_access_token, true);
       }
     }
 
@@ -400,12 +409,7 @@ export async function fulfillCheckoutSession(options: {
     });
   }
 
-  return {
-    ok: true,
-    alreadyExisted: false,
-    deliveryAccessToken: delivery_access_token,
-    orderId,
-  };
+  return buildSuccessResult(session, orderId, delivery_access_token, false);
 }
 
 export async function fulfillCheckoutSessionById(
