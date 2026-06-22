@@ -1,7 +1,7 @@
 export const ORDER_PLANS = [
   {
     title: "Standard Master",
-    price: "$0,01",
+    price: "$60",
     features: [
       "WAV + MP3",
       "Revisions included",
